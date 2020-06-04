@@ -4,9 +4,10 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build-example": "cross-env NODE_ENV=production babel example --out-dir dist --copy-files",
-    "start-example": "yarn build && node dist/index.js",
-    "start": "rm -Rf dist && tsc && mv -f dist/src/** dist && node dist/index.js"
+    "start": "rm -Rf dist && tsc && node dist/bin/index.js start"
+  },
+  "bin": {
+    "recife": "dist/index.js"
   },
   "dependencies": {
     "@types/node": "^14.0.10",

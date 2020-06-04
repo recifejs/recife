@@ -10,6 +10,6 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src", "example"],
+  "include": ["src", "example", "bin", "scripts"],
   "exclude": ["node_modules"]
 }
