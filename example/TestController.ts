@@ -1,4 +1,5 @@
 import Query from "./decorators/Query";
+import Mutation from "./decorators/Mutation";
 
 export default class TestController {
   @Query()
@@ -9,5 +10,10 @@ export default class TestController {
   @Query()
   getPost() {
     return "post";
+  }
+
+  @Mutation()
+  createMutation() {
+    return "create";
   }
 }

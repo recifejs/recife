@@ -28,7 +28,7 @@ const babelConfig = {
 };
 
 const resultTransform = babel.transformFileSync(
-  "./src/TestController.ts",
+  "./example/TestController.ts",
   babelConfig
 );
 
