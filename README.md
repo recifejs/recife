@@ -1,3 +1,3 @@
 <div align="center">
-  <img alt="Logo" src="https://raw.githubusercontent.com/andrelmlins/recife/master/logo.png" />
+  <img alt="RecifeJs" src="https://raw.githubusercontent.com/recifejs/recife/master/logo.png" />
 </div>
