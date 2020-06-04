@@ -1,7 +1,7 @@
 function Mutation(): any {
   return function(
-    target: any,
-    propertyKey: string,
+    _target: any,
+    _propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
     descriptor.value = {

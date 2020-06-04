@@ -1,7 +1,7 @@
 enum GraphTypeEnum {
-  QUERY = "query",
-  MUTATION = "mutation",
-  SUBSCRIPTION = "subscription"
+  QUERY = "Query",
+  MUTATION = "Mutation",
+  SUBSCRIPTION = "Subscription"
 }
 
 export default GraphTypeEnum;
