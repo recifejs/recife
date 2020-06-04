@@ -6,6 +6,7 @@ class Config {
     Config.PATH_BASE,
     "controllers"
   );
+  static PATH_MODELS = path.join(process.cwd(), Config.PATH_BASE, "models");
 }
 
 export default Config;

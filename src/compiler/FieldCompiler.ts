@@ -42,9 +42,7 @@ class FieldCompiler {
     const field = new Field();
     if (ts.isPropertySignature(node)) {
       field.name = node.name.getText(this.sourceFile);
-      if (ts.isTypeReferenceNode(node.type!)) {
-        field.type = node.type.getText(this.sourceFile);
-      }
+      field.type = node.type!.getText(this.sourceFile);
     }
 
     if (field.name && field.type) {
