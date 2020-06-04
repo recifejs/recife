@@ -6,7 +6,7 @@
   "scripts": {
     "build-example": "cross-env NODE_ENV=production babel example --out-dir dist --copy-files",
     "start-example": "yarn build && node dist/index.js",
-    "start": "tsc && node dist/indexTs.js"
+    "start": "tsc && mv dist/src/** dist && node dist/index.js"
   },
   "dependencies": {
     "typescript": "^3.9.2"

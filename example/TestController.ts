@@ -1,6 +1,8 @@
 import Query from "./decorators/Query";
 import Mutation from "./decorators/Mutation";
 
+import { CommentCreate } from "./inputs/CommentInput";
+
 export default class TestController {
   @Query()
   getComment() {
@@ -13,7 +15,7 @@ export default class TestController {
   }
 
   @Mutation()
-  createMutation() {
+  createComment(type: CommentCreate) {
     return "create";
   }
 }
