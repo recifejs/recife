@@ -1,4 +1,4 @@
-import TestController from "./TestController";
+import TestController from "./controllers/TestController";
 
 const testController = new TestController();
 

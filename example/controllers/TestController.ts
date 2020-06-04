@@ -1,7 +1,7 @@
-import Query from "./decorators/Query";
-import Mutation from "./decorators/Mutation";
+import Query from "../decorators/Query";
+import Mutation from "../decorators/Mutation";
 
-import { CommentCreate } from "./inputs/CommentInput";
+import { CommentCreate } from "../inputs/CommentInput";
 
 export default class TestController {
   @Query()
