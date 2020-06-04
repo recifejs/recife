@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
-    "esModuleInterop": true,
-    "allowJs": true,
-    "noEmit": true,
-    "moduleResolution": "node",
+    "lib": ["es6", "dom"],
+    "target": "es6",
+    "module": "commonjs",
+    "outDir": "dist",
     "strict": true,
-    "experimentalDecorators": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["./example/**/*"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
