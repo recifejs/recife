@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "rm -Rf dist && tsc && node dist/bin/index.js start"
+    "start": "rm -Rf dist && tsc && node dist/bin/index.js start",
+    "build": "tsc -p"
   },
   "bin": {
     "recife": "dist/index.js"
