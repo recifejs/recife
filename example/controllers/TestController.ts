@@ -1,5 +1,4 @@
-import Query from "../decorators/Query";
-import Mutation from "../decorators/Mutation";
+import { Query, Mutation } from "../../src";
 
 import { CommentCreate } from "../inputs/CommentInput";
 

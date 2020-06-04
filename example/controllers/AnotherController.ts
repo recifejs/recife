@@ -1,4 +1,4 @@
-import Mutation from "../decorators/Mutation";
+import { Mutation } from "../../src";
 
 import { CommentDelete, CommentUpdate } from "../inputs/CommentInput";
 
