@@ -3,12 +3,17 @@
 <img alt="RecifeJs" src="https://raw.githubusercontent.com/recifejs/recife/master/logo.png" />
 
 <br />
+<br />
 
 [Contributing](CONTRIBUTING.md) | [Code of Conduct](CODE_OF_CONDUCT.md)
 
+<br />
+<br />
+
+[![npm version](https://badge.fury.io/js/recife.svg)](https://www.npmjs.com/package/recife) &bull; [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/recifejs/recife/blob/master/LICENSE) &bull; [![Node.js CI](https://github.com/recifejs/recife/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/recifejs/recife/workflows/Node.js%20CI)
+
 </div>
 
-<br />
 <br />
 
 ## Install
