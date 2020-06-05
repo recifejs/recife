@@ -3,19 +3,21 @@
   "version": "0.1.1",
   "description": "MVC Framework for GraphQL",
   "license": "MIT",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "author": "André Lins <andrelucas01@hotmail.com> (https://andrelmlins.github.io/)",
   "repository": "https://github.com/recifejs/recife",
   "scripts": {
-    "start": "tsc && node dist/bin/index.js start",
+    "start": "tsc && node bin/recife start",
     "build": "tsc -p ."
   },
   "files": [
     "dist",
+    "bin",
     "README.md"
   ],
-  "main": "dist/src/index.js",
   "bin": {
-    "recife": "dist/bin/index.js"
+    "recife": "./bin/index.js"
   },
   "dependencies": {
     "apollo-server": "^2.14.2",

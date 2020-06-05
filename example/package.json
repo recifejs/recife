@@ -4,9 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "recife start",
     "build": "tsc"
   },
   "dependencies": {
+    "recife": "^0.1.1",
     "typescript": "^3.9.5"
   }
 }

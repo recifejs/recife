@@ -5,6 +5,7 @@
     "module": "commonjs",
     "outDir": "dist",
     "strict": true,
+    "declaration": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
