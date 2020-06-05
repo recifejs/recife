@@ -1,16 +1,16 @@
-import { Mutation } from "../../src";
+import { Mutation } from '../../../src';
 
-import { CommentDelete, CommentUpdate } from "../inputs/CommentInput";
+import { CommentDelete, CommentUpdate } from '../inputs/CommentInput';
 
 class AnotherController {
   @Mutation()
   deleteComment(input: CommentDelete) {
-    return "teste";
+    return 'teste';
   }
 
   @Mutation()
   updateComment(input: CommentUpdate) {
-    return "post";
+    return 'post';
   }
 }
 

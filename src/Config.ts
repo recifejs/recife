@@ -1,12 +1,12 @@
-import path from "path";
+import path from 'path';
 class Config {
-  static PATH_BASE = "./example";
+  static PATH_BASE = './example';
   static PATH_CONTROLLERS = path.join(
     process.cwd(),
     Config.PATH_BASE,
-    "controllers"
+    'src/controllers'
   );
-  static PATH_MODELS = path.join(process.cwd(), Config.PATH_BASE, "models");
+  static PATH_MODELS = path.join(process.cwd(), Config.PATH_BASE, 'src/models');
 }
 
 export default Config;
