@@ -1,6 +1,6 @@
 {
   "name": "recife",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "MVC Framework for GraphQL",
   "license": "MIT",
   "main": "dist/src/index.js",
@@ -17,7 +17,7 @@
     "README.md"
   ],
   "bin": {
-    "recife": "./bin/index.js"
+    "recife": "./bin/recife"
   },
   "dependencies": {
     "apollo-server": "^2.14.2",

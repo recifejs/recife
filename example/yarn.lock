@@ -1018,10 +1018,10 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-recife@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/recife/-/recife-0.1.1.tgz#9eb8cd2c5d5e5ec9db543791d592386562e3fb89"
-  integrity sha512-YtNY+SjPySID7XIuZjqNZMtP98AFX8hfQMV7/VGuAb+xxwnWD/WwgCltDOqPSjQ7/BYcm5P89ig5P5wSkXLNAg==
+recife@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/recife/-/recife-0.1.2.tgz#d89163311fac857d8d11f78d5b3fb0705ecfbd51"
+  integrity sha512-vcxd1JIJWv/TGeudRGym8Hb0V4pZDB88e3N3hQvql7seSEfTHtLfl3FUb1tmOW2n54zOTIMK/epwK6YIn7ypBA==
   dependencies:
     apollo-server "^2.14.2"
     apollo-server-express "^2.14.2"
