@@ -1,20 +1,16 @@
 import { Query, Mutation } from '../../../src';
 
 import { CommentCreate } from '../inputs/CommentInput';
+import CommentModel from '../models/CommentModel';
 
 export default class TestController {
   @Query()
-  getComment(): String {
-    return 'teste';
-  }
-
-  @Query()
-  getPost(): string {
-    return 'post';
+  getComment(): CommentModel {
+    return new CommentModel();
   }
 
   @Mutation()
-  createComment(type: CommentCreate) {
-    return 'create';
+  createComment(type: CommentCreate): CommentModel {
+    return new CommentModel();
   }
 }

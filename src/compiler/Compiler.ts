@@ -1,14 +1,14 @@
-import fs from "fs";
-import path from "path";
-import { gql } from "apollo-server";
-import { DocumentNode } from "graphql";
+import fs from 'fs';
+import path from 'path';
+import { gql } from 'apollo-server';
+import { DocumentNode } from 'graphql';
 
-import Graph from "./models/Graph";
-import Type from "./models/Type";
-import GraphCompiler from "./GraphCompiler";
-import TypeCompiler from "./TypeCompiler";
-import GraphTypeEnum from "./models/GraphTypeEnum";
-import Config from "../Config";
+import Graph from './models/Graph';
+import Type from './models/Type';
+import GraphCompiler from './GraphCompiler';
+import TypeCompiler from './TypeCompiler';
+import GraphTypeEnum from './models/GraphTypeEnum';
+import Config from '../Config';
 
 class Compiler {
   private graphs: Array<Graph> = [];
@@ -35,7 +35,7 @@ class Compiler {
   }
 
   generateType(): DocumentNode {
-    let typeString = "";
+    let typeString = '';
 
     this.types.forEach(type => {
       typeString += `type ${type.name} {\n`;
@@ -44,7 +44,7 @@ class Compiler {
         typeString += `  ${field.name}: ${field.type} \n`;
       });
 
-      typeString += "}\n";
+      typeString += '}\n';
     });
 
     this.graphs.forEach(graph => {
@@ -55,19 +55,19 @@ class Compiler {
           typeString += `  ${field.name}: ${field.type} \n`;
         });
 
-        typeString += "}\n";
+        typeString += '}\n';
       }
     });
 
     typeString += this.generateTypeGraph(GraphTypeEnum.QUERY);
     typeString += this.generateTypeGraph(GraphTypeEnum.MUTATION);
     typeString += this.generateTypeGraph(GraphTypeEnum.SUBSCRIPTION);
-
+    console.log(typeString);
     return gql(typeString);
   }
 
   generateTypeGraph(graphType: GraphTypeEnum): string {
-    let typeString = "";
+    let typeString = '';
 
     this.graphs.forEach(graph => {
       if (graph.type === graphType) {
@@ -83,7 +83,7 @@ class Compiler {
       return `type ${graphType.toString()} {\n${typeString}}\n`;
     }
 
-    return "";
+    return '';
   }
 }
 

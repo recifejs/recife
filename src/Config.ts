@@ -7,7 +7,7 @@ class Config {
     'src/controllers'
   );
   static PATH_MODELS = path.join(process.cwd(), Config.PATH_BASE, 'src/models');
-  static PORT = 6000;
+  static PORT = 8100;
 }
 
 export default Config;

@@ -6,13 +6,11 @@
   "author": "André Lins <andrelucas01@hotmail.com> (https://andrelmlins.github.io/)",
   "repository": "https://github.com/recifejs/recife",
   "scripts": {
-    "start": "rm -Rf dist && tsc && node dist/bin/index.js start",
-    "build": "tsc -p . && rm -Rf example"
+    "start": "tsc && node dist/bin/index.js start",
+    "build": "tsc -p ."
   },
   "files": [
     "dist",
-    "scripts",
-    "bin",
     "README.md"
   ],
   "bin": {
