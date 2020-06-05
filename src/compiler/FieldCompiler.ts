@@ -5,7 +5,7 @@ import Field from './models/Field';
 class FieldCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private className: string;
-  private fields: Array<Field> = [];
+  private fields: Field[] = [];
 
   constructor(file: string, className: string) {
     const program = ts.createProgram([file], { allowJs: true });

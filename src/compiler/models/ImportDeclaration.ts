@@ -1,7 +1,7 @@
 import pathLibrary from 'path';
 import Recife from '../../Recife';
 class ImportDeclaration {
-  public names: Array<string> = [];
+  public names: string[] = [];
   public path!: string;
 
   getPath() {

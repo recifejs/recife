@@ -6,14 +6,16 @@ import { DocumentNode } from 'graphql';
 import Graph from './models/Graph';
 import Resolvers from './models/Resolvers';
 import Type from './models/Type';
+import Input from './models/Input';
+import GraphTypeEnum from './models/GraphTypeEnum';
 import GraphCompiler from './GraphCompiler';
 import TypeCompiler from './TypeCompiler';
-import GraphTypeEnum from './models/GraphTypeEnum';
 import Recife from '../Recife';
 
 class Compiler {
-  private graphs: Array<Graph> = [];
-  private types: Array<Type> = [];
+  private graphs: Graph[] = [];
+  private types: Type[] = [];
+  private inputs: Input[] = [];
 
   compile() {
     const filesController: string[] = fs.readdirSync(Recife.PATH_CONTROLLERS);
@@ -23,6 +25,7 @@ class Compiler {
       const graphCompiler = new GraphCompiler(nameFileAbsolute);
       graphCompiler.compile();
       this.graphs = this.graphs.concat(graphCompiler.getGraphs());
+      this.inputs = this.inputs.concat(graphCompiler.getInputs());
     });
 
     const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
@@ -48,16 +51,14 @@ class Compiler {
       typeString += '}\n';
     });
 
-    this.graphs.forEach(graph => {
-      if (graph.params) {
-        typeString += `input ${graph.params.type} {\n`;
+    this.inputs.forEach(input => {
+      typeString += `input ${input.name} {\n`;
 
-        graph.params.fields.forEach(field => {
-          typeString += `  ${field.name}: ${field.type} \n`;
-        });
+      input.fields.forEach(field => {
+        typeString += `  ${field.name}: ${field.type} \n`;
+      });
 
-        typeString += '}\n';
-      }
+      typeString += '}\n';
     });
 
     typeString += this.generateTypeGraph(GraphTypeEnum.QUERY);

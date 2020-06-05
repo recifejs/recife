@@ -5,8 +5,8 @@ function Subscription(): any {
     descriptor: PropertyDescriptor
   ) {
     descriptor.value = {
-      type: "Subscription",
-      result: descriptor.value()
+      type: 'Subscription',
+      result: descriptor.value
     };
   };
 }

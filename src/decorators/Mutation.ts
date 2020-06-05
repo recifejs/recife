@@ -5,8 +5,8 @@ function Mutation(): any {
     descriptor: PropertyDescriptor
   ) {
     descriptor.value = {
-      type: "Mutation",
-      result: descriptor.value()
+      type: 'Mutation',
+      result: descriptor.value
     };
   };
 }

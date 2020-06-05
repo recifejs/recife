@@ -4,12 +4,14 @@ import FieldCompiler from './FieldCompiler';
 import PrimitiveType from './PrimitiveType';
 
 import Graph from './models/Graph';
+import Input from './models/Input';
 import GraphParam from './models/GraphParam';
 import GraphTypeEnum from './models/GraphTypeEnum';
 import ImportDeclaration from './models/ImportDeclaration';
 
 class GraphCompiler {
   private graphs: Array<Graph> = [];
+  private inputs: Map<string, Input> = new Map();
   private imports: Array<ImportDeclaration> = [];
   private sourceFile: ts.SourceFile | undefined;
 
@@ -20,6 +22,10 @@ class GraphCompiler {
 
   getGraphs() {
     return this.graphs;
+  }
+
+  getInputs() {
+    return Array.from(this.inputs.values());
   }
 
   compile() {
@@ -34,13 +40,6 @@ class GraphCompiler {
         }
       });
     }
-
-    this.graphs = this.graphs.map((graph: Graph) => {
-      if (graph.params) {
-        return this.compileFields(graph);
-      }
-      return graph;
-    });
   }
 
   private compileImport(node: ts.ImportDeclaration) {
@@ -109,34 +108,39 @@ class GraphCompiler {
 
         if (graph.type) {
           this.graphs.push(graph);
+
+          if (graph.params) {
+            this.createInput(graph.params.type);
+          }
         }
       }
     });
   }
 
-  private compileFields(graph: Graph): Graph {
-    let importDeclaration: ImportDeclaration | undefined = undefined;
+  private createInput(name: string) {
+    if (!this.inputs.has(name)) {
+      let importDeclaration: ImportDeclaration | undefined = undefined;
 
-    if (graph.params) {
       this.imports.forEach((importDecl: ImportDeclaration) => {
-        if (importDecl.names.some(item => item === graph.params.type)) {
+        if (importDecl.names.some(item => item === name)) {
           importDeclaration = importDecl;
         }
       });
+
+      if (importDeclaration) {
+        const fieldCompiler = new FieldCompiler(
+          importDeclaration!.getPath(),
+          name
+        );
+        fieldCompiler.compile();
+
+        const input = new Input();
+        input.name = name;
+        input.fields = fieldCompiler.getFields();
+
+        this.inputs.set(name, input);
+      }
     }
-
-    if (importDeclaration) {
-      const fieldCompiler = new FieldCompiler(
-        importDeclaration!.getPath(),
-        graph.params.type
-      );
-
-      fieldCompiler.compile();
-
-      graph.params.fields = fieldCompiler.getFields();
-    }
-
-    return graph;
   }
 }
 

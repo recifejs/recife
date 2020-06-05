@@ -1,8 +1,8 @@
-import Field from "./Field";
+import Field from './Field';
 
 class Type {
   public name!: string;
-  public fields!: Array<Field>;
+  public fields!: Field[];
 }
 
 export default Type;

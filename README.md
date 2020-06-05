@@ -16,7 +16,7 @@
 
 <br />
 
-## How to use
+## How to use RecifeJs
 
 **Create new project**
 
