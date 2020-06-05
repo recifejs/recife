@@ -9,25 +9,25 @@ import Type from './models/Type';
 import GraphCompiler from './GraphCompiler';
 import TypeCompiler from './TypeCompiler';
 import GraphTypeEnum from './models/GraphTypeEnum';
-import Config from '../Config';
+import Recife from '../Recife';
 
 class Compiler {
   private graphs: Array<Graph> = [];
   private types: Array<Type> = [];
 
   compile() {
-    const filesController: string[] = fs.readdirSync(Config.PATH_CONTROLLERS);
+    const filesController: string[] = fs.readdirSync(Recife.PATH_CONTROLLERS);
     filesController.forEach(file => {
-      const nameFileAbsolute = path.join(Config.PATH_CONTROLLERS, file);
+      const nameFileAbsolute = path.join(Recife.PATH_CONTROLLERS, file);
 
       const graphCompiler = new GraphCompiler(nameFileAbsolute);
       graphCompiler.compile();
       this.graphs = this.graphs.concat(graphCompiler.getGraphs());
     });
 
-    const filesModel: string[] = fs.readdirSync(Config.PATH_MODELS);
+    const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
     filesModel.forEach(file => {
-      const nameFileAbsolute = path.join(Config.PATH_MODELS, file);
+      const nameFileAbsolute = path.join(Recife.PATH_MODELS, file);
 
       const typeCompiler = new TypeCompiler(nameFileAbsolute);
       typeCompiler.compile();

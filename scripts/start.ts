@@ -1,7 +1,7 @@
 'use strict';
 
 import Compiler from '../src/compiler';
-import Config from '../src/Config';
+import Recife from '../src/Recife';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -15,8 +15,8 @@ const server = new ApolloServer({
   resolvers: compiler.generateResolvers(),
   typeDefs: compiler.generateType(),
   //   context: loginController.validation.bind(loginController),
-  introspection: true,
-  playground: true
+  introspection: Recife.GRAPHQL_INTROSPECT,
+  playground: Recife.GRAPHQL_PLAYGROUND
 });
 
 app.use(bodyParser.json());
@@ -28,7 +28,7 @@ app.use(cors());
 
 server.applyMiddleware({ app });
 
-const port = Config.PORT;
+const port = Recife.NODE_PORT;
 
 app.listen({ port }, () => {
   console.log(

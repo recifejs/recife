@@ -1,13 +1,13 @@
 import path from 'path';
 import Graph from './Graph';
-import Config from '../../Config';
+import Recife from '../../Recife';
 
 class Resolvers {
   private Query: any = {};
   private Mutation: any = {};
   private Subscription: any = {};
   private static basePathControllers = path.join(
-    Config.PATH_BUILD,
+    Recife.PATH_BUILD,
     'controllers'
   );
 
