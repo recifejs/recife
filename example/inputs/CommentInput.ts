@@ -4,7 +4,7 @@ export type CommentCreate = {
 };
 
 export type CommentDelete = {
-  postId: String;
+  postId: string;
   commentId: String;
 };
 
