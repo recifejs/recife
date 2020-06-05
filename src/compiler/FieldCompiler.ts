@@ -1,4 +1,5 @@
 import * as ts from "typescript";
+import PrimitiveType from "./PrimitiveType";
 import Field from "./models/Field";
 
 class FieldCompiler {
@@ -42,7 +43,7 @@ class FieldCompiler {
     const field = new Field();
     if (ts.isPropertySignature(node)) {
       field.name = node.name.getText(this.sourceFile);
-      field.type = node.type!.getText(this.sourceFile);
+      field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
     }
 
     if (field.name && field.type) {

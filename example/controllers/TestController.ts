@@ -4,12 +4,12 @@ import { CommentCreate } from "../inputs/CommentInput";
 
 export default class TestController {
   @Query()
-  getComment() {
+  getComment(): String {
     return "teste";
   }
 
   @Query()
-  getPost() {
+  getPost() : string {
     return "post";
   }
 

@@ -1,6 +1,7 @@
 import * as ts from "typescript";
 
 import FieldCompiler from "./FieldCompiler";
+import PrimitiveType from "./PrimitiveType";
 
 import Graph from "./models/Graph";
 import GraphParam from "./models/GraphParam";
@@ -83,6 +84,7 @@ class GraphCompiler {
               const type = expression.getText(this.sourceFile);
 
               graph.name = member.name.getText(this.sourceFile);
+              graph.returnType = PrimitiveType.getPrimitiveType(member.type?.getText(this.sourceFile));
 
               switch (type) {
                 case "Query":

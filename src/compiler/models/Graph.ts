@@ -5,6 +5,7 @@ class Graph {
   public name!: string;
   public type!: GraphTypeEnum;
   public params!: GraphParam;
+  public returnType?: string;
 }
 
 export default Graph;
