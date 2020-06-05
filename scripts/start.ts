@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-"use strict";
+'use strict';
 
-import Compiler from "../src/compiler";
-import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
-import { ApolloServer } from "apollo-server-express";
+import Compiler from '../src/compiler';
+import Config from '../src/Config';
+import express from 'express';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import { ApolloServer } from 'apollo-server-express';
 
 const compiler = new Compiler();
 compiler.compile();
@@ -29,7 +30,7 @@ app.use(cors());
 
 server.applyMiddleware({ app });
 
-const port = 8080;
+const port = Config.PORT;
 
 app.listen({ port: port }, () => {
   console.log(
