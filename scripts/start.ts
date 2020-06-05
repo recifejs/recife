@@ -2,14 +2,14 @@
 
 import Compiler from '../src/compiler';
 import Recife from '../src/Recife';
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { ApolloServer } from 'apollo-server-express';
+import koa from 'koa';
+import koaBody from 'koa-bodyparser';
+import { ApolloServer } from 'apollo-server-koa';
 
 const compiler = new Compiler();
 compiler.compile();
-const app = express();
+
+const app = new koa();
 
 const server = new ApolloServer({
   resolvers: compiler.generateResolvers(),
@@ -19,15 +19,12 @@ const server = new ApolloServer({
   playground: Recife.GRAPHQL_PLAYGROUND
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(koaBody());
 
 // app.route('/login').post(loginController.login.bind(loginController));
 // app.route('/signup').post(loginController.signup.bind(loginController));
 
 server.applyMiddleware({ app });
-
 const port = Recife.NODE_PORT;
 
 app.listen({ port }, () => {
