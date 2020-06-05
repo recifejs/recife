@@ -4,6 +4,7 @@ import { gql } from 'apollo-server';
 import { DocumentNode } from 'graphql';
 
 import Graph from './models/Graph';
+import Resolvers from './models/Resolvers';
 import Type from './models/Type';
 import GraphCompiler from './GraphCompiler';
 import TypeCompiler from './TypeCompiler';
@@ -62,11 +63,11 @@ class Compiler {
     typeString += this.generateTypeGraph(GraphTypeEnum.QUERY);
     typeString += this.generateTypeGraph(GraphTypeEnum.MUTATION);
     typeString += this.generateTypeGraph(GraphTypeEnum.SUBSCRIPTION);
-    console.log(typeString);
+
     return gql(typeString);
   }
 
-  generateTypeGraph(graphType: GraphTypeEnum): string {
+  private generateTypeGraph(graphType: GraphTypeEnum): string {
     let typeString = '';
 
     this.graphs.forEach(graph => {
@@ -84,6 +85,22 @@ class Compiler {
     }
 
     return '';
+  }
+
+  generateResolvers(): any {
+    let resolvers = new Resolvers();
+
+    this.graphs.forEach(graph => {
+      if (graph.type === GraphTypeEnum.QUERY) {
+        resolvers.addQuery(graph);
+      } else if (graph.type === GraphTypeEnum.MUTATION) {
+        resolvers.addMutation(graph);
+      } else if (graph.type === GraphTypeEnum.SUBSCRIPTION) {
+        resolvers.addSubscription(graph);
+      }
+    });
+
+    return resolvers.formatter();
   }
 }
 

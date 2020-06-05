@@ -1,4 +1,4 @@
-import { Type } from '../../../src';
+import { Type } from 'recife';
 
 @Type()
 class CommentModel {

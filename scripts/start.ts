@@ -14,7 +14,7 @@ compiler.compile();
 const app = express();
 
 const server = new ApolloServer({
-  //   resolvers: getResolvers(),
+  resolvers: compiler.generateResolvers(),
   typeDefs: compiler.generateType(),
   //   context: loginController.validation.bind(loginController),
   introspection: true,

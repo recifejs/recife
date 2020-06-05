@@ -4,10 +4,12 @@ function Type(): any {
     _propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    descriptor.value = {
-      type: "Type",
-      result: descriptor.value
-    };
+    if (descriptor) {
+      descriptor.value = {
+        type: 'Type',
+        result: descriptor.value
+      };
+    }
   };
 }
 

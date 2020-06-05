@@ -1,4 +1,4 @@
-import { Mutation } from '../../../src';
+import { Mutation } from 'recife';
 
 import { CommentDelete, CommentUpdate } from '../inputs/CommentInput';
 import CommentModel from '../models/CommentModel';

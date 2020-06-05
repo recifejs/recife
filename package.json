@@ -13,8 +13,9 @@
     "dist",
     "README.md"
   ],
+  "main": "dist/src/index.js",
   "bin": {
-    "recife": "dist/index.js"
+    "recife": "dist/bin/index.js"
   },
   "dependencies": {
     "apollo-server": "^2.14.2",

@@ -5,8 +5,8 @@ function Query(): any {
     descriptor: PropertyDescriptor
   ) {
     descriptor.value = {
-      type: "Query",
-      result: descriptor.value()
+      type: 'Query',
+      result: descriptor.value
     };
   };
 }

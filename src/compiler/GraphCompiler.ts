@@ -68,6 +68,10 @@ class GraphCompiler {
     node.members.forEach((member: ts.ClassElement) => {
       if (ts.isMethodDeclaration(member)) {
         const graph = new Graph();
+        graph.nameContext = node
+          .name!.getText(this.sourceFile)
+          .replace('Controller', '');
+
         if (member.parameters[0]) {
           graph.params = new GraphParam();
           graph.params.name = member.parameters[0].name.getText(
