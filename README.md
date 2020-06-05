@@ -14,6 +14,8 @@
 
 </div>
 
+RecifeJs is a powerful MVC Framework for GraphQL in NodeJS. Recife has a whole structure ready to start a GraphQL API. You no longer have to worry about declaring Types and Resolvers.
+
 <br />
 
 ## How to use RecifeJs
