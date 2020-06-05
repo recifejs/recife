@@ -5,39 +5,30 @@
 <br />
 <br />
 
-[Contributing](CONTRIBUTING.md) | [Code of Conduct](CODE_OF_CONDUCT.md)
+[Contributing](CONTRIBUTING.md) | [Code of Conduct](CODE_OF_CONDUCT.md) | [CLI](https://github.com/recifejs/cli)
 
 <br />
 <br />
 
-[![npm version](https://badge.fury.io/js/recife.svg)](https://www.npmjs.com/package/recife) &bull; [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/recifejs/recife/blob/master/LICENSE) &bull; [![Node.js CI](https://github.com/recifejs/recife/workflows/Node.js%20CI/badge.svg?branch=master)](https://github.com/recifejs/recife/workflows/Node.js%20CI)
+[![npm version](https://img.shields.io/npm/v/recife?style=for-the-badge)](https://www.npmjs.com/package/recife) [![License: MIT](https://img.shields.io/github/license/recifejs/recife?style=for-the-badge)](https://github.com/recifejs/recife/blob/master/LICENSE)[![Node.js CI](https://img.shields.io/github/workflow/status/recifejs/recife/Node.js%20CI?style=for-the-badge)](https://github.com/recifejs/recife/workflows/Node.js%20CI)[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/github/recifejs/recife.svg?logo=lgtm&style=for-the-badge)](https://lgtm.com/projects/g/andrelmlins/create-react-dependency/context:javascript)
 
 </div>
 
 <br />
 
-## Install
+## How to use
+
+**Create new project**
 
 ```
-npm install recife
-// OR
-yarn add recife
+npx recife-cli project my-project-name
 ```
 
-## File Structure
-
-File structure generated from the create-react-dependency project
+**Start the project**
 
 ```
-api
-├── README.md
-├── node_modules
-├── package.json
-├── .gitignore
-└── src
-    ├── controllers
-    ├── validators
-    └── models
+cd my-project-name
+npm start
 ```
 
 ## Contribution guidelines
