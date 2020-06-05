@@ -72,9 +72,9 @@ class Compiler {
     this.graphs.forEach(graph => {
       if (graph.type === graphType) {
         if (graph.params) {
-          typeString += `  ${graph.name}(${graph.params.name}: ${graph.params.type}): [String]\n`;
+          typeString += `  ${graph.name}(${graph.params.name}: ${graph.params.type}): ${graph.returnType}\n`;
         } else {
-          typeString += `  ${graph.name}: [String]\n`;
+          typeString += `  ${graph.name}: ${graph.returnType}\n`;
         }
       }
     });

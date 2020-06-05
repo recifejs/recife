@@ -83,6 +83,7 @@ class GraphCompiler {
               const type = expression.getText(this.sourceFile);
 
               graph.name = member.name.getText(this.sourceFile);
+              graph.returnType = this.getPrimitiveType(member.type?.getText(this.sourceFile));
 
               switch (type) {
                 case "Query":
@@ -104,6 +105,19 @@ class GraphCompiler {
         }
       }
     });
+  }
+
+  private getPrimitiveType(type: string = "string"): string {
+    switch(type) {
+      case "number":
+        return "Float";
+      case "boolean":
+        return "Boolean";
+      case "string":
+      default:
+        return "String";
+      
+    }
   }
 
   private compileFields(graph: Graph): Graph {
