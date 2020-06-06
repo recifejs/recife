@@ -20,7 +20,6 @@
     "recife": "./bin/recife"
   },
   "dependencies": {
-    "apollo-server": "^2.14.2",
     "apollo-server-koa": "^2.14.2",
     "koa": "^2.12.0"
   },

@@ -3,7 +3,7 @@ import Recife from '../src/Recife';
 import path from 'path';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
-import { ApolloServer } from 'apollo-server-koa';
+import { ApolloServer, Config } from 'apollo-server-koa';
 
 class Start {
   compiler = new Compiler();
@@ -16,8 +16,7 @@ class Start {
       resolvers: this.compiler.generateResolvers(),
       typeDefs: this.compiler.generateType(),
       //   context: loginController.validation.bind(loginController),
-      introspection: Recife.GRAPHQL_INTROSPECT,
-      playground: Recife.GRAPHQL_PLAYGROUND
+      ...this.createGraphlConfig()
     });
 
     this.app.use(this.createBodyParser());
@@ -52,6 +51,22 @@ class Start {
       extendTypes: bodyParserConfig.extendTypes || null,
       onerror: bodyParserConfig.onerror || null
     });
+  }
+
+  createGraphlConfig(): Config {
+    const graphqlConfig = require(path.join(
+      Recife.PATH_BUILD,
+      'config/graphql.js'
+    )).default;
+
+    return {
+      playground: graphqlConfig.playground,
+      introspection: graphqlConfig.introspection,
+      debug: graphqlConfig.debug,
+      mocks: graphqlConfig.mocks,
+      mockEntireSchema: graphqlConfig.mockEntireSchema,
+      rootValue: graphqlConfig.rootValue
+    };
   }
 }
 
