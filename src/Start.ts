@@ -3,7 +3,12 @@ import Recife from '../src/Recife';
 import path from 'path';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
+import koaCors from '@koa/cors';
 import { ApolloServer, Config } from 'apollo-server-koa';
+
+import CorsConfig from './configs/CorsConfig';
+import BodyParserConfig from './configs/BodyParserConfig';
+import GraphqlConfig from './configs/GraphqlConfig';
 
 class Start {
   compiler = new Compiler();
@@ -19,7 +24,8 @@ class Start {
       ...this.createGraphlConfig()
     });
 
-    this.app.use(this.createBodyParser());
+    this.createBodyParser();
+    this.createCorsConfig();
 
     // app.route('/login').post(loginController.login.bind(loginController));
     // app.route('/signup').post(loginController.signup.bind(loginController));
@@ -34,27 +40,29 @@ class Start {
     });
   }
 
-  createBodyParser(): Koa.Middleware {
-    const bodyParserConfig = require(path.join(
+  createBodyParser() {
+    const bodyParserConfig: BodyParserConfig = require(path.join(
       Recife.PATH_BUILD,
       'config/bodyParser.js'
     )).default;
 
-    return koaBody({
-      enableTypes: bodyParserConfig.enableTypes || ['json', 'form'],
-      encode: bodyParserConfig.encode || 'utf-8',
-      formLimit: bodyParserConfig.limit.form || '56kb',
-      jsonLimit: bodyParserConfig.limit.json || '1mb',
-      textLimit: bodyParserConfig.limit.form || '1mb',
-      strict: bodyParserConfig.strict || true,
-      detectJSON: bodyParserConfig.detectJSON || null,
-      extendTypes: bodyParserConfig.extendTypes || null,
-      onerror: bodyParserConfig.onerror || null
-    });
+    this.app.use(
+      koaBody({
+        enableTypes: bodyParserConfig.enableTypes,
+        encode: bodyParserConfig.encode,
+        formLimit: bodyParserConfig.limit.form,
+        jsonLimit: bodyParserConfig.limit.json,
+        textLimit: bodyParserConfig.limit.form,
+        strict: bodyParserConfig.strict,
+        detectJSON: bodyParserConfig.detectJSON,
+        extendTypes: bodyParserConfig.extendTypes,
+        onerror: bodyParserConfig.onerror
+      })
+    );
   }
 
   createGraphlConfig(): Config {
-    const graphqlConfig = require(path.join(
+    const graphqlConfig: GraphqlConfig = require(path.join(
       Recife.PATH_BUILD,
       'config/graphql.js'
     )).default;
@@ -67,6 +75,17 @@ class Start {
       mockEntireSchema: graphqlConfig.mockEntireSchema,
       rootValue: graphqlConfig.rootValue
     };
+  }
+
+  createCorsConfig() {
+    const corsConfig: CorsConfig = require(path.join(
+      Recife.PATH_BUILD,
+      'config/cors.js'
+    )).default;
+
+    if (corsConfig.enabled) {
+      this.app.use(koaCors(corsConfig));
+    }
   }
 }
 

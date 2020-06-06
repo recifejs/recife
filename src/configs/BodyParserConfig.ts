@@ -29,7 +29,7 @@ type BodyParserConfig = {
   /*
    * When set to true, JSON parser will only accept arrays and objects.
    */
-  strict?: Boolean;
+  strict?: boolean;
   /*
    * Custom json request detect function
    */
@@ -54,7 +54,7 @@ type BodyParserConfig = {
   /*
    * Support text extend type.
    */
-  onerror?: null;
+  onerror?: (err: Error, ctx: Koa.Context) => void;
 };
 
 export default BodyParserConfig;

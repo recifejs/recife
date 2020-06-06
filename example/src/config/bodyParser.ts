@@ -21,7 +21,7 @@ const bodyParserConfig: BodyParserConfig = {
     form: undefined,
     text: undefined
   },
-  onerror: null
+  onerror: undefined
 };
 
 export default bodyParserConfig;
