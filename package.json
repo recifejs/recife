@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "apollo-server-koa": "^2.14.2",
+    "choose-port": "^0.3.2",
     "koa": "^2.12.0"
   },
   "devDependencies": {

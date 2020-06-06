@@ -5,6 +5,7 @@ import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
 import koaCors from '@koa/cors';
 import { ApolloServer, Config } from 'apollo-server-koa';
+import choosePort from 'choose-port';
 
 import CorsConfig from './configs/CorsConfig';
 import BodyParserConfig from './configs/BodyParserConfig';
@@ -33,10 +34,15 @@ class Start {
     server.applyMiddleware({ app: this.app });
 
     const port = Recife.NODE_PORT;
-    this.app.listen({ port }, () => {
-      console.log(
-        `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
-      );
+    const host = Recife.NODE_HOST;
+
+    choosePort(port, host, (portValid: Number) => {
+      console.log(portValid);
+      this.app.listen({ port: portValid, host: host }, () => {
+        console.log(
+          `🚀 Server ready at http://${host}:${portValid}${server.graphqlPath}`
+        );
+      });
     });
   }
 
