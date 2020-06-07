@@ -5,10 +5,7 @@ class ImportDeclaration {
   public path!: string;
 
   getPath() {
-    const pathComplete = pathLibrary.join(
-      Recife.PATH_CONTROLLERS,
-      this.path.replace(/\"|\'/g, '')
-    );
+    const pathComplete = pathLibrary.join(Recife.PATH_CONTROLLERS, this.path.replace(/\"|\'/g, ''));
 
     if (!pathComplete.includes('.ts')) {
       return pathComplete + '.ts';

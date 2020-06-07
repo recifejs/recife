@@ -5,7 +5,7 @@ import CommentModel from '../models/CommentModel';
 
 export default class TestController {
   @Query()
-  getComment(): CommentModel {
+  getComment(_: any, { context }: any): CommentModel {
     const comment = new CommentModel();
     comment.text = 'teste';
     comment.postId = 'ABCDE';

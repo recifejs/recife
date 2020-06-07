@@ -64,9 +64,7 @@ class FieldCompiler {
 
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
       field.name = node.name.getText(this.sourceFile);
-      field.type = PrimitiveType.getPrimitiveType(
-        node.type!.getText(this.sourceFile)
-      );
+      field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
       field.isRequired = !node.questionToken;
     }
 

@@ -38,18 +38,13 @@ class Start {
 
     choosePort(port, host, (portValid: Number) => {
       this.app.listen({ port: portValid, host: host }, () => {
-        console.log(
-          `🚀 Server ready at http://${host}:${portValid}${server.graphqlPath}`
-        );
+        console.log(`🚀 Server ready at http://${host}:${portValid}${server.graphqlPath}`);
       });
     });
   }
 
   createBodyParser() {
-    const bodyParserConfig: BodyParserConfig = require(path.join(
-      Recife.PATH_BUILD,
-      'config/bodyParser.js'
-    )).default;
+    const bodyParserConfig: BodyParserConfig = require(path.join(Recife.PATH_BUILD, 'config/bodyParser.js')).default;
 
     this.app.use(
       koaBody({
@@ -67,10 +62,7 @@ class Start {
   }
 
   createGraphlConfig(): Config {
-    const graphqlConfig: GraphqlConfig = require(path.join(
-      Recife.PATH_BUILD,
-      'config/graphql.js'
-    )).default;
+    const graphqlConfig: GraphqlConfig = require(path.join(Recife.PATH_BUILD, 'config/graphql.js')).default;
 
     return {
       playground: graphqlConfig.playground,
@@ -83,10 +75,7 @@ class Start {
   }
 
   createCorsConfig() {
-    const corsConfig: CorsConfig = require(path.join(
-      Recife.PATH_BUILD,
-      'config/cors.js'
-    )).default;
+    const corsConfig: CorsConfig = require(path.join(Recife.PATH_BUILD, 'config/cors.js')).default;
 
     if (corsConfig.enabled) {
       this.app.use(koaCors(corsConfig));

@@ -40,19 +40,14 @@ class GraphCompiler {
         }
 
         if (ts.isClassDeclaration(node) && node.name) {
-          if (
-            node.name.getText(this.sourceFile) === classExportDefault ||
-            this.isExport(node)
-          ) {
+          if (node.name.getText(this.sourceFile) === classExportDefault || this.isExport(node)) {
             this.compileGraphs(node);
           }
         }
 
         if (ts.isExportAssignment(node)) {
           this.graphs = this.graphs.map(graph => {
-            if (
-              node.expression.getText(this.sourceFile) === graph.nameController
-            ) {
+            if (node.expression.getText(this.sourceFile) === graph.nameController) {
               graph.isExportDefaultController = true;
             }
 
@@ -69,9 +64,7 @@ class GraphCompiler {
 
     if (node.importClause) {
       if (node.importClause.name) {
-        importDeclaration.names.push(
-          node.importClause.name!.getText(this.sourceFile)
-        );
+        importDeclaration.names.push(node.importClause.name!.getText(this.sourceFile));
       }
 
       if (node.importClause.namedBindings) {

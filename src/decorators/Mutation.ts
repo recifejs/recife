@@ -1,9 +1,5 @@
 function Mutation(): any {
-  return function(
-    _target: any,
-    _propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function(_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
     descriptor.value = {
       type: 'Mutation',
       result: descriptor.value

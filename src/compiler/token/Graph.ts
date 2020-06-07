@@ -12,16 +12,11 @@ class Graph {
   public nameController: string;
   public path: string;
 
-  constructor(
-    method: ts.MethodDeclaration,
-    classDecl: ts.ClassDeclaration,
-    path: string,
-    sourceFile?: ts.SourceFile
-  ) {
+  constructor(method: ts.MethodDeclaration, classDecl: ts.ClassDeclaration, path: string, sourceFile?: ts.SourceFile) {
     this.nameController = classDecl.name!.getText(sourceFile);
     this.path = path;
 
-    if (method.parameters[0]) {
+    if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
       this.params = new GraphParam(method.parameters[0], sourceFile);
     }
 
@@ -37,19 +32,14 @@ class Graph {
               method.type.types.forEach(returnType => {
                 const textReturnType = returnType.getText(sourceFile);
 
-                if (
-                  textReturnType !== 'undefined' &&
-                  textReturnType !== 'null'
-                ) {
+                if (textReturnType !== 'undefined' && textReturnType !== 'null') {
                   returnNameType = textReturnType;
                 }
               });
 
               this.returnType = PrimitiveType.getPrimitiveType(returnNameType);
             } else {
-              this.returnType = PrimitiveType.getPrimitiveType(
-                method.type!.getText(sourceFile)
-              );
+              this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
             }
           }
 
@@ -69,10 +59,7 @@ class Graph {
     }
   }
 
-  private isDefault(
-    node: ts.ClassDeclaration,
-    sourceFile?: ts.SourceFile
-  ): boolean {
+  private isDefault(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile): boolean {
     let isDefault = false;
 
     if (node.modifiers) {

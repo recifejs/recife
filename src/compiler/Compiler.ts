@@ -27,7 +27,6 @@ class Compiler {
       this.graphs = this.graphs.concat(graphCompiler.getGraphs());
       this.inputs = this.inputs.concat(graphCompiler.getInputs());
     });
-    console.log(this.graphs);
 
     const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
     filesModel.forEach(file => {
