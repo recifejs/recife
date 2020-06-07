@@ -1,12 +1,9 @@
 import * as ts from 'typescript';
 
 import FieldCompiler from './FieldCompiler';
-import PrimitiveType from './PrimitiveType';
 
 import Graph from './models/Graph';
 import Input from './models/Input';
-import GraphParam from './models/GraphParam';
-import GraphTypeEnum from './models/GraphTypeEnum';
 import ImportDeclaration from './models/ImportDeclaration';
 
 class GraphCompiler {
@@ -66,64 +63,7 @@ class GraphCompiler {
   private compileGraphs(node: ts.ClassDeclaration) {
     node.members.forEach((member: ts.ClassElement) => {
       if (ts.isMethodDeclaration(member)) {
-        const graph = new Graph();
-        graph.nameContext = node
-          .name!.getText(this.sourceFile)
-          .replace('Controller', '');
-
-        if (member.parameters[0]) {
-          graph.params = new GraphParam();
-          graph.params.name = member.parameters[0].name.getText(
-            this.sourceFile
-          );
-          graph.params.type = member.parameters[0].type!.getText(
-            this.sourceFile
-          );
-          graph.params.isRequired = !member.parameters[0].questionToken;
-        }
-
-        if (member.decorators) {
-          member.decorators.forEach((decorator: ts.Decorator) => {
-            decorator.expression.forEachChild((expression: ts.Node) => {
-              graph.name = member.name.getText(this.sourceFile);
-              if (member.type) {
-                if (ts.isUnionTypeNode(member.type)) {
-                  let returnNameType = '';
-                  member.type.types.forEach(returnType => {
-                    const textReturnType = returnType.getText(this.sourceFile);
-
-                    if (
-                      textReturnType !== 'undefined' &&
-                      textReturnType !== 'null'
-                    ) {
-                      returnNameType = textReturnType;
-                    }
-                  });
-
-                  graph.returnType = PrimitiveType.getPrimitiveType(
-                    returnNameType
-                  );
-                } else {
-                  graph.returnType = PrimitiveType.getPrimitiveType(
-                    member.type!.getText(this.sourceFile)
-                  );
-                }
-              }
-
-              switch (expression.getText(this.sourceFile)) {
-                case 'Query':
-                  graph.type = GraphTypeEnum.QUERY;
-                  break;
-                case 'Mutation':
-                  graph.type = GraphTypeEnum.MUTATION;
-                  break;
-                case 'Subscription':
-                  graph.type = GraphTypeEnum.SUBSCRIPTION;
-                  break;
-              }
-            });
-          });
-        }
+        const graph = new Graph(member, node, this.sourceFile);
 
         if (graph.type) {
           this.graphs.push(graph);
@@ -136,28 +76,19 @@ class GraphCompiler {
     });
   }
 
-  private createInput(name: string) {
-    if (!this.inputs.has(name)) {
+  private createInput(className: string) {
+    if (!this.inputs.has(className)) {
       let importDeclaration: ImportDeclaration | undefined = undefined;
 
       this.imports.forEach((importDecl: ImportDeclaration) => {
-        if (importDecl.names.some(item => item === name)) {
+        if (importDecl.names.some(item => item === className)) {
           importDeclaration = importDecl;
         }
       });
 
       if (importDeclaration) {
-        const fieldCompiler = new FieldCompiler(
-          importDeclaration!.getPath(),
-          name
-        );
-        fieldCompiler.compile();
-
-        const input = new Input();
-        input.name = name;
-        input.fields = fieldCompiler.getFields();
-
-        this.inputs.set(name, input);
+        const input = new Input(importDeclaration, className);
+        this.inputs.set(className, input);
       }
     }
   }

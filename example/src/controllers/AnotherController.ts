@@ -10,7 +10,7 @@ class AnotherController {
   }
 
   @Mutation()
-  updateComment(input: CommentUpdate): CommentModel[] {
+  updateComment(input: CommentUpdate): Array<CommentModel> {
     return [new CommentModel()];
   }
 }

@@ -34,7 +34,7 @@ class Compiler {
 
       const typeCompiler = new TypeCompiler(nameFileAbsolute);
       typeCompiler.compile();
-      this.types.push(typeCompiler.getType());
+      this.types = this.types.concat(typeCompiler.getTypes());
     });
   }
 

@@ -6,17 +6,20 @@ class PrimitiveType {
     switch (type.toLowerCase()) {
       case 'number':
         type = 'Float';
+        break;
       case 'boolean':
         type = 'Boolean';
+        break;
       case 'string':
         type = 'String';
+        break;
     }
 
     return isArray ? `[${type}]` : type;
   }
 
   static formatType(type: string): string {
-    return type.replace(/\[|\]|Array\<|\>]/g, '').replace('Model', '');
+    return type.replace(/\[|\]|\>|Array\<|Model/g, '');
   }
 
   static isArray(type: string): boolean {
