@@ -1,11 +1,19 @@
 import fs from 'fs';
+import { GraphQLScalarType } from 'graphql';
 import Recife from '../Recife';
 import Graph from './token/Graph';
+import DateScalar from '../scalars/DateScalar';
 
 class Resolvers {
+  private scalars: Map<string, GraphQLScalarType>;
   private Query: any = {};
   private Mutation: any = {};
   private Subscription: any = {};
+
+  constructor() {
+    this.scalars = new Map();
+    this.scalars.set('Date', new DateScalar());
+  }
 
   addQuery(graph: Graph) {
     this.Query[graph.name] = (obj: any, args: any, context: any, info: any) =>
@@ -86,6 +94,10 @@ class Resolvers {
     if (Object.keys(this.Subscription).length > 0) {
       resolvers.Subscription = this.Subscription;
     }
+
+    this.scalars.forEach((value, key) => {
+      resolvers[key] = value;
+    });
 
     return resolvers;
   }

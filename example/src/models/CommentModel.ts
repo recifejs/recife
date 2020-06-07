@@ -4,6 +4,7 @@ import { Type } from 'recife';
 class CommentModel {
   postId!: String;
   text!: String;
+  date?: Date;
 }
 
 export default CommentModel;

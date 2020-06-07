@@ -16,6 +16,7 @@ class Compiler {
   private graphs: Graph[] = [];
   private types: Type[] = [];
   private inputs: Input[] = [];
+  private scalars: String[] = ['Date'];
 
   compile() {
     const filesController: string[] = fs.readdirSync(Recife.PATH_CONTROLLERS);
@@ -40,6 +41,10 @@ class Compiler {
 
   generateType(): DocumentNode {
     let typeString = '';
+
+    this.scalars.forEach(scalar => {
+      typeString += `scalar ${scalar}\n`;
+    });
 
     this.types.forEach(type => {
       typeString += `type ${type.name} {\n`;

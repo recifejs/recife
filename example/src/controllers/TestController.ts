@@ -9,6 +9,7 @@ export default class TestController {
     const comment = new CommentModel();
     comment.text = 'teste';
     comment.postId = 'ABCDE';
+    comment.date = new Date();
 
     return comment;
   }
