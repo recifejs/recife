@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import PrimitiveType from './PrimitiveType';
-import Field from './models/Field';
+import Field from './token/Field';
 
 class FieldCompiler {
   private sourceFile: ts.SourceFile | undefined;

@@ -1,10 +1,8 @@
 import * as ts from 'typescript';
 
-import FieldCompiler from './FieldCompiler';
-
-import Graph from './models/Graph';
-import Input from './models/Input';
-import ImportDeclaration from './models/ImportDeclaration';
+import Graph from './token/Graph';
+import Input from './token/Input';
+import ImportDeclaration from './token/ImportDeclaration';
 
 class GraphCompiler {
   private graphs: Array<Graph> = [];

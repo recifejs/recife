@@ -3,11 +3,11 @@ import path from 'path';
 import { gql } from 'apollo-server-koa';
 import { DocumentNode } from 'graphql';
 
-import Graph from './models/Graph';
-import Resolvers from './models/Resolvers';
-import Type from './models/Type';
-import Input from './models/Input';
-import GraphTypeEnum from './models/GraphTypeEnum';
+import Graph from './token/Graph';
+import Resolvers from './token/Resolvers';
+import Type from './token/Type';
+import Input from './token/Input';
+import GraphTypeEnum from './enum/GraphTypeEnum';
 import GraphCompiler from './GraphCompiler';
 import TypeCompiler from './TypeCompiler';
 import Recife from '../Recife';

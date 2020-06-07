@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import GraphParam from './GraphParam';
-import GraphTypeEnum from './GraphTypeEnum';
+import GraphTypeEnum from '../enum/GraphTypeEnum';
 import PrimitiveType from '../PrimitiveType';
 
 class Graph {

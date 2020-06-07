@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import Type from './models/Type';
+import Type from './token/Type';
 
 class TypeCompiler {
   private types: Type[];
