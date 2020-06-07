@@ -4,7 +4,7 @@ import { gql } from 'apollo-server-koa';
 import { DocumentNode } from 'graphql';
 
 import Graph from './token/Graph';
-import Resolvers from './token/Resolvers';
+import Resolvers from './Resolvers';
 import Type from './token/Type';
 import Input from './token/Input';
 import GraphTypeEnum from './enum/GraphTypeEnum';

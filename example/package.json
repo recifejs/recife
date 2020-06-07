@@ -8,7 +8,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "recife": "^0.1.3",
+    "recife": "^0.4.0",
     "typescript": "^3.9.5"
   }
 }

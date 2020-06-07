@@ -1,6 +1,6 @@
-import Graph from './Graph';
 import fs from 'fs';
-import Recife from '../../Recife';
+import Recife from '../Recife';
+import Graph from './token/Graph';
 
 class Resolvers {
   private Query: any = {};
@@ -13,21 +13,13 @@ class Resolvers {
   }
 
   addMutation(graph: Graph) {
-    this.Mutation[graph.name] = (
-      obj: any,
-      args: any,
-      context: any,
-      info: any
-    ) => this.createResolver(graph, args, { obj, context, info });
+    this.Mutation[graph.name] = (obj: any, args: any, context: any, info: any) =>
+      this.createResolver(graph, args, { obj, context, info });
   }
 
   addSubscription(graph: Graph) {
-    this.Subscription[graph.name] = (
-      obj: any,
-      args: any,
-      context: any,
-      info: any
-    ) => this.createResolver(graph, args, { obj, context, info });
+    this.Subscription[graph.name] = (obj: any, args: any, context: any, info: any) =>
+      this.createResolver(graph, args, { obj, context, info });
   }
 
   private async createResolver(graph: Graph, args: any, params: any) {
@@ -37,31 +29,32 @@ class Resolvers {
     if (Validator) {
       const validator = new Validator();
       if (validator[graph.name]) {
-        return validator[graph.name](args, params);
+        if (graph.params) {
+          await validator[graph.name](args[graph.params.name], params);
+        } else {
+          await validator[graph.name](args, params);
+        }
       }
     }
 
     const controller = new Controller();
-    return controller[graph.name].result(args, params);
+    if (graph.params) {
+      return controller[graph.name].result(args[graph.params.name], params);
+    } else {
+      return controller[graph.name].result(args, params);
+    }
   }
 
   private getController(graph: Graph) {
-    const file = require(graph.path
-      .replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD)
-      .replace('.ts', '.js'));
+    const file = require(graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
 
-    const Controller = graph.isExportDefaultController
-      ? file.default
-      : file[graph.nameController];
+    const Controller = graph.isExportDefaultController ? file.default : file[graph.nameController];
 
     return Controller;
   }
 
   private getValidator(graph: Graph) {
-    const nameValidator = graph.nameController.replace(
-      'Controller',
-      'Validator'
-    );
+    const nameValidator = graph.nameController.replace('Controller', 'Validator');
     const pathFile = graph.path
       .replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD)
       .replace('controllers', 'validators')
@@ -69,9 +62,7 @@ class Resolvers {
       .replace('.ts', '.js');
     if (fs.existsSync(pathFile)) {
       const file = require(pathFile);
-      const Validator = graph.isExportDefaultController
-        ? file.default
-        : file[nameValidator];
+      const Validator = graph.isExportDefaultController ? file.default : file[nameValidator];
 
       if (Validator) {
         return Validator;
