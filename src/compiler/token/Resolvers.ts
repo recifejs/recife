@@ -6,10 +6,6 @@ class Resolvers {
   private Query: any = {};
   private Mutation: any = {};
   private Subscription: any = {};
-  private static basePathControllers = path.join(
-    Recife.PATH_BUILD,
-    'controllers'
-  );
 
   addQuery(graph: Graph) {
     this.Query[graph.name] = async (
@@ -18,10 +14,7 @@ class Resolvers {
       context: any,
       info: any
     ) => {
-      const Controller = require(path.join(
-        Resolvers.basePathControllers,
-        graph.nameContext + 'Controller.js'
-      )).default;
+      const Controller = this.getController(graph);
       const controller = new Controller();
       return controller[graph.name].result(args, { obj, context, info });
     };
@@ -34,10 +27,7 @@ class Resolvers {
       context: any,
       info: any
     ) => {
-      const Controller = require(path.join(
-        Resolvers.basePathControllers,
-        graph.nameContext + 'Controller.js'
-      )).default;
+      const Controller = this.getController(graph);
       const controller = new Controller();
       return controller[graph.name].result(args, { obj, context, info });
     };
@@ -50,13 +40,22 @@ class Resolvers {
       context: any,
       info: any
     ) => {
-      const Controller = require(path.join(
-        Resolvers.basePathControllers,
-        graph.nameContext + 'Controller.js'
-      )).default;
+      const Controller = this.getController(graph);
       const controller = new Controller();
       return controller[graph.name].result(args, { obj, context, info });
     };
+  }
+
+  private getController(graph: Graph) {
+    const file = require(graph.path
+      .replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD)
+      .replace('.ts', '.js'));
+
+    const Controller = graph.isExportDefaultController
+      ? file.default
+      : file[graph.nameController];
+
+    return Controller;
   }
 
   formatter(): any {

@@ -7,21 +7,25 @@ class Graph {
   public name!: string;
   public type!: GraphTypeEnum;
   public params!: GraphParam;
-  public nameContext!: string;
+  public isExportDefaultController: boolean;
   public returnType?: string;
+  public nameController: string;
+  public path: string;
 
   constructor(
     method: ts.MethodDeclaration,
     classDecl: ts.ClassDeclaration,
+    path: string,
     sourceFile?: ts.SourceFile
   ) {
-    this.nameContext = classDecl
-      .name!.getText(sourceFile)
-      .replace('Controller', '');
+    this.nameController = classDecl.name!.getText(sourceFile);
+    this.path = path;
 
     if (method.parameters[0]) {
       this.params = new GraphParam(method.parameters[0], sourceFile);
     }
+
+    this.isExportDefaultController = this.isDefault(classDecl, sourceFile);
 
     if (method.decorators) {
       method.decorators.forEach((decorator: ts.Decorator) => {
@@ -63,6 +67,23 @@ class Graph {
         });
       });
     }
+  }
+
+  private isDefault(
+    node: ts.ClassDeclaration,
+    sourceFile?: ts.SourceFile
+  ): boolean {
+    let isDefault = false;
+
+    if (node.modifiers) {
+      node.modifiers.forEach(modifier => {
+        if (modifier.getText(sourceFile) === 'default') {
+          isDefault = true;
+        }
+      });
+    }
+
+    return isDefault;
   }
 }
 

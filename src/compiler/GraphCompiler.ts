@@ -5,14 +5,16 @@ import Input from './token/Input';
 import ImportDeclaration from './token/ImportDeclaration';
 
 class GraphCompiler {
-  private graphs: Array<Graph> = [];
+  private graphs: Graph[] = [];
   private inputs: Map<string, Input> = new Map();
   private imports: Array<ImportDeclaration> = [];
   private sourceFile: ts.SourceFile | undefined;
+  private path: string;
 
-  constructor(file: string) {
-    const program = ts.createProgram([file], { allowJs: true });
-    this.sourceFile = program.getSourceFile(file);
+  constructor(path: string) {
+    const program = ts.createProgram([path], { allowJs: true });
+    this.sourceFile = program.getSourceFile(path);
+    this.path = path;
   }
 
   getGraphs() {
@@ -25,13 +27,37 @@ class GraphCompiler {
 
   compile() {
     if (this.sourceFile) {
+      let classExportDefault = '';
+      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
+        if (ts.isExportAssignment(node)) {
+          classExportDefault = node.expression.getText(this.sourceFile);
+        }
+      });
+
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
           this.compileImport(node);
         }
 
-        if (ts.isClassDeclaration(node)) {
-          this.compileGraphs(node);
+        if (ts.isClassDeclaration(node) && node.name) {
+          if (
+            node.name.getText(this.sourceFile) === classExportDefault ||
+            this.isExport(node)
+          ) {
+            this.compileGraphs(node);
+          }
+        }
+
+        if (ts.isExportAssignment(node)) {
+          this.graphs = this.graphs.map(graph => {
+            if (
+              node.expression.getText(this.sourceFile) === graph.nameController
+            ) {
+              graph.isExportDefaultController = true;
+            }
+
+            return graph;
+          });
         }
       });
     }
@@ -61,7 +87,7 @@ class GraphCompiler {
   private compileGraphs(node: ts.ClassDeclaration) {
     node.members.forEach((member: ts.ClassElement) => {
       if (ts.isMethodDeclaration(member)) {
-        const graph = new Graph(member, node, this.sourceFile);
+        const graph = new Graph(member, node, this.path, this.sourceFile);
 
         if (graph.type) {
           this.graphs.push(graph);
@@ -89,6 +115,19 @@ class GraphCompiler {
         this.inputs.set(className, input);
       }
     }
+  }
+  private isExport(node: ts.ClassDeclaration): boolean {
+    let isExport = false;
+
+    if (node.modifiers) {
+      node.modifiers.forEach(modifier => {
+        if (modifier.getText(this.sourceFile) === 'export') {
+          isExport = true;
+        }
+      });
+    }
+
+    return isExport;
   }
 }
 

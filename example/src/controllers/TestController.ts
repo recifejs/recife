@@ -14,7 +14,7 @@ export default class TestController {
   }
 
   @Mutation()
-  createComment(type: CommentCreate): CommentModel {
+  createComment(input: CommentCreate): CommentModel {
     return new CommentModel();
   }
 }
