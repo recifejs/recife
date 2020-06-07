@@ -10,8 +10,8 @@ class AnotherController {
   }
 
   @Mutation()
-  updateComment(input: CommentUpdate): CommentModel {
-    return new CommentModel();
+  updateComment(input: CommentUpdate): CommentModel[] {
+    return [new CommentModel()];
   }
 }
 
