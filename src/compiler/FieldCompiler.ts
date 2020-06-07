@@ -24,6 +24,14 @@ class FieldCompiler {
           if (node.name.getText(this.sourceFile) === this.className) {
             this.compileTypeLiteral(node);
           }
+        } else if (ts.isClassDeclaration(node)) {
+          if (node.name!.getText(this.sourceFile) === this.className) {
+            this.compileClass(node);
+          }
+        } else if (ts.isInterfaceDeclaration(node)) {
+          if (node.name!.getText(this.sourceFile) === this.className) {
+            this.compileInterface(node);
+          }
         }
       });
     }
@@ -39,9 +47,22 @@ class FieldCompiler {
     });
   }
 
+  private compileClass(node: ts.ClassDeclaration) {
+    node.members.forEach(member => {
+      this.compileField(member);
+    });
+  }
+
+  private compileInterface(node: ts.InterfaceDeclaration) {
+    node.members.forEach(member => {
+      this.compileField(member);
+    });
+  }
+
   private compileField(node: ts.Node) {
     const field = new Field();
-    if (ts.isPropertySignature(node)) {
+
+    if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
       field.name = node.name.getText(this.sourceFile);
       field.type = PrimitiveType.getPrimitiveType(
         node.type!.getText(this.sourceFile)

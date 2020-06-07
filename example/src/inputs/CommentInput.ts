@@ -3,13 +3,13 @@ export type CommentCreate = {
   text: String;
 };
 
-export type CommentDelete = {
+export interface CommentDelete {
   postId: string;
-  commentId: String;
-};
+  commentId?: String;
+}
 
-export type CommentUpdate = {
-  postId: String;
-  text: String;
-  commentId: String;
-};
+export class CommentUpdate {
+  postId!: String;
+  text!: String;
+  commentId?: String;
+}
