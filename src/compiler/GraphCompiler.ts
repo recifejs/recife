@@ -79,19 +79,38 @@ class GraphCompiler {
           graph.params.type = member.parameters[0].type!.getText(
             this.sourceFile
           );
+          graph.params.isRequired = !member.parameters[0].questionToken;
         }
 
         if (member.decorators) {
           member.decorators.forEach((decorator: ts.Decorator) => {
             decorator.expression.forEachChild((expression: ts.Node) => {
-              const type = expression.getText(this.sourceFile);
-
               graph.name = member.name.getText(this.sourceFile);
-              graph.returnType = PrimitiveType.getPrimitiveType(
-                member.type!.getText(this.sourceFile)
-              );
+              if (member.type) {
+                if (ts.isUnionTypeNode(member.type)) {
+                  let returnNameType = '';
+                  member.type.types.forEach(returnType => {
+                    const textReturnType = returnType.getText(this.sourceFile);
 
-              switch (type) {
+                    if (
+                      textReturnType !== 'undefined' &&
+                      textReturnType !== 'null'
+                    ) {
+                      returnNameType = textReturnType;
+                    }
+                  });
+
+                  graph.returnType = PrimitiveType.getPrimitiveType(
+                    returnNameType
+                  );
+                } else {
+                  graph.returnType = PrimitiveType.getPrimitiveType(
+                    member.type!.getText(this.sourceFile)
+                  );
+                }
+              }
+
+              switch (expression.getText(this.sourceFile)) {
                 case 'Query':
                   graph.type = GraphTypeEnum.QUERY;
                   break;

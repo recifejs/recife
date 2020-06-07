@@ -46,6 +46,7 @@ class FieldCompiler {
       field.type = PrimitiveType.getPrimitiveType(
         node.type!.getText(this.sourceFile)
       );
+      field.isRequired = !node.questionToken;
     }
 
     if (field.name && field.type) {

@@ -1,6 +1,6 @@
 class PrimitiveType {
   static getPrimitiveType(type: string = 'string'): string {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case 'number':
         return 'Float';
       case 'boolean':

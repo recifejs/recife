@@ -37,7 +37,6 @@ class Start {
     const host = Recife.NODE_HOST;
 
     choosePort(port, host, (portValid: Number) => {
-      console.log(portValid);
       this.app.listen({ port: portValid, host: host }, () => {
         console.log(
           `🚀 Server ready at http://${host}:${portValid}${server.graphqlPath}`

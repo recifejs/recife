@@ -1,5 +1,5 @@
 export type CommentCreate = {
-  postId: String;
+  postId?: String;
   text: String;
 };
 

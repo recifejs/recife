@@ -1,7 +1,8 @@
-import * as ts from "typescript";
+import * as ts from 'typescript';
 
-import Type from "./models/Type";
-import Field from "./models/Field";
+import Type from './models/Type';
+import Field from './models/Field';
+import PrimitiveType from './PrimitiveType';
 
 class TypeCompiler {
   private type: Type;
@@ -26,7 +27,7 @@ class TypeCompiler {
           if (this.isType(node)) {
             this.type.name = node
               .name!.getText(this.sourceFile)
-              .replace("Model", "");
+              .replace('Model', '');
             node.members.map(item => this.compileField(item));
           }
         }
@@ -38,7 +39,10 @@ class TypeCompiler {
     if (ts.isPropertyDeclaration(node)) {
       const field = new Field();
       field.name = node.name.getText(this.sourceFile);
-      field.type = node.type!.getText(this.sourceFile);
+      field.type = PrimitiveType.getPrimitiveType(
+        node.type!.getText(this.sourceFile)
+      );
+      field.isRequired = !node.questionToken;
 
       this.type.fields.push(field);
     }
@@ -49,7 +53,7 @@ class TypeCompiler {
     if (node.decorators) {
       node.decorators.map(decorator => {
         decorator.expression.forEachChild((expression: ts.Node) => {
-          if (expression.getText(this.sourceFile) === "Type") {
+          if (expression.getText(this.sourceFile) === 'Type') {
             isType = true;
           }
         });

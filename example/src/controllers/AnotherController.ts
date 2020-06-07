@@ -5,7 +5,7 @@ import CommentModel from '../models/CommentModel';
 
 class AnotherController {
   @Mutation()
-  deleteComment(input: CommentDelete): boolean {
+  deleteComment(input: CommentDelete): boolean | undefined | null {
     return true;
   }
 

@@ -55,7 +55,8 @@ class Compiler {
       typeString += `input ${input.name} {\n`;
 
       input.fields.forEach(field => {
-        typeString += `  ${field.name}: ${field.type} \n`;
+        const required = field.isRequired ? '!' : '';
+        typeString += `  ${field.name}: ${field.type}${required} \n`;
       });
 
       typeString += '}\n';
@@ -74,7 +75,8 @@ class Compiler {
     this.graphs.forEach(graph => {
       if (graph.type === graphType) {
         if (graph.params) {
-          typeString += `  ${graph.name}(${graph.params.name}: ${graph.params.type}): ${graph.returnType}\n`;
+          const required = graph.params.isRequired ? '!' : '';
+          typeString += `  ${graph.name}(${graph.params.name}: ${graph.params.type}${required}): ${graph.returnType}\n`;
         } else {
           typeString += `  ${graph.name}: ${graph.returnType}\n`;
         }
