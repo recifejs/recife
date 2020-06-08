@@ -97,6 +97,15 @@ class Compiler {
 
   generateResolvers(): any {
     let resolvers = new Resolvers();
+    const listScalars: String[] = ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalars];
+
+    this.types.forEach(type => {
+      type.fields.forEach(field => {
+        if (!listScalars.includes(field.type)) {
+          resolvers.add(field, type);
+        }
+      });
+    });
 
     this.graphs.forEach(graph => {
       if (graph.type === GraphTypeEnum.QUERY) {

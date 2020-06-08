@@ -41,7 +41,7 @@ class GraphCompiler {
 
         if (ts.isClassDeclaration(node) && node.name) {
           if (node.name.getText(this.sourceFile) === classExportDefault || this.isExport(node)) {
-            this.compileGraphs(node);
+            this.compileGraphs(node, node.name.getText(this.sourceFile) === classExportDefault);
           }
         }
 
@@ -77,10 +77,10 @@ class GraphCompiler {
     this.imports.push(importDeclaration);
   }
 
-  private compileGraphs(node: ts.ClassDeclaration) {
+  private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean) {
     node.members.forEach((member: ts.ClassElement) => {
       if (ts.isMethodDeclaration(member)) {
-        const graph = new Graph(member, node, this.path, this.sourceFile);
+        const graph = new Graph(member, node, this.path, isDefault, this.sourceFile);
 
         if (graph.type) {
           this.graphs.push(graph);
@@ -109,6 +109,7 @@ class GraphCompiler {
       }
     }
   }
+
   private isExport(node: ts.ClassDeclaration): boolean {
     let isExport = false;
 

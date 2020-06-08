@@ -12,7 +12,13 @@ class Graph {
   public nameController: string;
   public path: string;
 
-  constructor(method: ts.MethodDeclaration, classDecl: ts.ClassDeclaration, path: string, sourceFile?: ts.SourceFile) {
+  constructor(
+    method: ts.MethodDeclaration,
+    classDecl: ts.ClassDeclaration,
+    path: string,
+    isDefaultExternal: boolean,
+    sourceFile?: ts.SourceFile
+  ) {
     this.nameController = classDecl.name!.getText(sourceFile);
     this.path = path;
 
@@ -20,7 +26,7 @@ class Graph {
       this.params = new GraphParam(method.parameters[0], sourceFile);
     }
 
-    this.isExportDefaultController = this.isDefault(classDecl, sourceFile);
+    this.isExportDefaultController = isDefaultExternal || this.isDefault(classDecl, sourceFile);
 
     if (method.decorators) {
       method.decorators.forEach((decorator: ts.Decorator) => {

@@ -3,16 +3,33 @@ import { GraphQLScalarType } from 'graphql';
 import Recife from '../Recife';
 import Graph from './token/Graph';
 import DateScalar from '../scalars/DateScalar';
+import Field from './token/Field';
+import Type from './token/Type';
 
 class Resolvers {
   private scalars: Map<string, GraphQLScalarType>;
   private Query: any = {};
   private Mutation: any = {};
   private Subscription: any = {};
+  private resolversType: any = {};
 
   constructor() {
     this.scalars = new Map();
     this.scalars.set('Date', new DateScalar());
+  }
+
+  add(field: Field, type: Type) {
+    const Model = this.getModel(type);
+
+    if (!this.resolversType[type.name]) {
+      this.resolversType[type.name] = {};
+    }
+
+    this.resolversType[type.name] = {
+      [field.name]: (...params: any[]) => {
+        return Model[`get${this.capitalize(field.type)}`](...params);
+      }
+    };
   }
 
   addQuery(graph: Graph) {
@@ -55,10 +72,14 @@ class Resolvers {
 
   private getController(graph: Graph) {
     const file = require(graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
-
     const Controller = graph.isExportDefaultController ? file.default : file[graph.nameController];
-
     return Controller;
+  }
+
+  private getModel(type: Type) {
+    const file = require(type.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
+    const Model = type.isExportDefaultModel ? file.default : file[type.nameModel];
+    return Model;
   }
 
   private getValidator(graph: Graph) {
@@ -80,8 +101,12 @@ class Resolvers {
     return undefined;
   }
 
+  private capitalize(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   formatter(): any {
-    const resolvers: any = {};
+    const resolvers: any = this.resolversType;
 
     if (Object.keys(this.Query).length > 0) {
       resolvers.Query = this.Query;
