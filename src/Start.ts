@@ -14,7 +14,7 @@ import Recife from '../src/Recife';
 import CorsConfig from './configs/CorsConfig';
 import BodyParserConfig from './configs/BodyParserConfig';
 import GraphqlConfig from './configs/GraphqlConfig';
-import Config from './configs/Config';
+import AppConfig from './configs/AppConfig';
 
 class Start {
   compiler = new Compiler();
@@ -51,7 +51,7 @@ class Start {
   }
 
   createBodyParser() {
-    const bodyParserConfig: BodyParserConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/bodyParser.ts'));
+    const bodyParserConfig: BodyParserConfig = this.readConfigFile(path.join(process.cwd(), 'config/bodyParser.ts'));
 
     this.app.use(
       koaBody({
@@ -69,7 +69,7 @@ class Start {
   }
 
   createGraphlConfig() {
-    const graphqlConfig: GraphqlConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/graphql.ts'));
+    const graphqlConfig: GraphqlConfig = this.readConfigFile(path.join(process.cwd(), 'config/graphql.ts'));
 
     return {
       playground: graphqlConfig.playground,
@@ -82,7 +82,7 @@ class Start {
   }
 
   createCorsConfig() {
-    const corsConfig: CorsConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/cors.ts'));
+    const corsConfig: CorsConfig = this.readConfigFile(path.join(process.cwd(), 'config/cors.ts'));
 
     if (corsConfig.enabled) {
       this.app.use(koaCors(corsConfig));
@@ -90,7 +90,7 @@ class Start {
   }
 
   readConfigBase() {
-    const config: Config = this.readConfigFile(path.join(process.cwd(), 'recife.config.ts'));
+    const config: AppConfig = this.readConfigFile(path.join(process.cwd(), 'config/app.ts'));
     new Recife(config);
   }
 

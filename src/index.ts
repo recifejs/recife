@@ -6,4 +6,4 @@ export { default as Type } from './decorators/Type';
 export { default as BodyParserConfig } from './configs/BodyParserConfig';
 export { default as GraphqlConfig } from './configs/GraphqlConfig';
 export { default as CorsConfig } from './configs/CorsConfig';
-export { default as Config } from './configs/Config';
+export { default as AppConfig } from './configs/AppConfig';

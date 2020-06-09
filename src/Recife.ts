@@ -1,5 +1,5 @@
 import path from 'path';
-import Config from './configs/Config';
+import AppConfig from './configs/AppConfig';
 
 class Recife {
   static PATH_BASE: string;
@@ -10,7 +10,7 @@ class Recife {
   static NODE_PORT: number;
   static NODE_HOST: string;
 
-  constructor(config: Config) {
+  constructor(config: AppConfig) {
     Recife.PATH_BASE = config.basePath;
     Recife.PATH_BASE_ABSOLUTE = path.join(process.cwd(), Recife.PATH_BASE);
     Recife.PATH_BUILD = path.join(process.cwd(), this.readTsconfig());
