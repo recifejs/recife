@@ -3,10 +3,14 @@ import path from 'path';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
 import koaCors from '@koa/cors';
+import Router, { RouterContext } from '@koa/router';
 import { ApolloServer } from 'apollo-server-koa';
 import choosePort from 'choose-port';
 import fs from 'fs';
 import vm from 'vm';
+import open from 'open';
+
+import generateHomepage from './templates/generateHomepage';
 
 import Compiler from '../src/compiler';
 import Recife from '../src/Recife';
@@ -19,6 +23,7 @@ import AppConfig from './configs/AppConfig';
 class Start {
   compiler = new Compiler();
   app = new Koa();
+  router = new Router();
 
   run() {
     this.readConfigBase();
@@ -28,15 +33,17 @@ class Start {
     const server = new ApolloServer({
       resolvers: this.compiler.generateResolvers(),
       typeDefs: this.compiler.generateType(),
-      //   context: loginController.validation.bind(loginController),
       ...this.createGraphlConfig()
     });
 
     this.createBodyParser();
     this.createCorsConfig();
 
-    // app.route('/login').post(loginController.login.bind(loginController));
-    // app.route('/signup').post(loginController.signup.bind(loginController));
+    this.router.get('/', (ctx: RouterContext) => {
+      ctx.body = generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version);
+    });
+
+    this.app.use(this.router.routes());
 
     server.applyMiddleware({ app: this.app });
 
@@ -46,6 +53,7 @@ class Start {
     choosePort(port, host, (portValid: Number) => {
       this.app.listen({ port: portValid, host: host }, () => {
         console.log(`🚀 Server ready at http://${host}:${portValid}${server.graphqlPath}`);
+        open(`http://${host}:${portValid}`);
       });
     });
   }
