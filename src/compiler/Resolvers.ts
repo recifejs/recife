@@ -64,9 +64,9 @@ class Resolvers {
 
     const controller = new Controller();
     if (graph.params) {
-      return controller[graph.name].result(args[graph.params.name], params);
+      return controller[graph.name](args[graph.params.name], params);
     } else {
-      return controller[graph.name].result(args, params);
+      return controller[graph.name](args, params);
     }
   }
 
