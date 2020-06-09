@@ -55,8 +55,8 @@ const generateHomepage = (application: string, version: string) => `
         <p>Application: ${application} | Version:${version}</p>
         <div class="links">
         <a href="/graphql">Graphql Playground</a>
-        <a href="https://recifejs.netlify.app/">Documentação</a>
-        <a href="https://github.com/recifejs/recife">Github</a>
+        <a target="_blank" href="https://recifejs.netlify.app/">Documentação</a>
+        <a target="_blank" href="https://github.com/recifejs/recife">Github</a>
         </div>
         <footer>
         Copyright © 2020 RecifeJs
