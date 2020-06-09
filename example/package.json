@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "recife start",
+    "start": "cd .. && yarn build && cd example && recife start",
     "build": "tsc"
   },
   "dependencies": {
