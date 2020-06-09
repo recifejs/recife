@@ -1,21 +1,28 @@
-import Compiler from '../src/compiler';
-import Recife from '../src/Recife';
+import ts, { ModuleKind } from 'typescript';
 import path from 'path';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
 import koaCors from '@koa/cors';
-import { ApolloServer, Config } from 'apollo-server-koa';
+import { ApolloServer } from 'apollo-server-koa';
 import choosePort from 'choose-port';
+import fs from 'fs';
+import vm from 'vm';
+
+import Compiler from '../src/compiler';
+import Recife from '../src/Recife';
 
 import CorsConfig from './configs/CorsConfig';
 import BodyParserConfig from './configs/BodyParserConfig';
 import GraphqlConfig from './configs/GraphqlConfig';
+import Config from './configs/Config';
 
 class Start {
   compiler = new Compiler();
   app = new Koa();
 
   run() {
+    this.readConfigBase();
+
     this.compiler.compile();
 
     const server = new ApolloServer({
@@ -44,7 +51,7 @@ class Start {
   }
 
   createBodyParser() {
-    const bodyParserConfig: BodyParserConfig = require(path.join(Recife.PATH_BUILD, 'config/bodyParser.js')).default;
+    const bodyParserConfig: BodyParserConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/bodyParser.ts'));
 
     this.app.use(
       koaBody({
@@ -61,8 +68,8 @@ class Start {
     );
   }
 
-  createGraphlConfig(): Config {
-    const graphqlConfig: GraphqlConfig = require(path.join(Recife.PATH_BUILD, 'config/graphql.js')).default;
+  createGraphlConfig() {
+    const graphqlConfig: GraphqlConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/graphql.ts'));
 
     return {
       playground: graphqlConfig.playground,
@@ -75,11 +82,32 @@ class Start {
   }
 
   createCorsConfig() {
-    const corsConfig: CorsConfig = require(path.join(Recife.PATH_BUILD, 'config/cors.js')).default;
+    const corsConfig: CorsConfig = this.readConfigFile(path.join(Recife.PATH_BASE, 'config/cors.ts'));
 
     if (corsConfig.enabled) {
       this.app.use(koaCors(corsConfig));
     }
+  }
+
+  readConfigBase() {
+    const config: Config = this.readConfigFile(path.join(process.cwd(), 'recife.config.ts'));
+    new Recife(config);
+  }
+
+  readConfigFile(filePath: string) {
+    const sourceTs = fs.readFileSync(filePath);
+    const sourceJs = ts.transpileModule(sourceTs.toString(), {
+      compilerOptions: {
+        module: ModuleKind.CommonJS,
+        moduleResolution: ts.ModuleResolutionKind.NodeJs,
+        esModuleInterop: true,
+        target: ts.ScriptTarget.ES2015,
+        allowJs: true
+      }
+    }).outputText;
+
+    const script = new vm.Script(`const exports = {}; ${sourceJs};`);
+    return script.runInNewContext();
   }
 }
 
