@@ -51,7 +51,7 @@ const generateHomepage = (application: string, version: string) => `
         </style>
     </head>
     <body>
-        <img alt="RecifeJs" src="https://recifejs.netlify.app/img/logo.svg" />
+        <img alt="RecifeJs" src="https://recifejs.netlify.app/img/logo.png" />
         <p>Application: ${application} | Version:${version}</p>
         <div class="links">
         <a href="/graphql">Graphql Playground</a>

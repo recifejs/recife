@@ -71,9 +71,17 @@ class Resolvers {
   }
 
   private getController(graph: Graph) {
-    const file = require(graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
+    const file = this.requireUncached(
+      graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
+    );
+
     const Controller = graph.isExportDefaultController ? file.default : file[graph.nameController];
     return Controller;
+  }
+
+  private requireUncached(module: string) {
+    delete require.cache[require.resolve(module)];
+    return require(module);
   }
 
   private getModel(type: Type) {

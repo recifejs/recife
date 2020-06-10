@@ -39,6 +39,13 @@ class Compiler {
     });
   }
 
+  clean() {
+    this.graphs = [];
+    this.types = [];
+    this.inputs = [];
+    this.scalars = ['Date'];
+  }
+
   generateType(): DocumentNode {
     let typeString = '';
 
