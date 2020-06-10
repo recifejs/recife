@@ -18,7 +18,7 @@ RecifeJs is a powerful MVC Framework for GraphQL in NodeJS. Recife has a whole s
 <br />
 <br />
 
-[Contributing](CONTRIBUTING.md) | [Code of Conduct](CODE_OF_CONDUCT.md) | [CLI](https://github.com/recifejs/cli)
+[Documentation](https://recifejs.org/) | [Contributing](CONTRIBUTING.md) | [CLI](https://github.com/recifejs/cli)
 
 <br />
 <br />
