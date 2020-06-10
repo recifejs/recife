@@ -6,6 +6,7 @@ const generateHomepage = (application: string, version: string) => `
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>RecifeJS</title>
+        <link rel="shortcut icon" href="https://recifejs.org/img/favicon.ico">
         <style>
         html { height: 100vh; }
         body {
@@ -51,11 +52,11 @@ const generateHomepage = (application: string, version: string) => `
         </style>
     </head>
     <body>
-        <img alt="RecifeJs" src="https://recifejs.netlify.app/img/logo.png" />
+        <img alt="RecifeJs" src="https://recifejs.org/img/logo.png" />
         <p>Application: ${application} | Version:${version}</p>
         <div class="links">
         <a href="/graphql">Graphql Playground</a>
-        <a target="_blank" href="https://recifejs.netlify.app/">Documentação</a>
+        <a target="_blank" href="https://recifejs.org/">Documentação</a>
         <a target="_blank" href="https://github.com/recifejs/recife">Github</a>
         </div>
         <footer>
