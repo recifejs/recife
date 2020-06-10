@@ -1,3 +1,6 @@
 'use strict';
 
-console.log('Build');
+import Build from '../src/Build';
+
+const build = new Build();
+build.run();

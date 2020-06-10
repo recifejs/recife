@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start": "cd .. && yarn build && cd example && recife start",
-    "build": "tsc"
+    "build": "cd .. && yarn build && cd example && recife build"
   },
   "dependencies": {
     "recife": "^0.4.0",
