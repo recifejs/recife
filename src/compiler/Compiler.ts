@@ -3,20 +3,26 @@ import path from 'path';
 import { gql } from 'apollo-server-koa';
 import { DocumentNode } from 'graphql';
 
+import GraphCompiler from './GraphCompiler';
+import TypeCompiler from './TypeCompiler';
+import ScalarCompiler from './ScalarCompiler';
+
 import Graph from './token/Graph';
 import Resolvers from './Resolvers';
 import Type from './token/Type';
 import Input from './token/Input';
+import Scalar from './token/Scalar';
+
 import GraphTypeEnum from './enum/GraphTypeEnum';
-import GraphCompiler from './GraphCompiler';
-import TypeCompiler from './TypeCompiler';
 import Recife from '../Recife';
+import requireUncached from '../helpers/requireUncached';
 
 class Compiler {
   private graphs: Graph[] = [];
   private types: Type[] = [];
   private inputs: Input[] = [];
-  private scalars: String[] = ['Date'];
+  private scalarIntern: String[] = ['Date'];
+  private scalars: Scalar[] = [];
 
   compile() {
     const filesController: string[] = fs.readdirSync(Recife.PATH_CONTROLLERS);
@@ -37,20 +43,37 @@ class Compiler {
       typeCompiler.compile();
       this.types = this.types.concat(typeCompiler.getTypes());
     });
+
+    const filesScalar: string[] = fs.readdirSync(Recife.PATH_SCALARS);
+    filesScalar.forEach(file => {
+      const nameFileAbsolute = path.join(Recife.PATH_SCALARS, file);
+
+      const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
+      scalarCompiler.compile();
+      this.scalars = this.scalars.concat(scalarCompiler.getScalars());
+    });
   }
 
   clean() {
     this.graphs = [];
     this.types = [];
     this.inputs = [];
-    this.scalars = ['Date'];
+    this.scalarIntern = ['Date'];
+    this.scalars = [];
   }
 
   generateType(): DocumentNode {
     let typeString = '';
 
-    this.scalars.forEach(scalar => {
+    this.scalarIntern.forEach(scalar => {
       typeString += `scalar ${scalar}\n`;
+    });
+
+    this.scalars.forEach(scalar => {
+      const scalarConfig = this.getScalar(scalar);
+      this.scalarIntern.push(scalarConfig.name);
+
+      typeString += `scalar ${scalarConfig.name}\n`;
     });
 
     this.types.forEach(type => {
@@ -104,7 +127,15 @@ class Compiler {
 
   generateResolvers(): any {
     let resolvers = new Resolvers();
-    const listScalars: String[] = ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalars];
+    const listScalars: String[] = [
+      'Int',
+      'Float',
+      'String',
+      'Boolean',
+      'ID',
+      ...this.scalarIntern,
+      ...this.scalars.map(item => item.name)
+    ];
 
     this.types.forEach(type => {
       type.fields.forEach(field => {
@@ -112,6 +143,10 @@ class Compiler {
           resolvers.add(field, type);
         }
       });
+    });
+
+    this.scalars.forEach(scalar => {
+      resolvers.addScalar(scalar);
     });
 
     this.graphs.forEach(graph => {
@@ -125,6 +160,14 @@ class Compiler {
     });
 
     return resolvers.formatter();
+  }
+
+  private getScalar(scalar: Scalar) {
+    const file = requireUncached(
+      scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
+    );
+    const Model = scalar.isExportDefault ? file.default : file[scalar.name];
+    return Model;
   }
 }
 

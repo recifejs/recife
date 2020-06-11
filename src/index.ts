@@ -7,3 +7,5 @@ export { default as BodyParserConfig } from './configs/BodyParserConfig';
 export { default as GraphqlConfig } from './configs/GraphqlConfig';
 export { default as CorsConfig } from './configs/CorsConfig';
 export { default as AppConfig } from './configs/AppConfig';
+
+export { default as ScalarType } from './types/ScalarType';

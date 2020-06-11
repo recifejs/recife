@@ -8,6 +8,7 @@ class Recife {
   static PATH_BUILD: string;
   static PATH_CONTROLLERS: string;
   static PATH_MODELS: string;
+  static PATH_SCALARS: string;
   static NODE_PORT: number;
   static NODE_HOST: string;
   static PACKAGE_JSON: any;
@@ -19,6 +20,7 @@ class Recife {
     Recife.PATH_BUILD = path.join(process.cwd(), this.readTsconfig());
     Recife.PATH_CONTROLLERS = path.join(process.cwd(), Recife.PATH_BASE, 'controllers');
     Recife.PATH_MODELS = path.join(process.cwd(), Recife.PATH_BASE, 'models');
+    Recife.PATH_SCALARS = path.join(process.cwd(), Recife.PATH_BASE, 'scalars');
     Recife.NODE_PORT = config.port;
     Recife.NODE_HOST = config.host;
     Recife.PACKAGE_JSON = this.readPackageJson();
