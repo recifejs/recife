@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
+import Program from './Program';
 
-class Server {
+class Server extends Program {
   run() {
     const configPath = ts.findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
     if (!configPath) {
@@ -21,10 +22,10 @@ class Server {
       console.log('Finished making the program!');
       origPostProgramCreate!(program);
       console.log('Compiling the graphql');
+      this.start();
     };
 
-    const watch = ts.createWatchProgram(host);
-    watch.close();
+    ts.createWatchProgram(host);
   }
 }
 
