@@ -5,6 +5,6 @@ module.exports = {
   include: ['src', 'scripts'],
   all: true,
   exclude: ['coverage', 'test', 'example'],
-  reporter: ['html', 'lcov', 'text-lcov'],
+  reporter: ['html', 'lcov', 'text'],
   'report-dir': 'coverage'
 };
