@@ -17,12 +17,12 @@ class Type {
 
     this.isExportDefaultModel = isDefaultExternal || this.isDefault(node, sourceFile);
 
-    node.members.map(nodeField => {
+    node.members.forEach(nodeField => {
       if (ts.isPropertyDeclaration(nodeField)) {
         const field = new Field();
         field.name = nodeField.name.getText(sourceFile);
-        field.type = PrimitiveType.getPrimitiveType(nodeField.type!.getText(sourceFile));
         field.isRequired = !nodeField.questionToken;
+        field.type = this.findType(nodeField, sourceFile);
 
         this.fields.push(field);
       }
@@ -41,6 +41,31 @@ class Type {
     }
 
     return isDefault;
+  }
+
+  private findType(nodeField: ts.PropertyDeclaration, sourceFile?: ts.SourceFile): string {
+    if (nodeField.decorators) {
+      const decorator = nodeField.decorators.find(item => {
+        if (item.getText(sourceFile).includes('Field')) {
+          return item;
+        }
+      });
+
+      if (decorator) {
+        let _type = undefined;
+        decorator.expression.forEachChild(item => {          
+          if (ts.isStringLiteral(item)) {
+            _type = item.getText(sourceFile).replace(/\"|\'/g, '');
+          }
+        });
+
+        if (_type) {
+          return _type;
+        }
+      }
+    }
+
+    return PrimitiveType.getPrimitiveType(nodeField.type!.getText(sourceFile));
   }
 }
 

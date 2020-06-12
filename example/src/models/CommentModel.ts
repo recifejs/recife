@@ -1,7 +1,8 @@
-import { Type } from 'recife';
+import { Type, Field } from 'recife';
 
 @Type()
 class CommentModel {
+  @Field("String")
   postId!: String;
   text!: String;
   date?: Date;
