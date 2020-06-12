@@ -1,13 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import sinon from 'sinon';
 import { assert } from 'chai';
 import 'mocha';
 import Recife from '../../src/Recife';
 
 import GraphCompiler from '../../src/compiler/GraphCompiler';
 
-describe('GraphqCompiler tests', () => {
+describe('GraphCompiler tests', () => {
   const pathSnapshot = path.join(__dirname, 'snapshot');
   const folders = fs.readdirSync(pathSnapshot);
 
