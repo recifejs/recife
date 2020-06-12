@@ -1,7 +1,9 @@
 import { Query } from '../../../../src';
+import { FilterUser } from './UserInput';
 
 class InputController {
-  method(): string {
+  @Query()
+  getUser(input: FilterUser): string {
     return '';
   }
 }
