@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import Program from './Program';
 
-class Start extends Program {
+class Server extends Program {
   run() {
     const configPath = ts.findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
     if (!configPath) {
@@ -25,9 +25,8 @@ class Start extends Program {
       this.start();
     };
 
-    const watch = ts.createWatchProgram(host);
-    watch.close();
+    ts.createWatchProgram(host);
   }
 }
 
-export default Start;
+export default Server;

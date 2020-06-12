@@ -1,21 +1,24 @@
 import fs from 'fs';
 import { GraphQLScalarType } from 'graphql';
-import Recife from '../Recife';
 import Graph from './token/Graph';
-import DateScalar from '../scalars/DateScalar';
 import Field from './token/Field';
 import Type from './token/Type';
+import Scalar from './token/Scalar';
+
+import Recife from '../Recife';
+import DateScalar from '../scalars/DateScalar';
+import ScalarType from '../types/ScalarType';
+import requireUncached from '../helpers/requireUncached';
 
 class Resolvers {
-  private scalars: Map<string, GraphQLScalarType>;
   private Query: any = {};
   private Mutation: any = {};
   private Subscription: any = {};
+  private scalars: any = {};
   private resolversType: any = {};
 
   constructor() {
-    this.scalars = new Map();
-    this.scalars.set('Date', new DateScalar());
+    this.scalars.Date = new GraphQLScalarType(DateScalar);
   }
 
   add(field: Field, type: Type) {
@@ -47,6 +50,17 @@ class Resolvers {
       this.createResolver(graph, args, { obj, context, info });
   }
 
+  addScalar(scalar: Scalar) {
+    const scalarObject: ScalarType = this.getScalar(scalar);
+    this.scalars[scalarObject.name] = new GraphQLScalarType({
+      name: scalarObject.name,
+      description: scalarObject.description,
+      parseValue: scalarObject.parseValue,
+      serialize: scalarObject.serialize,
+      parseLiteral: scalarObject.parseLiteral
+    });
+  }
+
   private async createResolver(graph: Graph, args: any, params: any) {
     const Controller = this.getController(graph);
     const Validator = this.getValidator(graph);
@@ -71,13 +85,16 @@ class Resolvers {
   }
 
   private getController(graph: Graph) {
-    const file = require(graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
+    const file = requireUncached(
+      graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
+    );
+
     const Controller = graph.isExportDefaultController ? file.default : file[graph.nameController];
     return Controller;
   }
 
   private getModel(type: Type) {
-    const file = require(type.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
+    const file = requireUncached(type.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
     const Model = type.isExportDefaultModel ? file.default : file[type.nameModel];
     return Model;
   }
@@ -90,7 +107,7 @@ class Resolvers {
       .replace('Controller', 'Validator')
       .replace('.ts', '.js');
     if (fs.existsSync(pathFile)) {
-      const file = require(pathFile);
+      const file = requireUncached(pathFile);
       const Validator = graph.isExportDefaultController ? file.default : file[nameValidator];
 
       if (Validator) {
@@ -99,6 +116,14 @@ class Resolvers {
     }
 
     return undefined;
+  }
+
+  private getScalar(scalar: Scalar) {
+    const file = requireUncached(
+      scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
+    );
+    const Model = scalar.isExportDefault ? file.default : file[scalar.name];
+    return Model;
   }
 
   private capitalize(string: string) {
@@ -120,11 +145,7 @@ class Resolvers {
       resolvers.Subscription = this.Subscription;
     }
 
-    this.scalars.forEach((value, key) => {
-      resolvers[key] = value;
-    });
-
-    return resolvers;
+    return { ...resolvers, ...this.scalars };
   }
 }
 
