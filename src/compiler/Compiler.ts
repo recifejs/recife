@@ -35,23 +35,27 @@ class Compiler {
       this.inputs = this.inputs.concat(graphCompiler.getInputs());
     });
 
-    const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
-    filesModel.forEach(file => {
-      const nameFileAbsolute = path.join(Recife.PATH_MODELS, file);
+    if (fs.existsSync(Recife.PATH_MODELS)) {
+      const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
+      filesModel.forEach(file => {
+        const nameFileAbsolute = path.join(Recife.PATH_MODELS, file);
 
-      const typeCompiler = new TypeCompiler(nameFileAbsolute);
-      typeCompiler.compile();
-      this.types = this.types.concat(typeCompiler.getTypes());
-    });
+        const typeCompiler = new TypeCompiler(nameFileAbsolute);
+        typeCompiler.compile();
+        this.types = this.types.concat(typeCompiler.getTypes());
+      });
+    }
 
-    const filesScalar: string[] = fs.readdirSync(Recife.PATH_SCALARS);
-    filesScalar.forEach(file => {
-      const nameFileAbsolute = path.join(Recife.PATH_SCALARS, file);
+    if (fs.existsSync(Recife.PATH_SCALARS)) {
+      const filesScalar: string[] = fs.readdirSync(Recife.PATH_SCALARS);
+      filesScalar.forEach(file => {
+        const nameFileAbsolute = path.join(Recife.PATH_SCALARS, file);
 
-      const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
-      scalarCompiler.compile();
-      this.scalars = this.scalars.concat(scalarCompiler.getScalars());
-    });
+        const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
+        scalarCompiler.compile();
+        this.scalars = this.scalars.concat(scalarCompiler.getScalars());
+      });
+    }
   }
 
   clean() {
