@@ -10,6 +10,7 @@ import GraphqlConfig from './configs/GraphqlConfig';
 import CorsConfig from './configs/CorsConfig';
 import AppConfig from './configs/AppConfig';
 import Recife from './Recife';
+import MiddlewareConfig from './configs/MiddlewareConfig';
 
 class Config {
   createBodyParser() {
@@ -51,12 +52,17 @@ class Config {
     return null;
   }
 
+  createMidddlewareConfig(): MiddlewareConfig {
+    const middlewareConfig: MiddlewareConfig = this.readConfigFile(path.join(process.cwd(), 'config/middleware.ts'));
+    return middlewareConfig;
+  }
+
   readConfigBase() {
     const config: AppConfig = this.readConfigFile(path.join(process.cwd(), 'config/app.ts'));
     new Recife(config);
   }
 
-  readConfigFile(filePath: string) {
+  private readConfigFile(filePath: string) {
     const sourceTs = fs.readFileSync(filePath);
     const sourceJs = ts.transpileModule(sourceTs.toString(), {
       compilerOptions: {

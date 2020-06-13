@@ -4,12 +4,15 @@ import { ApolloServer } from 'apollo-server-koa';
 import { Server } from 'http';
 import choosePort from 'choose-port';
 import open from 'open';
+import path from 'path';
 
 import generateHomepage from './templates/generateHomepage';
 
 import Compiler from './compiler';
 import Recife from './Recife';
 import Config from './Config';
+import MiddlewareConfig from './configs/MiddlewareConfig';
+import MiddlewareResultType from './types/MiddlewareResultType';
 
 class Program {
   compiler = new Compiler();
@@ -18,6 +21,7 @@ class Program {
   config = new Config();
   server?: Server;
   port: Number = 0;
+  middlewareConfig: MiddlewareConfig;
 
   constructor() {
     this.config.readConfigBase();
@@ -26,6 +30,8 @@ class Program {
     if (corsConfig) {
       this.app.use(corsConfig);
     }
+
+    this.middlewareConfig = this.config.createMidddlewareConfig();
 
     this.router.get('/', (ctx: RouterContext) => {
       ctx.body = generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version);
@@ -40,7 +46,47 @@ class Program {
     const apolloServer = new ApolloServer({
       resolvers: this.compiler.generateResolvers(),
       typeDefs: this.compiler.generateType(),
-      ...this.config.createGraphlConfig()
+      ...this.config.createGraphlConfig(),
+      context: async ({ ctx }) => {
+        let contextReturn: any = {};
+        const keys = Object.keys(this.middlewareConfig.global);
+
+        for (let i = 0; i < keys.length; i++) {
+          const middlewareName = this.middlewareConfig.global[keys[i]];
+          let Middleware = undefined;
+
+          try {
+            Middleware = require(path.join(process.cwd(), 'node_modules', middlewareName)).default;
+          } catch (e) {
+            try {
+              Middleware = require(path.join(Recife.PATH_BUILD, middlewareName)).default;
+            } catch (e) {
+              console.error('Middleware not exists!');
+            }
+          }
+          const middleware = new Middleware();
+          if (middleware.handle) {
+            const config: MiddlewareResultType = {
+              request: {
+                method: ctx.request.method,
+                url: ctx.request.url,
+                header: ctx.request.header
+              },
+              response: {
+                status: ctx.response.status,
+                message: ctx.response.message,
+                header: ctx.response.header
+              }
+            };
+
+            await middleware.handle(config, (context: any) => {
+              contextReturn[keys[i]] = context;
+            });
+          }
+        }
+
+        return contextReturn;
+      }
     });
 
     this.app.use(this.router.routes());
