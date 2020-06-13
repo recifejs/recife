@@ -44,16 +44,6 @@ class GraphCompiler {
             this.compileGraphs(node, node.name.getText(this.sourceFile) === classExportDefault);
           }
         }
-
-        if (ts.isExportAssignment(node)) {
-          this.graphs = this.graphs.map(graph => {
-            if (node.expression.getText(this.sourceFile) === graph.nameController) {
-              graph.isExportDefaultController = true;
-            }
-
-            return graph;
-          });
-        }
       });
     }
   }
