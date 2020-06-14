@@ -16,7 +16,7 @@ module.exports = {
   inputs: [
     {
       name: 'FilterUser',
-      fields: [{ name: 'name', type: 'String', isRequired: false }]
+      fields: [{ name: 'name', isRequired: false, type: 'String' }]
     }
   ]
 };

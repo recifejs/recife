@@ -4,8 +4,13 @@ module.exports = {
   fields: [
     {
       name: 'name',
-      isRequired: true,
+      isRequired: false,
       type: 'String'
+    },
+    {
+      name: 'date',
+      isRequired: false,
+      type: 'Date'
     }
   ]
 };

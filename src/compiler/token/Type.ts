@@ -23,12 +23,25 @@ class Type {
 
     this.isExportDefaultModel = isDefaultExternal || this.isDefault(node, sourceFile);
 
-    node.members.forEach(nodeField => {
-      if (ts.isPropertyDeclaration(nodeField)) {
+    node.members.forEach(member => {
+      if (ts.isPropertyDeclaration(member) && member.type) {
+        const fieldTypeDecorator = this.findTypeDecorator(member, sourceFile);
+
         const field = new Field();
-        field.name = nodeField.name.getText(sourceFile);
-        field.isRequired = !nodeField.questionToken;
-        field.type = this.findType(nodeField, sourceFile);
+        field.name = member.name.getText(sourceFile);
+        field.isRequired = !member.questionToken;
+
+        if (ts.isUnionTypeNode(member.type)) {
+          member.type.types.forEach(type => {
+            if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
+              field.isRequired = false;
+            } else {
+              field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(type.getText(sourceFile));
+            }
+          });
+        } else {
+          field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(member.type.getText(sourceFile));
+        }
 
         this.fields.push(field);
       }
@@ -57,7 +70,7 @@ class Type {
     return isDefault;
   }
 
-  private findType(nodeField: ts.PropertyDeclaration, sourceFile?: ts.SourceFile): string {
+  private findTypeDecorator(nodeField: ts.PropertyDeclaration, sourceFile?: ts.SourceFile): string | undefined {
     if (nodeField.decorators) {
       const decorator = nodeField.decorators.find(item => {
         if (item.getText(sourceFile).includes('Field')) {
@@ -78,8 +91,6 @@ class Type {
         }
       }
     }
-
-    return PrimitiveType.getPrimitiveType(nodeField.type!.getText(sourceFile));
   }
 
   private getOptions(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile) {

@@ -63,9 +63,22 @@ class FieldCompiler {
     const field = new Field();
 
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
-      field.name = node.name.getText(this.sourceFile);
-      field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
-      field.isRequired = !node.questionToken;
+      if (node.type) {
+        field.name = node.name.getText(this.sourceFile);
+        field.isRequired = !node.questionToken;
+
+        if (ts.isUnionTypeNode(node.type)) {
+          node.type.types.forEach(type => {
+            if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
+              field.isRequired = false;
+            } else {
+              field.type = PrimitiveType.getPrimitiveType(type.getText(this.sourceFile));
+            }
+          });
+        } else {
+          field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
+        }
+      }
     }
 
     if (field.name && field.type) {

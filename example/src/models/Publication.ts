@@ -1,8 +1,8 @@
 import { Type } from 'recife';
 
-@Type({ onlyHeritage: true })
+@Type({ onlyHeritage: false })
 class Publication {
-  text!: String;
+  text?: String;
 }
 
 export default Publication;

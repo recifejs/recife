@@ -1,6 +1,6 @@
 export type CommentCreate = {
-  postId?: String;
-  text: String;
+  postId: string | undefined;
+  text: string;
 };
 
 export interface CommentDelete {
