@@ -4,6 +4,13 @@ import { CommentCreate } from '../inputs/CommentInput';
 import CommentModel from '../models/CommentModel';
 
 export default class TestController {
+  commentDefault: CommentModel;
+
+  constructor() {
+    this.commentDefault = new CommentModel();
+    this.commentDefault.date = new Date();
+  }
+
   @Query()
   getComment(_: any, { context }: any): CommentModel {
     const comment = new CommentModel();
@@ -14,8 +21,8 @@ export default class TestController {
     return comment;
   }
 
-  @Mutation()
+  @Mutation({ name: 'registerComment' })
   createComment(input: CommentCreate): CommentModel {
-    return new CommentModel();
+    return this.commentDefault;
   }
 }
