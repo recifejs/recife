@@ -88,12 +88,13 @@ class Graph {
 
   toStringType(): string {
     let typeString = '';
+    const name = this.options.name || this.name;
 
     if (this.params) {
       const required = this.params.isRequired ? '!' : '';
-      typeString += `  ${this.name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}\n`;
+      typeString += `  ${name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}\n`;
     } else {
-      typeString += `  ${this.name}: ${this.returnType}\n`;
+      typeString += `  ${name}: ${this.returnType}\n`;
     }
 
     return typeString;

@@ -101,7 +101,7 @@ class Type {
       return '';
     }
 
-    let type = `type ${this.name} {\n`;
+    let type = `type ${this.options.name || this.name} {\n`;
 
     this.fields.forEach(field => {
       const required = field.isRequired ? '!' : '';
