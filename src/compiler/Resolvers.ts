@@ -85,16 +85,14 @@ class Resolvers {
   }
 
   private getController(graph: Graph) {
-    const file = requireUncached(
-      graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
-    );
+    const file = requireUncached(graph.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
 
     const Controller = graph.isExportDefaultController ? file.default : file[graph.nameController];
     return Controller;
   }
 
   private getModel(type: Type) {
-    const file = requireUncached(type.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js'));
+    const file = requireUncached(type.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
     const Model = type.isExportDefaultModel ? file.default : file[type.nameModel];
     return Model;
   }
@@ -119,9 +117,7 @@ class Resolvers {
   }
 
   private getScalar(scalar: Scalar) {
-    const file = requireUncached(
-      scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
-    );
+    const file = requireUncached(scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
     const Model = scalar.isExportDefault ? file.default : file[scalar.name];
     return Model;
   }

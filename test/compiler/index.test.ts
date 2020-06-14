@@ -14,6 +14,7 @@ describe('GraphCompiler tests', () => {
     it(`test ${folder}`, () => {
       Recife.PATH_CONTROLLERS = path.join(pathSnapshot, folder, 'controllers');
       Recife.PATH_MODELS = path.join(pathSnapshot, folder, 'models');
+      Recife.PATH_SCALARS = path.join(pathSnapshot, folder, 'scalars');
 
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
       const compiler = new Compiler();

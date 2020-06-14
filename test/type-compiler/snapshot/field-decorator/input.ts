@@ -2,7 +2,7 @@ import { Type, Field } from 'recife';
 
 @Type()
 export class User {
-  @Field("Int")
+  @Field('Int')
   id!: Number;
   name?: String;
 }

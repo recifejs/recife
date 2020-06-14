@@ -167,9 +167,7 @@ class Compiler {
   }
 
   private getScalar(scalar: Scalar) {
-    const file = requireUncached(
-      scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', '.js')
-    );
+    const file = requireUncached(scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
     const Model = scalar.isExportDefault ? file.default : file[scalar.name];
     return Model;
   }
