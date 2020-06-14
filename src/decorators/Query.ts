@@ -1,9 +1,6 @@
-export type QueryOptionsType = {
-  name?: string;
-  middleware?: string[];
-};
+import GraphOptionsType from '../types/GraphOptionsType';
 
-function Query(options: QueryOptionsType = {}): any {
+function Query(options: GraphOptionsType = {}): any {
   return function(_target: any, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value;
     descriptor.value = function() {

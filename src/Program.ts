@@ -18,12 +18,13 @@ class Program {
   compiler = new Compiler();
   app = new Koa();
   router = new Router();
-  config = new Config();
+  config: Config;
   server?: Server;
   port: Number = 0;
-  middlewareConfig: MiddlewareConfig;
 
   constructor() {
+    this.config = Config.Instance;
+
     this.config.readConfigBase();
     this.app.use(this.config.createBodyParser());
     const corsConfig = this.config.createCorsConfig();
@@ -31,7 +32,7 @@ class Program {
       this.app.use(corsConfig);
     }
 
-    this.middlewareConfig = this.config.createMidddlewareConfig();
+    Recife.MIDDLEWARES = this.config.createMidddlewareConfig();
 
     this.router.get('/', (ctx: RouterContext) => {
       ctx.body = generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version);
@@ -49,10 +50,10 @@ class Program {
       ...this.config.createGraphlConfig(),
       context: async ({ ctx }) => {
         let contextReturn: any = {};
-        const keys = Object.keys(this.middlewareConfig.global);
+        const keys = Object.keys(Recife.MIDDLEWARES.global);
 
         for (let i = 0; i < keys.length; i++) {
-          const middlewareName = this.middlewareConfig.global[keys[i]];
+          const middlewareName = Recife.MIDDLEWARES.global[keys[i]];
           let Middleware = undefined;
 
           try {

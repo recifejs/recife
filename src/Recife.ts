@@ -1,5 +1,6 @@
 import path from 'path';
 import AppConfig from './configs/AppConfig';
+import MiddlewareConfig from './configs/MiddlewareConfig';
 
 class Recife {
   static APP_NAME: string;
@@ -12,6 +13,7 @@ class Recife {
   static NODE_PORT: number;
   static NODE_HOST: string;
   static PACKAGE_JSON: any;
+  static MIDDLEWARES: MiddlewareConfig;
 
   constructor(config: AppConfig) {
     Recife.APP_NAME = config.appName;

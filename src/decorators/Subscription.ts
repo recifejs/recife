@@ -1,9 +1,6 @@
-export type SubscriptionOptionsType = {
-  name?: string;
-  middleware?: string[];
-};
+import GraphOptionsType from '../types/GraphOptionsType';
 
-function Subscription(options: SubscriptionOptionsType = {}): any {
+function Subscription(options: GraphOptionsType = {}): any {
   return function(_target: any, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value;
     descriptor.value = function() {

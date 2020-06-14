@@ -1,9 +1,6 @@
-export type MutationOptionsType = {
-  name?: string;
-  middleware?: string[];
-};
+import GraphOptionsType from '../types/GraphOptionsType';
 
-function Mutation(options: MutationOptionsType = {}): any {
+function Mutation(options: GraphOptionsType = {}): any {
   return function(_target: Object, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value;
     descriptor.value = function() {

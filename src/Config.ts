@@ -13,6 +13,14 @@ import Recife from './Recife';
 import MiddlewareConfig from './configs/MiddlewareConfig';
 
 class Config {
+  private static _instance: Config;
+
+  private constructor() {}
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
+  }
+
   createBodyParser() {
     const bodyParserConfig: BodyParserConfig = this.readConfigFile(path.join(process.cwd(), 'config/bodyParser.ts'));
 
