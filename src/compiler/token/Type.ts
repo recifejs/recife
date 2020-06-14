@@ -53,7 +53,7 @@ class Type {
 
       if (decorator) {
         let _type = undefined;
-        decorator.expression.forEachChild(item => {          
+        decorator.expression.forEachChild(item => {
           if (ts.isStringLiteral(item)) {
             _type = item.getText(sourceFile).replace(/\"|\'/g, '');
           }
@@ -66,6 +66,19 @@ class Type {
     }
 
     return PrimitiveType.getPrimitiveType(nodeField.type!.getText(sourceFile));
+  }
+
+  toStringType(): string {
+    let type = `type ${this.name} {\n`;
+
+    this.fields.forEach(field => {
+      const required = field.isRequired ? '!' : '';
+      type += `  ${field.name}: ${field.type}${required} \n`;
+    });
+
+    type += '}\n';
+
+    return type;
   }
 }
 

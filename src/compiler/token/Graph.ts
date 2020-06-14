@@ -95,6 +95,19 @@ class Graph {
 
     return isDefault;
   }
+
+  toStringType(): string {
+    let typeString = '';
+
+    if (this.params) {
+      const required = this.params.isRequired ? '!' : '';
+      typeString += `  ${this.name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}\n`;
+    } else {
+      typeString += `  ${this.name}: ${this.returnType}\n`;
+    }
+
+    return typeString;
+  }
 }
 
 export default Graph;

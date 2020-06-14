@@ -14,14 +14,12 @@ import Input from './token/Input';
 import Scalar from './token/Scalar';
 
 import GraphTypeEnum from './enum/GraphTypeEnum';
-import Recife from '../Recife';
-import requireUncached from '../helpers/requireUncached';
 
 class Compiler {
   private graphs: Graph[] = [];
   private types: Type[] = [];
   private inputs: Input[] = [];
-  private scalarIntern: String[] = ['Date'];
+  private scalarIntern: string[] = ['Date'];
   private scalars: Scalar[] = [];
   private pathControllers: string;
   private pathModels: string;
@@ -82,33 +80,9 @@ class Compiler {
       typeString += `scalar ${scalar}\n`;
     });
 
-    this.scalars.forEach(scalar => {
-      const scalarConfig = this.getScalar(scalar);
-      this.scalarIntern.push(scalarConfig.name);
-
-      typeString += `scalar ${scalarConfig.name}\n`;
-    });
-
-    this.types.forEach(type => {
-      typeString += `type ${type.name} {\n`;
-
-      type.fields.forEach(field => {
-        typeString += `  ${field.name}: ${field.type} \n`;
-      });
-
-      typeString += '}\n';
-    });
-
-    this.inputs.forEach(input => {
-      typeString += `input ${input.name} {\n`;
-
-      input.fields.forEach(field => {
-        const required = field.isRequired ? '!' : '';
-        typeString += `  ${field.name}: ${field.type}${required} \n`;
-      });
-
-      typeString += '}\n';
-    });
+    this.scalars.forEach(scalar => (typeString += scalar.toStringType()));
+    this.types.forEach(type => (typeString += type.toStringType()));
+    this.inputs.forEach(input => (typeString += input.toStringType()));
 
     typeString += this.generateTypeGraph(GraphTypeEnum.QUERY);
     typeString += this.generateTypeGraph(GraphTypeEnum.MUTATION);
@@ -122,12 +96,7 @@ class Compiler {
 
     this.graphs.forEach(graph => {
       if (graph.type === graphType) {
-        if (graph.params) {
-          const required = graph.params.isRequired ? '!' : '';
-          typeString += `  ${graph.name}(${graph.params.name}: ${graph.params.type}${required}): ${graph.returnType}\n`;
-        } else {
-          typeString += `  ${graph.name}: ${graph.returnType}\n`;
-        }
+        typeString += graph.toStringType();
       }
     });
 
@@ -140,7 +109,7 @@ class Compiler {
 
   generateResolvers(): any {
     let resolvers = new Resolvers();
-    const listScalars: String[] = [
+    const listScalars: string[] = [
       'Int',
       'Float',
       'String',
@@ -173,12 +142,6 @@ class Compiler {
     });
 
     return resolvers.formatter();
-  }
-
-  private getScalar(scalar: Scalar) {
-    const file = requireUncached(scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
-    const Model = scalar.isExportDefault ? file.default : file[scalar.name];
-    return Model;
   }
 }
 

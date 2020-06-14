@@ -30,6 +30,14 @@ class Scalar {
 
     return isDefault;
   }
+
+  getNameScalar(): string {
+    return this.name.replace('Scalar', '');
+  }
+
+  toStringType(): string {
+    return `scalar ${this.getNameScalar()}\n`;
+  }
 }
 
 export default Scalar;
