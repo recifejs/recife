@@ -13,10 +13,12 @@ module.exports = {
 
     input FilterUser {
       name: String
+      type: String!
     }
 
     type Query {
       getUser(input: FilterUser!): Input
+      allUsers(input: FilterUser): [Input]
     }
   `
 };

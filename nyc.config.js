@@ -8,8 +8,8 @@ module.exports = {
   reporter: ['html', 'lcov', 'text'],
   'report-dir': 'coverage',
   'check-coverage': 'true',
-  statements: 49,
+  statements: 50,
   branches: 50,
-  functions: 48,
+  functions: 50,
   lines: 50
 };

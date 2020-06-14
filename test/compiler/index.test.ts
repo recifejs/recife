@@ -6,7 +6,7 @@ import Recife from '../../src/Recife';
 
 import Compiler from '../../src/compiler/Compiler';
 
-describe('GraphCompiler tests', () => {
+describe('Compiler tests', () => {
   const pathSnapshot = path.join(__dirname, 'snapshot');
   const folders = fs.readdirSync(pathSnapshot);
 
@@ -27,6 +27,8 @@ describe('GraphCompiler tests', () => {
       if (output.resolvers) {
         assert.equal(JSON.stringify(compiler.generateResolvers()), JSON.stringify(output.resolvers));
       }
+
+      compiler.clean();
     });
   });
 });

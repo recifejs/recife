@@ -7,6 +7,11 @@ class InputController {
   getUser(input: FilterUser): InputModel {
     return new InputModel();
   }
+
+  @Query()
+  allUsers(input?: FilterUser): InputModel[] {
+    return [new InputModel()];
+  }
 }
 
 export default InputController;
