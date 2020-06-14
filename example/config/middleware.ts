@@ -1,7 +1,7 @@
 import { MiddlewareConfig } from 'recife';
 
 export const config: MiddlewareConfig = {
-  middlewares: {},
+  middlewares: { auth: './middlewares/Auth' },
   global: {
     ConvertEmptyStringToNull: './middlewares/ConvertEmptyStringToNull'
   }

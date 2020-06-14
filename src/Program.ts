@@ -4,14 +4,14 @@ import { ApolloServer } from 'apollo-server-koa';
 import { Server } from 'http';
 import choosePort from 'choose-port';
 import open from 'open';
-import path from 'path';
 
 import generateHomepage from './templates/generateHomepage';
 
 import Compiler from './compiler';
 import Recife from './Recife';
 import Config from './Config';
-import MiddlewareResultType from './types/MiddlewareResultType';
+import { MiddlewareGlobalType } from './types/MiddlewareResultType';
+import getMiddleware from './helpers/getMiddleware';
 
 class Program {
   compiler: Compiler;
@@ -81,22 +81,11 @@ class Program {
     const keys = Object.keys(Recife.MIDDLEWARES.global);
 
     for (let i = 0; i < keys.length; i++) {
-      const middlewareName = Recife.MIDDLEWARES.global[keys[i]];
-      let Middleware = undefined;
-
-      try {
-        Middleware = require(path.join(process.cwd(), 'node_modules', middlewareName)).default;
-      } catch (e) {
-        try {
-          Middleware = require(path.join(Recife.PATH_BUILD, middlewareName)).default;
-        } catch (e) {
-          console.error('Middleware not exists!');
-        }
-      }
+      let Middleware = getMiddleware(Recife.MIDDLEWARES.global[keys[i]]);
 
       const middleware = new Middleware();
       if (middleware.handle) {
-        const config: MiddlewareResultType = {
+        const config: MiddlewareGlobalType = {
           request: {
             method: ctx.request.method,
             url: ctx.request.url,
@@ -110,7 +99,9 @@ class Program {
         };
 
         await middleware.handle(config, (context: any) => {
-          contextReturn[keys[i]] = context;
+          if (context) {
+            contextReturn[keys[i]] = context;
+          }
         });
       }
     }

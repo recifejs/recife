@@ -16,7 +16,7 @@ class AnotherController {
 }
 
 export class TestController {
-  @Query()
+  @Query({ middlewares: ['auth'] })
   allComments(): Comment[] {
     return [];
   }

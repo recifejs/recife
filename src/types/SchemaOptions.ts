@@ -1,6 +1,6 @@
 type SchemaOptions = {
   name?: string;
-  middleware?: string[];
+  middlewares?: string[];
 };
 
 export default SchemaOptions;
