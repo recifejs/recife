@@ -23,22 +23,31 @@ class Compiler {
   private inputs: Input[] = [];
   private scalarIntern: String[] = ['Date'];
   private scalars: Scalar[] = [];
+  private pathControllers: string;
+  private pathModels: string;
+  private pathScalars: string;
+
+  constructor(pathControllers: string, pathModels: string, pathScalars: string) {
+    this.pathControllers = pathControllers;
+    this.pathModels = pathModels;
+    this.pathScalars = pathScalars;
+  }
 
   compile() {
-    const filesController: string[] = fs.readdirSync(Recife.PATH_CONTROLLERS);
+    const filesController: string[] = fs.readdirSync(this.pathControllers);
     filesController.forEach(file => {
-      const nameFileAbsolute = path.join(Recife.PATH_CONTROLLERS, file);
+      const nameFileAbsolute = path.join(this.pathControllers, file);
 
-      const graphCompiler = new GraphCompiler(nameFileAbsolute);
+      const graphCompiler = new GraphCompiler(nameFileAbsolute, this.pathControllers);
       graphCompiler.compile();
       this.graphs = this.graphs.concat(graphCompiler.getGraphs());
       this.inputs = this.inputs.concat(graphCompiler.getInputs());
     });
 
-    if (fs.existsSync(Recife.PATH_MODELS)) {
-      const filesModel: string[] = fs.readdirSync(Recife.PATH_MODELS);
+    if (fs.existsSync(this.pathModels)) {
+      const filesModel: string[] = fs.readdirSync(this.pathModels);
       filesModel.forEach(file => {
-        const nameFileAbsolute = path.join(Recife.PATH_MODELS, file);
+        const nameFileAbsolute = path.join(this.pathModels, file);
 
         const typeCompiler = new TypeCompiler(nameFileAbsolute);
         typeCompiler.compile();
@@ -46,10 +55,10 @@ class Compiler {
       });
     }
 
-    if (fs.existsSync(Recife.PATH_SCALARS)) {
-      const filesScalar: string[] = fs.readdirSync(Recife.PATH_SCALARS);
+    if (fs.existsSync(this.pathScalars)) {
+      const filesScalar: string[] = fs.readdirSync(this.pathScalars);
       filesScalar.forEach(file => {
-        const nameFileAbsolute = path.join(Recife.PATH_SCALARS, file);
+        const nameFileAbsolute = path.join(this.pathScalars, file);
 
         const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
         scalarCompiler.compile();

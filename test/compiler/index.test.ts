@@ -12,12 +12,12 @@ describe('Compiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
-      Recife.PATH_CONTROLLERS = path.join(pathSnapshot, folder, 'controllers');
-      Recife.PATH_MODELS = path.join(pathSnapshot, folder, 'models');
-      Recife.PATH_SCALARS = path.join(pathSnapshot, folder, 'scalars');
-
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const compiler = new Compiler();
+      const compiler = new Compiler(
+        path.join(pathSnapshot, folder, 'controllers'),
+        path.join(pathSnapshot, folder, 'models'),
+        path.join(pathSnapshot, folder, 'scalars')
+      );
       compiler.compile();
 
       if (output.types) {

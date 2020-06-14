@@ -11,11 +11,10 @@ import generateHomepage from './templates/generateHomepage';
 import Compiler from './compiler';
 import Recife from './Recife';
 import Config from './Config';
-import MiddlewareConfig from './configs/MiddlewareConfig';
 import MiddlewareResultType from './types/MiddlewareResultType';
 
 class Program {
-  compiler = new Compiler();
+  compiler: Compiler;
   app = new Koa();
   router = new Router();
   config: Config;
@@ -24,8 +23,9 @@ class Program {
 
   constructor() {
     this.config = Config.Instance;
-
     this.config.readConfigBase();
+    this.compiler = new Compiler(Recife.PATH_CONTROLLERS, Recife.PATH_MODELS, Recife.PATH_SCALARS);
+
     this.app.use(this.config.createBodyParser());
     const corsConfig = this.config.createCorsConfig();
     if (corsConfig) {
@@ -48,46 +48,7 @@ class Program {
       resolvers: this.compiler.generateResolvers(),
       typeDefs: this.compiler.generateType(),
       ...this.config.createGraphlConfig(),
-      context: async ({ ctx }) => {
-        let contextReturn: any = {};
-        const keys = Object.keys(Recife.MIDDLEWARES.global);
-
-        for (let i = 0; i < keys.length; i++) {
-          const middlewareName = Recife.MIDDLEWARES.global[keys[i]];
-          let Middleware = undefined;
-
-          try {
-            Middleware = require(path.join(process.cwd(), 'node_modules', middlewareName)).default;
-          } catch (e) {
-            try {
-              Middleware = require(path.join(Recife.PATH_BUILD, middlewareName)).default;
-            } catch (e) {
-              console.error('Middleware not exists!');
-            }
-          }
-          const middleware = new Middleware();
-          if (middleware.handle) {
-            const config: MiddlewareResultType = {
-              request: {
-                method: ctx.request.method,
-                url: ctx.request.url,
-                header: ctx.request.header
-              },
-              response: {
-                status: ctx.response.status,
-                message: ctx.response.message,
-                header: ctx.response.header
-              }
-            };
-
-            await middleware.handle(config, (context: any) => {
-              contextReturn[keys[i]] = context;
-            });
-          }
-        }
-
-        return contextReturn;
-      }
+      context: this.runContext
     });
 
     this.app.use(this.router.routes());
@@ -96,6 +57,7 @@ class Program {
 
     const port = Recife.NODE_PORT;
     const host = Recife.NODE_HOST;
+
     if (this.server) {
       this.server.close();
 
@@ -112,6 +74,48 @@ class Program {
         });
       });
     }
+  }
+
+  async runContext({ ctx }: any) {
+    let contextReturn: any = {};
+    const keys = Object.keys(Recife.MIDDLEWARES.global);
+
+    for (let i = 0; i < keys.length; i++) {
+      const middlewareName = Recife.MIDDLEWARES.global[keys[i]];
+      let Middleware = undefined;
+
+      try {
+        Middleware = require(path.join(process.cwd(), 'node_modules', middlewareName)).default;
+      } catch (e) {
+        try {
+          Middleware = require(path.join(Recife.PATH_BUILD, middlewareName)).default;
+        } catch (e) {
+          console.error('Middleware not exists!');
+        }
+      }
+
+      const middleware = new Middleware();
+      if (middleware.handle) {
+        const config: MiddlewareResultType = {
+          request: {
+            method: ctx.request.method,
+            url: ctx.request.url,
+            header: ctx.request.header
+          },
+          response: {
+            status: ctx.response.status,
+            message: ctx.response.message,
+            header: ctx.response.header
+          }
+        };
+
+        await middleware.handle(config, (context: any) => {
+          contextReturn[keys[i]] = context;
+        });
+      }
+    }
+
+    return contextReturn;
   }
 }
 

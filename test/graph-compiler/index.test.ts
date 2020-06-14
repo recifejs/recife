@@ -12,10 +12,11 @@ describe('GraphCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
-      Recife.PATH_CONTROLLERS = path.join(pathSnapshot, folder);
-
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const graphCompiler = new GraphCompiler(path.join(pathSnapshot, folder, 'input.ts'));
+      const graphCompiler = new GraphCompiler(
+        path.join(pathSnapshot, folder, 'input.ts'),
+        path.join(pathSnapshot, folder)
+      );
       graphCompiler.compile();
 
       if (output.graphs) {

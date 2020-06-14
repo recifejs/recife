@@ -10,11 +10,13 @@ class GraphCompiler {
   private imports: Array<ImportDeclaration> = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
+  private pathControllers: string;
 
-  constructor(path: string) {
+  constructor(path: string, pathControllers: string) {
     const program = ts.createProgram([path], { allowJs: true });
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
+    this.pathControllers = pathControllers;
   }
 
   getGraphs() {
@@ -49,7 +51,7 @@ class GraphCompiler {
   }
 
   private compileImport(node: ts.ImportDeclaration) {
-    const importDeclaration = new ImportDeclaration();
+    const importDeclaration = new ImportDeclaration(this.pathControllers);
     importDeclaration.path = node.moduleSpecifier.getText(this.sourceFile);
 
     if (node.importClause) {
