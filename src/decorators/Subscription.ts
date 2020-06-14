@@ -1,6 +1,6 @@
-import GraphOptionsType from '../types/GraphOptionsType';
+import SchemaOptions from '../types/SchemaOptions';
 
-function Subscription(options: GraphOptionsType = {}): any {
+function Subscription(options: SchemaOptions = {}): any {
   return function(_target: any, _propertyKey: string, descriptor: TypedPropertyDescriptor<any>) {
     const originalMethod = descriptor.value;
     descriptor.value = function() {

@@ -1,16 +1,22 @@
 import * as ts from 'typescript';
 import Field from './Field';
 import PrimitiveType from '../PrimitiveType';
+import TypeOptions from '../../types/TypeOptions';
+import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 
 class Type {
-  public name!: string;
-  public fields!: Field[];
+  public name: string;
+  public fields: Field[];
   public isExportDefaultModel: boolean;
   public path: string;
   public nameModel: string;
+  public heritageName?: string;
+  public heritageType?: Type;
+  public options: TypeOptions;
 
   constructor(node: ts.ClassDeclaration, path: string, isDefaultExternal: boolean, sourceFile?: ts.SourceFile) {
     this.fields = [];
+    this.options = {};
     this.path = path;
     this.name = node.name!.getText(sourceFile).replace('Model', '');
     this.nameModel = node.name!.getText(sourceFile);
@@ -27,6 +33,14 @@ class Type {
         this.fields.push(field);
       }
     });
+
+    if (node.heritageClauses) {
+      node.heritageClauses.forEach((heritage: ts.HeritageClause) => {
+        this.heritageName = heritage.types[0].expression.getText(sourceFile);
+      });
+    }
+
+    this.getOptions(node, sourceFile);
   }
 
   private isDefault(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile): boolean {
@@ -68,13 +82,38 @@ class Type {
     return PrimitiveType.getPrimitiveType(nodeField.type!.getText(sourceFile));
   }
 
+  private getOptions(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile) {
+    node.decorators!.forEach(decorator => {
+      decorator.expression.forEachChild((expression: ts.Node) => {
+        if (ts.isObjectLiteralExpression(expression)) {
+          this.options = { ...createDecoratorOptions(expression, sourceFile) };
+        }
+      });
+    });
+  }
+
+  setHeritageType(heritageType: Type) {
+    this.heritageType = heritageType;
+  }
+
   toStringType(): string {
+    if (this.options.isHeritage === true) {
+      return '';
+    }
+
     let type = `type ${this.name} {\n`;
 
     this.fields.forEach(field => {
       const required = field.isRequired ? '!' : '';
       type += `  ${field.name}: ${field.type}${required} \n`;
     });
+
+    if (this.heritageType) {
+      this.heritageType.fields.forEach(field => {
+        const required = field.isRequired ? '!' : '';
+        type += `  ${field.name}: ${field.type}${required} \n`;
+      });
+    }
 
     type += '}\n';
 

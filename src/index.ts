@@ -12,3 +12,5 @@ export { default as MiddlewareConfig } from './configs/MiddlewareConfig';
 
 export { default as ScalarType } from './types/ScalarType';
 export { default as MiddlewareResultType } from './types/MiddlewareResultType';
+export { default as SchemaOptions } from './types/SchemaOptions';
+export { default as TypeOptions } from './types/TypeOptions';

@@ -1,10 +1,10 @@
 import { Type, Field } from 'recife';
+import Publication from './Publication';
 
 @Type()
-class CommentModel {
-  @Field("String")
-  postId!: String;
-  text!: String;
+class CommentModel extends Publication {
+  @Field('String')
+  postId: String | undefined;
   date?: Date;
   author?: AuthorModel;
 

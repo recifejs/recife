@@ -53,6 +53,17 @@ class Compiler {
       });
     }
 
+    this.types = this.types.map(type => {
+      if (type.heritageName) {
+        const heritageType = this.types.find(item => item.name === type.heritageName);
+        if (heritageType) {
+          type.setHeritageType(heritageType);
+        }
+      }
+
+      return type;
+    });
+
     if (fs.existsSync(this.pathScalars)) {
       const filesScalar: string[] = fs.readdirSync(this.pathScalars);
       filesScalar.forEach(file => {

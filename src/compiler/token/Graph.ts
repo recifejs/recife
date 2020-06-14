@@ -2,7 +2,8 @@ import * as ts from 'typescript';
 import GraphParam from './GraphParam';
 import GraphTypeEnum from '../enum/GraphTypeEnum';
 import PrimitiveType from '../PrimitiveType';
-import GraphOptionsType from '../../types/GraphOptionsType';
+import SchemaOptions from '../../types/SchemaOptions';
+import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 
 class Graph {
   public name!: string;
@@ -12,7 +13,7 @@ class Graph {
   public returnType?: string;
   public nameController: string;
   public path: string;
-  public options: GraphOptionsType;
+  public options: SchemaOptions;
 
   constructor(
     method: ts.MethodDeclaration,
@@ -24,34 +25,33 @@ class Graph {
     this.nameController = classDecl.name!.getText(sourceFile);
     this.path = path;
     this.options = {};
+    this.name = method.name.getText(sourceFile);
+    this.isExportDefaultController = isDefaultExternal || this.isDefault(classDecl, sourceFile);
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
       this.params = new GraphParam(method.parameters[0], sourceFile);
     }
 
-    this.isExportDefaultController = isDefaultExternal || this.isDefault(classDecl, sourceFile);
+    if (method.type) {
+      if (ts.isUnionTypeNode(method.type)) {
+        let returnNameType = '';
+        method.type.types.forEach(returnType => {
+          const textReturnType = returnType.getText(sourceFile);
+
+          if (textReturnType !== 'undefined' && textReturnType !== 'null') {
+            returnNameType = textReturnType;
+          }
+        });
+
+        this.returnType = PrimitiveType.getPrimitiveType(returnNameType);
+      } else {
+        this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
+      }
+    }
 
     if (method.decorators) {
       method.decorators.forEach((decorator: ts.Decorator) => {
         decorator.expression.forEachChild((expression: ts.Node) => {
-          this.name = method.name.getText(sourceFile);
-          if (method.type) {
-            if (ts.isUnionTypeNode(method.type)) {
-              let returnNameType = '';
-              method.type.types.forEach(returnType => {
-                const textReturnType = returnType.getText(sourceFile);
-
-                if (textReturnType !== 'undefined' && textReturnType !== 'null') {
-                  returnNameType = textReturnType;
-                }
-              });
-
-              this.returnType = PrimitiveType.getPrimitiveType(returnNameType);
-            } else {
-              this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
-            }
-          }
-
           if (ts.isIdentifier(expression)) {
             switch (expression.getText(sourceFile)) {
               case 'Query':
@@ -65,17 +65,7 @@ class Graph {
                 break;
             }
           } else if (ts.isObjectLiteralExpression(expression)) {
-            let object: any = {};
-
-            expression.properties.forEach(property => {
-              if (ts.isPropertyAssignment(property)) {
-                object[property.name.getText(sourceFile)] = property.initializer
-                  .getText(sourceFile)
-                  .replace(/\"|\'/g, '');
-              }
-            });
-
-            this.options = { ...object };
+            this.options = { ...createDecoratorOptions(expression, sourceFile) };
           }
         });
       });
