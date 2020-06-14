@@ -60,7 +60,6 @@ class Compiler {
           type.setHeritageType(heritageType);
         }
       }
-
       return type;
     });
 
@@ -95,27 +94,15 @@ class Compiler {
     this.types.forEach(type => (typeString += type.toStringType()));
     this.inputs.forEach(input => (typeString += input.toStringType()));
 
-    typeString += this.generateTypeGraph(GraphTypeEnum.QUERY);
-    typeString += this.generateTypeGraph(GraphTypeEnum.MUTATION);
-    typeString += this.generateTypeGraph(GraphTypeEnum.SUBSCRIPTION);
-
-    return gql(typeString);
-  }
-
-  private generateTypeGraph(graphType: GraphTypeEnum): string {
-    let typeString = '';
-
     this.graphs.forEach(graph => {
-      if (graph.type === graphType) {
-        typeString += graph.toStringType();
-      }
+      typeString += graph.toStringType();
     });
 
-    if (typeString) {
-      return `type ${graphType.toString()} {\n${typeString}}\n`;
-    }
+    typeString = typeString.includes('type Subscription') ? `type Subscription\n${typeString}` : typeString;
+    typeString = typeString.includes('type Mutation') ? `type Mutation\n${typeString}` : typeString;
+    typeString = typeString.includes('type Query') ? `type Query\n${typeString}` : typeString;
 
-    return '';
+    return gql(typeString);
   }
 
   generateResolvers(): any {

@@ -1,6 +1,6 @@
 type TypeOptions = {
   name?: string;
-  isHeritage?: boolean;
+  onlyHeritage?: boolean;
 };
 
 export default TypeOptions;

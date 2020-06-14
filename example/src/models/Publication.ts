@@ -1,6 +1,6 @@
 import { Type } from 'recife';
 
-@Type({ isHeritage: true })
+@Type({ onlyHeritage: true })
 class Publication {
   text!: String;
 }

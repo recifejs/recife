@@ -97,7 +97,7 @@ class Graph {
       typeString += `  ${name}: ${this.returnType}\n`;
     }
 
-    return typeString;
+    return `extend type ${this.type.toString()} {\n${typeString}}\n`;
   }
 }
 

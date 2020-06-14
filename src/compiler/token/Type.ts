@@ -97,7 +97,7 @@ class Type {
   }
 
   toStringType(): string {
-    if (this.options.isHeritage === true) {
+    if (this.options.onlyHeritage === true) {
       return '';
     }
 

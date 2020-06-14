@@ -36,17 +36,20 @@ class Resolvers {
   }
 
   addQuery(graph: Graph) {
-    this.Query[graph.name] = (obj: any, args: any, context: any, info: any) =>
+    const name = graph.options.name || graph.name;
+    this.Query[name] = (obj: any, args: any, context: any, info: any) =>
       this.createResolver(graph, args, { obj, context, info });
   }
 
   addMutation(graph: Graph) {
-    this.Mutation[graph.name] = (obj: any, args: any, context: any, info: any) =>
+    const name = graph.options.name || graph.name;
+    this.Mutation[name] = (obj: any, args: any, context: any, info: any) =>
       this.createResolver(graph, args, { obj, context, info });
   }
 
   addSubscription(graph: Graph) {
-    this.Subscription[graph.name] = (obj: any, args: any, context: any, info: any) =>
+    const name = graph.options.name || graph.name;
+    this.Subscription[name] = (obj: any, args: any, context: any, info: any) =>
       this.createResolver(graph, args, { obj, context, info });
   }
 
