@@ -20,6 +20,7 @@ module.exports = {
           type: '[String]'
         }
       ],
+      options: {},
       path: '/test/type-compiler/snapshot/export-default/input.ts',
       name: 'User',
       nameModel: 'User',

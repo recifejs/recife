@@ -6,8 +6,8 @@ module.exports = {
       nameController: 'InputController',
       path: '/test/graph-compiler/snapshot/export-default-multiples-controllers/input.ts',
       options: {},
-      isExportDefaultController: true,
       name: 'getUser',
+      isExportDefaultController: true,
       returnType: 'String',
       type: 'Query'
     },
@@ -15,8 +15,8 @@ module.exports = {
       nameController: 'AnotherInputController',
       path: '/test/graph-compiler/snapshot/export-default-multiples-controllers/input.ts',
       options: {},
-      isExportDefaultController: false,
       name: 'createUser',
+      isExportDefaultController: false,
       returnType: 'String',
       type: 'Mutation'
     }

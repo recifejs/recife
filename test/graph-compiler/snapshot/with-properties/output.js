@@ -6,8 +6,8 @@ module.exports = {
       nameController: 'InputController',
       path: '/test/graph-compiler/snapshot/with-properties/input.ts',
       options: {},
-      isExportDefaultController: false,
       name: 'getUser',
+      isExportDefaultController: false,
       returnType: 'String',
       type: 'Query'
     }

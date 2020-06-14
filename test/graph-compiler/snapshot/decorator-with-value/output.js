@@ -4,8 +4,8 @@ module.exports = {
   graphs: [
     {
       nameController: 'InputController',
-      path: '/test/graph-compiler/snapshot/query-schema/input.ts',
-      options: {},
+      path: '/test/graph-compiler/snapshot/decorator-with-value/input.ts',
+      options: { name: 'readUser' },
       name: 'getUser',
       isExportDefaultController: true,
       returnType: 'String',

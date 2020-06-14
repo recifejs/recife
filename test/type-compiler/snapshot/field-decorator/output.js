@@ -3,22 +3,22 @@
 module.exports = {
   types: [
     {
-      fields:
-        [
-          {
-            name: "id",
-            isRequired: true,
-            type: "Int"
-          },
-          {
-            name: "name",
-            isRequired: false,
-            type: "String"
-          }
-        ],
-      path: "/test/type-compiler/snapshot/field-decorator/input.ts",
-      name: "User",
-      nameModel: "User",
+      fields: [
+        {
+          name: 'id',
+          isRequired: true,
+          type: 'Int'
+        },
+        {
+          name: 'name',
+          isRequired: false,
+          type: 'String'
+        }
+      ],
+      options: {},
+      path: '/test/type-compiler/snapshot/field-decorator/input.ts',
+      name: 'User',
+      nameModel: 'User',
       isExportDefaultModel: false
     }
   ]
