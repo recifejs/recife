@@ -26,7 +26,7 @@ describe('ScalarCompiler tests', () => {
 const translateScalars = (scalars: any[]) => {
   return JSON.stringify(
     scalars.map(scalar => {
-      scalar.path = scalar.path.replace(process.cwd(), '');
+      delete scalar.path;
       return scalar;
     })
   );

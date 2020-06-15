@@ -1,4 +1,4 @@
-type MiddlewareResultType = {
+export type MiddlewareGlobalType = {
   request: {
     method: string;
     url: string;
@@ -11,4 +11,9 @@ type MiddlewareResultType = {
   };
 };
 
-export default MiddlewareResultType;
+export type MiddlewareType = {
+  parent?: any;
+  args?: any;
+  context?: any;
+  info?: any;
+};

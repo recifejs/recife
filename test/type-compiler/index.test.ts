@@ -26,7 +26,7 @@ describe('TypeCompiler tests', () => {
 const translateTypes = (types: any[]) => {
   return JSON.stringify(
     types.map(type => {
-      type.path = type.path.replace(process.cwd(), '');
+      delete type.path;
       return type;
     })
   );

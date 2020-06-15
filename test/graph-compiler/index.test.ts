@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
 import 'mocha';
-import Recife from '../../src/Recife';
 
 import GraphCompiler from '../../src/compiler/GraphCompiler';
 
@@ -33,7 +32,7 @@ describe('GraphCompiler tests', () => {
 const translateGraphs = (graphs: any[]) => {
   return JSON.stringify(
     graphs.map(graph => {
-      graph.path = graph.path.replace(process.cwd(), '');
+      delete graph.path;
       return graph;
     })
   );

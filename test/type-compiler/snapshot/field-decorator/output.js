@@ -16,7 +16,6 @@ module.exports = {
         }
       ],
       options: {},
-      path: '/test/type-compiler/snapshot/field-decorator/input.ts',
       name: 'User',
       nameModel: 'User',
       isExportDefaultModel: false
