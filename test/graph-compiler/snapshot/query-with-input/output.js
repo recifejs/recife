@@ -4,7 +4,6 @@ module.exports = {
   graphs: [
     {
       nameController: 'InputController',
-      path: '/test/graph-compiler/snapshot/query-with-input/input.ts',
       options: {},
       name: 'getUser',
       isExportDefaultController: true,

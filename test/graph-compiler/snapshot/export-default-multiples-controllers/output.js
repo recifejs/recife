@@ -4,7 +4,6 @@ module.exports = {
   graphs: [
     {
       nameController: 'InputController',
-      path: '/test/graph-compiler/snapshot/export-default-multiples-controllers/input.ts',
       options: {},
       name: 'getUser',
       isExportDefaultController: true,
@@ -13,7 +12,6 @@ module.exports = {
     },
     {
       nameController: 'AnotherInputController',
-      path: '/test/graph-compiler/snapshot/export-default-multiples-controllers/input.ts',
       options: {},
       name: 'createUser',
       isExportDefaultController: false,
