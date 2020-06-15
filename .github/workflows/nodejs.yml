@@ -1,19 +1,14 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+on: [push, pull_request]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  build_test:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [10.x, 12.x]
-
+        node-version: [10, 12, 14]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -28,8 +23,9 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: yarn build
   finish:
-    needs: build
+    needs: build_test
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
