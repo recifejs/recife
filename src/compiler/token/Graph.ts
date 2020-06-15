@@ -11,6 +11,7 @@ class Graph {
   public params!: GraphParam;
   public isExportDefaultController: boolean;
   public returnType?: string;
+  public isReturnRequired: boolean;
   public nameController: string;
   public path: string;
   public options: SchemaOptions;
@@ -27,6 +28,7 @@ class Graph {
     this.options = {};
     this.name = method.name.getText(sourceFile);
     this.isExportDefaultController = isDefaultExternal || this.isDefault(classDecl, sourceFile);
+    this.isReturnRequired = true;
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
       this.params = new GraphParam(method.parameters[0], sourceFile);
@@ -34,16 +36,16 @@ class Graph {
 
     if (method.type) {
       if (ts.isUnionTypeNode(method.type)) {
-        let returnNameType = '';
         method.type.types.forEach(returnType => {
-          const textReturnType = returnType.getText(sourceFile);
-
-          if (textReturnType !== 'undefined' && textReturnType !== 'null') {
-            returnNameType = textReturnType;
+          if (
+            returnType.kind === ts.SyntaxKind.UndefinedKeyword.valueOf() ||
+            returnType.kind === ts.SyntaxKind.NullKeyword.valueOf()
+          ) {
+            this.isReturnRequired = false;
+          } else {
+            this.returnType = PrimitiveType.getPrimitiveType(returnType.getText(sourceFile));
           }
         });
-
-        this.returnType = PrimitiveType.getPrimitiveType(returnNameType);
       } else {
         this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
       }
@@ -89,12 +91,13 @@ class Graph {
   toStringType(): string {
     let typeString = '';
     const name = this.options.name || this.name;
+    const requiredReturn = this.isReturnRequired ? '!' : '';
 
     if (this.params) {
       const required = this.params.isRequired ? '!' : '';
-      typeString += `  ${name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}\n`;
+      typeString += `  ${name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}${requiredReturn}\n`;
     } else {
-      typeString += `  ${name}: ${this.returnType}\n`;
+      typeString += `  ${name}: ${this.returnType}${requiredReturn}\n`;
     }
 
     return `extend type ${this.type.toString()} {\n${typeString}}\n`;

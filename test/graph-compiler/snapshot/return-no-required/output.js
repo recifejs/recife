@@ -7,6 +7,7 @@ module.exports = {
       options: {},
       name: 'getUser',
       isExportDefaultController: true,
+      isReturnRequired: false,
       returnType: 'String',
       type: 'Query'
     }

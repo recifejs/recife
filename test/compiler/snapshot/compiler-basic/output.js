@@ -18,11 +18,11 @@ module.exports = {
     }
 
     extend type Query {
-      getUser(input: FilterUser!): Input
+      getUser(input: FilterUser!): Input!
     }
 
     extend type Query {
-      allUsers(input: FilterUser): [Input]
+      allUsers(input: FilterUser): [Input]!
     }
   `
 };
