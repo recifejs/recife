@@ -10,7 +10,7 @@
   "scripts": {
     "start": "tsc && node bin/recife start",
     "build": "tsc -p .",
-    "test": "mocha -r ts-node/register --timeout 5000 test/**/*.test.ts",
+    "test": "mocha -r ts-node/register --timeout 10000 test/**/*.test.ts",
     "coverage": "nyc npm run test"
   },
   "files": [
