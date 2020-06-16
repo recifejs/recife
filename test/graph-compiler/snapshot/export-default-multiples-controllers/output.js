@@ -7,6 +7,7 @@ module.exports = {
       options: {},
       name: 'getUser',
       isExportDefaultController: true,
+      isReturnRequired: true,
       returnType: 'String',
       type: 'Query'
     },
@@ -15,6 +16,7 @@ module.exports = {
       options: {},
       name: 'createUser',
       isExportDefaultController: false,
+      isReturnRequired: true,
       returnType: 'String',
       type: 'Mutation'
     }
