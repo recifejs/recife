@@ -12,7 +12,7 @@ import Recife from './Recife';
 import Config from './Config';
 import { MiddlewareGlobalType } from './types/MiddlewareResultType';
 import getMiddleware from './helpers/getMiddleware';
-import Log from './Log';
+import Log from './log';
 
 class Program {
   compiler: Compiler;
@@ -42,44 +42,47 @@ class Program {
 
   start() {
     this.compiler.clean();
-    this.compiler.compile().then(() => {
-      Log.Instance.successHeap('Compiled graphql');
+    this.compiler
+      .compile()
+      .then(() => {
+        Log.Instance.successHeap('Compiled graphql');
 
-      const apolloServer = new ApolloServer({
-        resolvers: this.compiler.generateResolvers(),
-        typeDefs: this.compiler.generateType(),
-        ...this.config.createGraphlConfig(),
-        context: this.runContext
-      });
-
-      this.app.use(this.router.routes());
-
-      apolloServer.applyMiddleware({ app: this.app });
-
-      const port = Recife.NODE_PORT;
-      const host = Recife.NODE_HOST;
-
-      if (this.server) {
-        this.server.close();
-
-        this.server = this.app.listen({ port: this.port, host: host }, () => {
-          Log.Instance.info(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
-          Log.Instance.jump();
+        const apolloServer = new ApolloServer({
+          resolvers: this.compiler.generateResolvers(),
+          typeDefs: this.compiler.generateType(),
+          ...this.config.createGraphlConfig(),
+          context: this.runContext
         });
-      } else {
-        choosePort(port, host, (portValid: Number) => {
-          this.port = portValid;
 
-          this.server = this.app.listen({ port: portValid, host: host }, () => {
-            Log.Instance.info(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+        this.app.use(this.router.routes());
+
+        apolloServer.applyMiddleware({ app: this.app });
+
+        const port = Recife.NODE_PORT;
+        const host = Recife.NODE_HOST;
+
+        if (this.server) {
+          this.server.close();
+
+          this.server = this.app.listen({ port: this.port, host: host }, () => {
+            Log.Instance.info(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
             Log.Instance.jump();
-            setTimeout(() => {
-              open(`http://${host}:${portValid}`);
-            }, 2000);
           });
-        });
-      }
-    });
+        } else {
+          choosePort(port, host, (portValid: Number) => {
+            this.port = portValid;
+
+            this.server = this.app.listen({ port: portValid, host: host }, () => {
+              Log.Instance.info(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+              Log.Instance.jump();
+              setTimeout(() => {
+                open(`http://${host}:${portValid}`);
+              }, 2000);
+            });
+          });
+        }
+      })
+      .catch(() => process.exit(1));
   }
 
   async runContext({ ctx }: any) {

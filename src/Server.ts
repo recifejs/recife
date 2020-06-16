@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import Program from './Program';
-import Log from './Log';
+import Log from './log';
 
 class Server extends Program {
   run() {

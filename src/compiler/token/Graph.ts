@@ -4,6 +4,7 @@ import GraphTypeEnum from '../enum/GraphTypeEnum';
 import PrimitiveType from '../PrimitiveType';
 import SchemaOptions from '../../types/SchemaOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
+import Log from '../../log';
 
 class Graph {
   public name!: string;
@@ -49,6 +50,14 @@ class Graph {
       } else {
         this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
       }
+    } else {
+      Log.Instance.error({
+        code: 'return-not-exist',
+        message: `Return not defined in method ${this.name}.`,
+        path: this.path,
+        node: method,
+        sourceFile
+      });
     }
 
     if (method.decorators) {

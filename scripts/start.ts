@@ -1,7 +1,7 @@
 'use strict';
 
 import Start from '../src/Start';
-import Log from '../src/Log';
+import Log from '../src/log';
 
 Log.Instance.title(`Start RecifeJs`);
 
