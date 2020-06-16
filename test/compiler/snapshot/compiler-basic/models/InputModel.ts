@@ -1,9 +1,12 @@
 import { Type } from 'recife';
 
-@Type()
-class InputModel {
+@Type({ onlyHeritage: true })
+export class User {
   id?: Number;
   name?: string;
+}
+@Type()
+class InputModel extends User {
   age: Number;
 }
 

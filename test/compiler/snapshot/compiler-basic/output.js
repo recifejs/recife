@@ -9,9 +9,9 @@ module.exports = {
     scalar Url
 
     type Input {
+      age: Float!
       id: Float
       name: String
-      age: Float!
     }
 
     input FilterUser {
