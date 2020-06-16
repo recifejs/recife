@@ -1,8 +1,8 @@
+import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
 import 'mocha';
-import Recife from '../../src/Recife';
 
 import TypeCompiler from '../../src/compiler/TypeCompiler';
 
@@ -12,10 +12,11 @@ describe('TypeCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
-      Recife.PATH_MODELS = path.join(pathSnapshot, folder);
+      const file = path.join(pathSnapshot, folder, 'input.ts');
+      const program = ts.createProgram([file], { allowJs: true });
 
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const typeCompiler = new TypeCompiler(path.join(pathSnapshot, folder, 'input.ts'));
+      const typeCompiler = new TypeCompiler(file, program);
       typeCompiler.compile();
 
       assert.equal(translateTypes(typeCompiler.getTypes()), JSON.stringify(output.types));

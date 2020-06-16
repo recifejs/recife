@@ -51,7 +51,7 @@ class Compiler {
   readFileFolderSync(folder: string): Promise<string[]> {
     return new Promise(resolve => {
       fs.readdir(folder, (err, list) => {
-        resolve(list.map(file => path.join(folder, file)));
+        resolve(list ? list.map(file => path.join(folder, file)) : []);
       });
     });
   }
