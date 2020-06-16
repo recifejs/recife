@@ -33,19 +33,27 @@ class Compiler {
   }
 
   async compile() {
-    const filesModel: string[] = fs.readdirSync(this.pathModels).map(file => path.join(this.pathModels, file));
-    const filesController: string[] = fs
-      .readdirSync(this.pathControllers)
-      .map(file => path.join(this.pathControllers, file));
-    const filesScalar: string[] = fs.readdirSync(this.pathScalars).map(file => path.join(this.pathScalars, file));
+    let promisesReadFile: Promise<string[]>[] = [];
+    promisesReadFile.push(this.readFileFolderSync(this.pathControllers));
+    promisesReadFile.push(this.readFileFolderSync(this.pathModels));
+    promisesReadFile.push(this.readFileFolderSync(this.pathScalars));
+    const paths = await Promise.all(promisesReadFile);
 
-    const program = ts.createProgram([...filesModel, ...filesController, ...filesScalar], { allowJs: true });
+    const program = ts.createProgram([...paths[0], ...paths[1], ...paths[2]], { allowJs: true });
 
-    let promises: Promise<any>[] = [];
-    promises.push(this.createGraphs(filesController, program));
-    promises.push(this.createTypes(filesModel, program));
-    promises.push(this.createScalar(filesScalar, program));
-    await Promise.all(promises);
+    let promisesCreate: Promise<any>[] = [];
+    promisesCreate.push(this.createGraphs(paths[0], program));
+    promisesCreate.push(this.createTypes(paths[1], program));
+    promisesCreate.push(this.createScalar(paths[2], program));
+    await Promise.all(promisesCreate);
+  }
+
+  readFileFolderSync(folder: string): Promise<string[]> {
+    return new Promise(resolve => {
+      fs.readdir(folder, (err, list) => {
+        resolve(list.map(file => path.join(folder, file)));
+      });
+    });
   }
 
   clean() {
