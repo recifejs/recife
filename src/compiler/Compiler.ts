@@ -31,26 +31,63 @@ class Compiler {
     this.pathScalars = pathScalars;
   }
 
-  compile() {
-    const filesController: string[] = fs.readdirSync(this.pathControllers);
-    filesController.forEach(file => {
-      const nameFileAbsolute = path.join(this.pathControllers, file);
+  async compile() {
+    let promises: Promise<any>[] = [];
+    promises.push(this.createGraphs());
+    promises.push(this.createTypes());
+    promises.push(this.createScalar());
+    await Promise.all(promises);
+  }
 
-      const graphCompiler = new GraphCompiler(nameFileAbsolute, this.pathControllers);
-      graphCompiler.compile();
-      this.graphs = this.graphs.concat(graphCompiler.getGraphs());
-      this.inputs = this.inputs.concat(graphCompiler.getInputs());
+  clean() {
+    this.graphs = [];
+    this.types = [];
+    this.inputs = [];
+    this.scalarIntern = ['Date'];
+    this.scalars = [];
+  }
+
+  async createGraphs() {
+    let promises: Promise<any>[] = [];
+    const filesController: string[] = fs.readdirSync(this.pathControllers);
+
+    filesController.forEach(file => {
+      promises.push(
+        new Promise(resolve => {
+          const nameFileAbsolute = path.join(this.pathControllers, file);
+
+          const graphCompiler = new GraphCompiler(nameFileAbsolute, this.pathControllers);
+          graphCompiler.compile();
+          this.graphs = this.graphs.concat(graphCompiler.getGraphs());
+          this.inputs = this.inputs.concat(graphCompiler.getInputs());
+
+          resolve();
+        })
+      );
     });
 
+    await Promise.all(promises);
+  }
+
+  async createTypes() {
     if (fs.existsSync(this.pathModels)) {
+      let promises: Promise<any>[] = [];
       const filesModel: string[] = fs.readdirSync(this.pathModels);
       filesModel.forEach(file => {
-        const nameFileAbsolute = path.join(this.pathModels, file);
+        promises.push(
+          new Promise(resolve => {
+            const nameFileAbsolute = path.join(this.pathModels, file);
 
-        const typeCompiler = new TypeCompiler(nameFileAbsolute);
-        typeCompiler.compile();
-        this.types = this.types.concat(typeCompiler.getTypes());
+            const typeCompiler = new TypeCompiler(nameFileAbsolute);
+            typeCompiler.compile();
+            this.types = this.types.concat(typeCompiler.getTypes());
+
+            resolve();
+          })
+        );
       });
+
+      await Promise.all(promises);
     }
 
     this.types = this.types.map(type => {
@@ -62,25 +99,28 @@ class Compiler {
       }
       return type;
     });
-
-    if (fs.existsSync(this.pathScalars)) {
-      const filesScalar: string[] = fs.readdirSync(this.pathScalars);
-      filesScalar.forEach(file => {
-        const nameFileAbsolute = path.join(this.pathScalars, file);
-
-        const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
-        scalarCompiler.compile();
-        this.scalars = this.scalars.concat(scalarCompiler.getScalars());
-      });
-    }
   }
 
-  clean() {
-    this.graphs = [];
-    this.types = [];
-    this.inputs = [];
-    this.scalarIntern = ['Date'];
-    this.scalars = [];
+  async createScalar() {
+    if (fs.existsSync(this.pathScalars)) {
+      let promises: Promise<any>[] = [];
+      const filesScalar: string[] = fs.readdirSync(this.pathScalars);
+      filesScalar.forEach(file => {
+        promises.push(
+          new Promise(resolve => {
+            const nameFileAbsolute = path.join(this.pathScalars, file);
+
+            const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
+            scalarCompiler.compile();
+            this.scalars = this.scalars.concat(scalarCompiler.getScalars());
+
+            resolve();
+          })
+        );
+      });
+
+      await Promise.all(promises);
+    }
   }
 
   generateType(): DocumentNode {
