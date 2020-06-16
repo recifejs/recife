@@ -1,8 +1,8 @@
+import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
 import 'mocha';
-import Recife from '../../src/Recife';
 
 import ScalarCompiler from '../../src/compiler/ScalarCompiler';
 
@@ -12,10 +12,11 @@ describe('ScalarCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
-      Recife.PATH_SCALARS = path.join(pathSnapshot, folder);
+      const file = path.join(pathSnapshot, folder, 'input.ts');
+      const program = ts.createProgram([file], { allowJs: true });
 
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const scalarCompiler = new ScalarCompiler(path.join(pathSnapshot, folder, 'input.ts'));
+      const scalarCompiler = new ScalarCompiler(file, program);
       scalarCompiler.compile();
 
       assert.equal(translateScalars(scalarCompiler.getScalars()), JSON.stringify(output.scalars));

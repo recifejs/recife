@@ -12,8 +12,7 @@ class GraphCompiler {
   private path: string;
   private pathControllers: string;
 
-  constructor(path: string, pathControllers: string) {
-    const program = ts.createProgram([path], { allowJs: true });
+  constructor(path: string, program: ts.Program, pathControllers: string) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.pathControllers = pathControllers;

@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
@@ -11,11 +12,11 @@ describe('GraphCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
+      const file = path.join(pathSnapshot, folder, 'input.ts');
+      const program = ts.createProgram([file], { allowJs: true });
+
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const graphCompiler = new GraphCompiler(
-        path.join(pathSnapshot, folder, 'input.ts'),
-        path.join(pathSnapshot, folder)
-      );
+      const graphCompiler = new GraphCompiler(file, program, path.join(pathSnapshot, folder));
       graphCompiler.compile();
 
       if (output.graphs) {

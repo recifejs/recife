@@ -11,14 +11,14 @@ describe('Compiler tests', () => {
   const folders = fs.readdirSync(pathSnapshot);
 
   folders.forEach(folder => {
-    it(`test ${folder}`, () => {
+    it(`test ${folder}`, async () => {
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
       const compiler = new Compiler(
         path.join(pathSnapshot, folder, 'controllers'),
         path.join(pathSnapshot, folder, 'models'),
         path.join(pathSnapshot, folder, 'scalars')
       );
-      compiler.compile();
+      await compiler.compile();
 
       if (output.types) {
         assert.equal(JSON.stringify(compiler.generateType()), JSON.stringify(output.types));

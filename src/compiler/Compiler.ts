@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
 import { gql } from 'apollo-server-koa';
@@ -32,11 +33,27 @@ class Compiler {
   }
 
   async compile() {
-    let promises: Promise<any>[] = [];
-    promises.push(this.createGraphs());
-    promises.push(this.createTypes());
-    promises.push(this.createScalar());
-    await Promise.all(promises);
+    let promisesReadFile: Promise<string[]>[] = [];
+    promisesReadFile.push(this.readFileFolderSync(this.pathControllers));
+    promisesReadFile.push(this.readFileFolderSync(this.pathModels));
+    promisesReadFile.push(this.readFileFolderSync(this.pathScalars));
+    const paths = await Promise.all(promisesReadFile);
+
+    const program = ts.createProgram([...paths[0], ...paths[1], ...paths[2]], { allowJs: true });
+
+    let promisesCreate: Promise<any>[] = [];
+    promisesCreate.push(this.createGraphs(paths[0], program));
+    promisesCreate.push(this.createTypes(paths[1], program));
+    promisesCreate.push(this.createScalar(paths[2], program));
+    await Promise.all(promisesCreate);
+  }
+
+  readFileFolderSync(folder: string): Promise<string[]> {
+    return new Promise(resolve => {
+      fs.readdir(folder, (err, list) => {
+        resolve(list ? list.map(file => path.join(folder, file)) : []);
+      });
+    });
   }
 
   clean() {
@@ -47,16 +64,13 @@ class Compiler {
     this.scalars = [];
   }
 
-  async createGraphs() {
+  async createGraphs(files: string[], program: ts.Program) {
     let promises: Promise<any>[] = [];
-    const filesController: string[] = fs.readdirSync(this.pathControllers);
 
-    filesController.forEach(file => {
+    files.forEach(file => {
       promises.push(
         new Promise(resolve => {
-          const nameFileAbsolute = path.join(this.pathControllers, file);
-
-          const graphCompiler = new GraphCompiler(nameFileAbsolute, this.pathControllers);
+          const graphCompiler = new GraphCompiler(file, program, this.pathControllers);
           graphCompiler.compile();
           this.graphs = this.graphs.concat(graphCompiler.getGraphs());
           this.inputs = this.inputs.concat(graphCompiler.getInputs());
@@ -69,16 +83,13 @@ class Compiler {
     await Promise.all(promises);
   }
 
-  async createTypes() {
+  async createTypes(files: string[], program: ts.Program) {
     if (fs.existsSync(this.pathModels)) {
       let promises: Promise<any>[] = [];
-      const filesModel: string[] = fs.readdirSync(this.pathModels);
-      filesModel.forEach(file => {
+      files.forEach(file => {
         promises.push(
           new Promise(resolve => {
-            const nameFileAbsolute = path.join(this.pathModels, file);
-
-            const typeCompiler = new TypeCompiler(nameFileAbsolute);
+            const typeCompiler = new TypeCompiler(file, program);
             typeCompiler.compile();
             this.types = this.types.concat(typeCompiler.getTypes());
 
@@ -101,16 +112,13 @@ class Compiler {
     });
   }
 
-  async createScalar() {
+  async createScalar(files: string[], program: ts.Program) {
     if (fs.existsSync(this.pathScalars)) {
       let promises: Promise<any>[] = [];
-      const filesScalar: string[] = fs.readdirSync(this.pathScalars);
-      filesScalar.forEach(file => {
+      files.forEach(file => {
         promises.push(
           new Promise(resolve => {
-            const nameFileAbsolute = path.join(this.pathScalars, file);
-
-            const scalarCompiler = new ScalarCompiler(nameFileAbsolute);
+            const scalarCompiler = new ScalarCompiler(file, program);
             scalarCompiler.compile();
             this.scalars = this.scalars.concat(scalarCompiler.getScalars());
 
