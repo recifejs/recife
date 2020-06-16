@@ -41,39 +41,40 @@ class Program {
 
   start() {
     this.compiler.clean();
-    this.compiler.compile();
-    console.log('Compiled graphql');
+    this.compiler.compile().then(() => {
+      console.log('Compiled graphql');
 
-    const apolloServer = new ApolloServer({
-      resolvers: this.compiler.generateResolvers(),
-      typeDefs: this.compiler.generateType(),
-      ...this.config.createGraphlConfig(),
-      context: this.runContext
-    });
-
-    this.app.use(this.router.routes());
-
-    apolloServer.applyMiddleware({ app: this.app });
-
-    const port = Recife.NODE_PORT;
-    const host = Recife.NODE_HOST;
-
-    if (this.server) {
-      this.server.close();
-
-      this.server = this.app.listen({ port: this.port, host: host }, () => {
-        console.log(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+      const apolloServer = new ApolloServer({
+        resolvers: this.compiler.generateResolvers(),
+        typeDefs: this.compiler.generateType(),
+        ...this.config.createGraphlConfig(),
+        context: this.runContext
       });
-    } else {
-      choosePort(port, host, (portValid: Number) => {
-        this.port = portValid;
 
-        this.server = this.app.listen({ port: portValid, host: host }, () => {
-          console.log(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
-          open(`http://${host}:${portValid}`);
+      this.app.use(this.router.routes());
+
+      apolloServer.applyMiddleware({ app: this.app });
+
+      const port = Recife.NODE_PORT;
+      const host = Recife.NODE_HOST;
+
+      if (this.server) {
+        this.server.close();
+
+        this.server = this.app.listen({ port: this.port, host: host }, () => {
+          console.log(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
         });
-      });
-    }
+      } else {
+        choosePort(port, host, (portValid: Number) => {
+          this.port = portValid;
+
+          this.server = this.app.listen({ port: portValid, host: host }, () => {
+            console.log(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+            open(`http://${host}:${portValid}`);
+          });
+        });
+      }
+    });
   }
 
   async runContext({ ctx }: any) {

@@ -6,8 +6,7 @@ class TypeCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
 
-  constructor(path: string) {
-    const program = ts.createProgram([path], { allowJs: true });
+  constructor(path: string, program: ts.Program) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.types = [];
