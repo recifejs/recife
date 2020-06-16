@@ -4,6 +4,7 @@ import { Type } from 'recife';
 class InputModel {
   id?: Number;
   name?: string;
+  age: Number;
 }
 
 export default InputModel;
