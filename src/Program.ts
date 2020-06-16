@@ -12,6 +12,7 @@ import Recife from './Recife';
 import Config from './Config';
 import { MiddlewareGlobalType } from './types/MiddlewareResultType';
 import getMiddleware from './helpers/getMiddleware';
+import Log from './Log';
 
 class Program {
   compiler: Compiler;
@@ -42,7 +43,7 @@ class Program {
   start() {
     this.compiler.clean();
     this.compiler.compile().then(() => {
-      console.log('Compiled graphql');
+      Log.Instance.successHeap('Compiled graphql');
 
       const apolloServer = new ApolloServer({
         resolvers: this.compiler.generateResolvers(),
@@ -62,15 +63,19 @@ class Program {
         this.server.close();
 
         this.server = this.app.listen({ port: this.port, host: host }, () => {
-          console.log(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+          Log.Instance.info(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+          Log.Instance.jump();
         });
       } else {
         choosePort(port, host, (portValid: Number) => {
           this.port = portValid;
 
           this.server = this.app.listen({ port: portValid, host: host }, () => {
-            console.log(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
-            open(`http://${host}:${portValid}`);
+            Log.Instance.info(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
+            Log.Instance.jump();
+            setTimeout(() => {
+              open(`http://${host}:${portValid}`);
+            }, 2000);
           });
         });
       }
