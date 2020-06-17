@@ -8,7 +8,7 @@ module.exports = {
       name: 'getUser',
       isExportDefaultController: true,
       isReturnRequired: true,
-      params: { name: 'input', isRequired: true, type: 'FilterUser' },
+      params: { name: 'input', isRequired: false, type: 'FilterUser' },
       returnType: 'String',
       type: 'Query'
     }
