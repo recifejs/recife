@@ -5,6 +5,19 @@ module.exports = {
     {
       fields: [
         {
+          name: 'id',
+          isRequired: true,
+          type: 'String'
+        }
+      ],
+      options: { onlyHeritage: true },
+      name: 'Person',
+      nameModel: 'Person',
+      isExportDefaultModel: false
+    },
+    {
+      fields: [
+        {
           name: 'name',
           isRequired: false,
           type: 'String'
@@ -13,7 +26,8 @@ module.exports = {
       options: {},
       name: 'User',
       nameModel: 'User',
-      isExportDefaultModel: false
+      isExportDefaultModel: false,
+      heritageName: 'Person'
     },
     {
       fields: [

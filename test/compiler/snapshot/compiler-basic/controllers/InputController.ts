@@ -4,7 +4,7 @@ import InputModel from '../models/InputModel';
 
 class InputController {
   @Query()
-  getUser(input: FilterUser): InputModel {
+  getUser(input: FilterUser): InputModel | undefined {
     return new InputModel();
   }
 

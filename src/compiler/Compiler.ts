@@ -15,6 +15,7 @@ import Input from './token/Input';
 import Scalar from './token/Scalar';
 
 import GraphTypeEnum from './enum/GraphTypeEnum';
+import Log from '../log';
 
 class Compiler {
   private graphs: Graph[] = [];
@@ -46,6 +47,10 @@ class Compiler {
     promisesCreate.push(this.createTypes(paths[1], program));
     promisesCreate.push(this.createScalar(paths[2], program));
     await Promise.all(promisesCreate);
+
+    if (Log.Instance.containsErrors()) {
+      Log.Instance.showErrors('Error in compiled');
+    }
   }
 
   readFileFolderSync(folder: string): Promise<string[]> {

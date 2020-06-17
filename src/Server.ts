@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 import Program from './Program';
+import Log from './log';
 
 class Server extends Program {
   run() {
@@ -13,15 +14,15 @@ class Server extends Program {
 
     const origCreateProgram = host.createProgram;
     host.createProgram = (rootNames: ReadonlyArray<string> | undefined, options, host, oldProgram) => {
-      console.log('Created the program!');
+      Log.Instance.infoHeap('Created the program!');
       return origCreateProgram(rootNames, options, host, oldProgram);
     };
 
     const origPostProgramCreate = host.afterProgramCreate;
     host.afterProgramCreate = program => {
-      console.log('Finished making the program!');
+      Log.Instance.infoHeap('Finished making the program!');
       origPostProgramCreate!(program);
-      console.log('Compiling the graphql');
+      Log.Instance.infoHeap('Compiling the graphql!');
       this.start();
     };
 

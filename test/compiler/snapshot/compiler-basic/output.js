@@ -6,8 +6,10 @@ module.exports = {
   types: gql`
     type Query
     scalar Date
+    scalar Url
 
     type Input {
+      age: Float!
       id: Float
       name: String
     }
@@ -18,7 +20,7 @@ module.exports = {
     }
 
     extend type Query {
-      getUser(input: FilterUser!): Input!
+      getUser(input: FilterUser!): Input
     }
 
     extend type Query {
