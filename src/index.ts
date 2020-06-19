@@ -14,3 +14,5 @@ export { default as ScalarType } from './types/ScalarType';
 export { MiddlewareGlobalType, MiddlewareType } from './types/MiddlewareResultType';
 export { default as SchemaOptions } from './types/SchemaOptions';
 export { default as TypeOptions } from './types/TypeOptions';
+
+export { default as IServer } from './interfaces/IServer';

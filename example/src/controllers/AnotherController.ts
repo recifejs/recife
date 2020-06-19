@@ -6,12 +6,12 @@ import CommentModel from '../models/CommentModel';
 class AnotherController {
   @Mutation()
   deleteComment(input: CommentDelete | undefined): boolean | undefined | null {
-    return false;
+    return true;
   }
 
   @Mutation()
   updateComment(input: CommentUpdate): Array<CommentModel> {
-    return [new CommentModel()];
+    return [new CommentModel(), new CommentModel()];
   }
 }
 

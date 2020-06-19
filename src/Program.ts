@@ -4,6 +4,8 @@ import { ApolloServer } from 'apollo-server-koa';
 import { Server } from 'http';
 import choosePort from 'choose-port';
 import open from 'open';
+import path from 'path';
+import fs from 'fs';
 
 import generateHomepage from './templates/generateHomepage';
 
@@ -11,8 +13,10 @@ import Compiler from './compiler';
 import Recife from './Recife';
 import Config from './Config';
 import { MiddlewareGlobalType } from './types/MiddlewareResultType';
+import IServer from './interfaces/IServer';
 import getMiddleware from './helpers/getMiddleware';
 import Log from './log';
+import requireUncached from './helpers/requireUncached';
 
 class Program {
   compiler: Compiler;
@@ -21,10 +25,14 @@ class Program {
   config: Config;
   server?: Server;
   port: Number = 0;
+  lifecycle?: IServer;
+  lastUpdatedLifecycle?: Date;
 
   constructor() {
     this.config = Config.Instance;
     this.config.readConfigBase();
+    this.getLifecycle();
+
     this.compiler = new Compiler(Recife.PATH_CONTROLLERS, Recife.PATH_MODELS, Recife.PATH_SCALARS);
 
     this.app.use(this.config.createBodyParser());
@@ -41,10 +49,23 @@ class Program {
   }
 
   start() {
+    if (!this.server) {
+      this.lifecycle && this.lifecycle.beforeMounted();
+    } else {
+      this.getLifecycle();
+      this.lifecycle && this.lifecycle.beforeUpdated();
+    }
+
     this.compiler.clean();
     this.compiler
       .compile()
       .then(() => {
+        if (!this.server) {
+          this.lifecycle && this.lifecycle.mounted();
+        } else {
+          this.lifecycle && this.lifecycle.updated();
+        }
+
         Log.Instance.successHeap('Compiled graphql');
 
         const apolloServer = new ApolloServer({
@@ -82,7 +103,10 @@ class Program {
           });
         }
       })
-      .catch(() => process.exit(1));
+      .catch(e => {
+        this.lifecycle && this.lifecycle.catch(e);
+        process.exit(1);
+      });
   }
 
   async runContext({ ctx }: any) {
@@ -116,6 +140,22 @@ class Program {
     }
 
     return contextReturn;
+  }
+
+  private getLifecycle() {
+    const pathBuildLifecycle = path.join(Recife.PATH_BUILD, 'server.js');
+    const pathLifecycle = path.join(Recife.PATH_BASE_ABSOLUTE, 'server.ts');
+
+    if (fs.existsSync(pathBuildLifecycle)) {
+      if (!this.lastUpdatedLifecycle || fs.statSync(pathLifecycle).mtimeMs > this.lastUpdatedLifecycle.getTime()) {
+        this.lastUpdatedLifecycle = new Date();
+
+        const Lifecycle = requireUncached(pathBuildLifecycle).default;
+        const lifecycle: IServer = new Lifecycle();
+
+        this.lifecycle = lifecycle;
+      }
+    }
   }
 }
 

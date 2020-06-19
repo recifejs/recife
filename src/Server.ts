@@ -4,6 +4,9 @@ import Log from './log';
 
 class Server extends Program {
   run() {
+    Log.Instance.infoHeap('Initializing');
+    this.lifecycle && this.lifecycle.beforeStarted();
+
     const configPath = ts.findConfigFile(process.cwd(), ts.sys.fileExists, 'tsconfig.json');
     if (!configPath) {
       throw new Error("Could not find a valid 'tsconfig.json'.");
@@ -23,6 +26,9 @@ class Server extends Program {
       Log.Instance.infoHeap('Finished making the program!');
       origPostProgramCreate!(program);
       Log.Instance.infoHeap('Compiling the graphql!');
+
+      this.lifecycle && this.lifecycle.started();
+
       this.start();
     };
 
