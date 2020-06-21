@@ -14,6 +14,7 @@ class Recife {
   static NODE_HOST: string;
   static PACKAGE_JSON: any;
   static MIDDLEWARES: MiddlewareConfig;
+  static HTTP_FRAMEWORK: string;
 
   constructor(config: AppConfig) {
     Recife.APP_NAME = config.appName;
@@ -25,6 +26,7 @@ class Recife {
     Recife.PATH_SCALARS = path.join(process.cwd(), Recife.PATH_BASE, 'scalars');
     Recife.NODE_PORT = config.port;
     Recife.NODE_HOST = config.host;
+    Recife.HTTP_FRAMEWORK = config.httpFramework;
     Recife.PACKAGE_JSON = this.readPackageJson();
   }
 

@@ -3,6 +3,7 @@ type AppConfig = {
   basePath: string;
   port: number;
   host: string;
+  httpFramework: string;
 };
 
 export default AppConfig;

@@ -1,6 +1,4 @@
-import Koa from 'koa';
-import Router, { RouterContext } from '@koa/router';
-import { ApolloServer } from 'apollo-server-koa';
+import { ApolloServerBase } from 'apollo-server-core';
 import { Server } from 'http';
 import choosePort from 'choose-port';
 import open from 'open';
@@ -20,8 +18,7 @@ import requireUncached from './helpers/requireUncached';
 
 class Program {
   compiler: Compiler;
-  app = new Koa();
-  router = new Router();
+  app: any;
   config: Config;
   server?: Server;
   port: Number = 0;
@@ -32,20 +29,11 @@ class Program {
     this.config = Config.Instance;
     this.config.readConfigBase();
     this.getLifecycle();
+    this.getHttpFramework();
 
     this.compiler = new Compiler(Recife.PATH_CONTROLLERS, Recife.PATH_MODELS, Recife.PATH_SCALARS);
 
-    this.app.use(this.config.createBodyParser());
-    const corsConfig = this.config.createCorsConfig();
-    if (corsConfig) {
-      this.app.use(corsConfig);
-    }
-
     Recife.MIDDLEWARES = this.config.createMidddlewareConfig();
-
-    this.router.get('/', (ctx: RouterContext) => {
-      ctx.body = generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version);
-    });
   }
 
   start() {
@@ -68,16 +56,12 @@ class Program {
 
         Log.Instance.successHeap('Compiled graphql');
 
-        const apolloServer = new ApolloServer({
+        const apolloServer: ApolloServerBase = this.app.createApolloServer({
           resolvers: this.compiler.generateResolvers(),
           typeDefs: this.compiler.generateType(),
-          ...this.config.createGraphlConfig(),
-          context: this.runContext
+          context: this.runContext,
+          graphqlConfig: this.config.createGraphlConfig()
         });
-
-        this.app.use(this.router.routes());
-
-        apolloServer.applyMiddleware({ app: this.app });
 
         const port = Recife.NODE_PORT;
         const host = Recife.NODE_HOST;
@@ -104,6 +88,7 @@ class Program {
         }
       })
       .catch(e => {
+        console.log(e);
         this.lifecycle && this.lifecycle.catch(e);
         process.exit(1);
       });
@@ -156,6 +141,15 @@ class Program {
         this.lifecycle = lifecycle;
       }
     }
+  }
+
+  private getHttpFramework() {
+    const HttpFramework = require(path.join(process.cwd(), 'node_modules', `recife-${Recife.HTTP_FRAMEWORK}`)).default;
+    this.app = new HttpFramework(
+      this.config.createBodyParser(),
+      this.config.createCorsConfig(),
+      generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version)
+    );
   }
 }
 
