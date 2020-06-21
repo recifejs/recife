@@ -13,7 +13,7 @@ RecifeJs is a powerful MVC Framework for GraphQL in NodeJS. Recife has a whole s
 <br />
 <br />
 
-[![npm version](https://img.shields.io/npm/v/recife?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/recife) [![License: MIT](https://img.shields.io/github/license/recifejs/recife?style=for-the-badge)](https://github.com/recifejs/recife/blob/master/LICENSE) [![Node.js CI](https://img.shields.io/github/workflow/status/recifejs/recife/Node.js%20CI?style=for-the-badge&logo=github)](https://github.com/recifejs/recife/workflows/Node.js%20CI) [![Coveralls github](https://img.shields.io/coveralls/github/recifejs/recife?logo=coveralls&style=for-the-badge)](https://coveralls.io/github/recifejs/recife) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/github/recifejs/recife.svg?logo=lgtm&style=for-the-badge)](https://lgtm.com/projects/g/andrelmlins/create-react-dependency/context:javascript)
+[![npm version](https://img.shields.io/npm/v/recife?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/recife) [![License: MIT](https://img.shields.io/github/license/recifejs/recife?style=for-the-badge)](https://github.com/recifejs/recife/blob/master/LICENSE) [![Node.js CI](https://img.shields.io/github/workflow/status/recifejs/recife/Node.js%20CI?style=for-the-badge&logo=github)](https://github.com/recifejs/recife/workflows/Node.js%20CI) [![Coveralls github](https://img.shields.io/coveralls/github/recifejs/recife?logo=coveralls&style=for-the-badge)](https://coveralls.io/github/recifejs/recife) [![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/github/recifejs/recife.svg?logo=lgtm&style=for-the-badge)](https://lgtm.com/projects/g/recifejs/recife/context:javascript)
 
 <br />
 <br />
