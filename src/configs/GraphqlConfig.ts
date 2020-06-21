@@ -1,4 +1,4 @@
-import { IMocks, PlaygroundConfig } from 'apollo-server-koa';
+import { PlaygroundConfig } from 'apollo-server-core';
 
 type GraphqlConfig = {
   /*
@@ -16,7 +16,7 @@ type GraphqlConfig = {
   /*
    * A boolean enabling the default mocks or object that contains definitions.
    */
-  mocks: boolean | IMocks;
+  mocks: boolean;
   /*
    * A boolean controlling whether existing resolvers are overridden by mocks.
    */

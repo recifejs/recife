@@ -1,8 +1,6 @@
-import Koa from 'koa';
-
 type CorsConfig = {
   enabled: boolean;
-  origin?: ((ctx: Koa.Context) => string) | string;
+  origin?: string;
   allowMethods?: string[] | string;
   exposeHeaders?: string[] | string;
   allowHeaders?: string[] | string;

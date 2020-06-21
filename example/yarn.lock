@@ -1189,10 +1189,10 @@ raw-body@^2.3.3:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-recife-koa@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/recife-koa/-/recife-koa-0.1.1.tgz#b55440b138066363c36d7bb0339053f719720311"
-  integrity sha512-5aZdbXoaZxMGZAkDtgqZNfhDmHyDKYBFMsO62PmloZYWjFy+BVGeQrFc0TS7mSHYpebWMkDlUhfvc489R10EHA==
+recife-koa@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/recife-koa/-/recife-koa-0.1.2.tgz#b9bd612185ce3424821c9f025dc7f8eb922ae69f"
+  integrity sha512-VVmTks6hsQsE2mEB5EE7psD1SYFueAxUJRvhQUA5PLJi6VvWtFZ9qyDueP2Uzp7Tr1jbm4oqtX0/Ic195qTV3w==
   dependencies:
     "@koa/router" "^9.0.1"
     apollo-server-koa "^2.15.0"

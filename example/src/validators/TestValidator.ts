@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-koa';
+import { ForbiddenError } from 'apollo-server-core';
 import { CommentCreate } from '../inputs/CommentInput';
 
 export default class TestValidator {

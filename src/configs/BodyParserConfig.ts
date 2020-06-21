@@ -1,5 +1,3 @@
-import Koa from 'koa';
-
 type BodyParserConfig = {
   /*
    * Parser will only parse when request type hits enableTypes.
@@ -31,10 +29,6 @@ type BodyParserConfig = {
    */
   strict?: boolean;
   /*
-   * Custom json request detect function
-   */
-  detectJSON?: (ctx: Koa.Context) => boolean;
-  /*
    * Support extend types
    */
   extendTypes?: {
@@ -51,10 +45,6 @@ type BodyParserConfig = {
      */
     text?: string[];
   };
-  /*
-   * Support text extend type.
-   */
-  onerror?: (err: Error, ctx: Koa.Context) => void;
 };
 
 export default BodyParserConfig;

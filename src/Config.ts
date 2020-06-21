@@ -2,8 +2,6 @@ import ts, { ModuleKind } from 'typescript';
 import fs from 'fs';
 import path from 'path';
 import vm from 'vm';
-import koaBody from 'koa-bodyparser';
-import koaCors from '@koa/cors';
 
 import BodyParserConfig from './configs/BodyParserConfig';
 import GraphqlConfig from './configs/GraphqlConfig';
@@ -21,20 +19,18 @@ class Config {
     return this._instance || (this._instance = new this());
   }
 
-  createBodyParser() {
+  getBodyParser() {
     const bodyParserConfig: BodyParserConfig = this.readConfigFile(path.join(process.cwd(), 'config/bodyParser.ts'));
 
-    return koaBody({
+    return {
       enableTypes: bodyParserConfig.enableTypes,
       encode: bodyParserConfig.encode,
       formLimit: bodyParserConfig.limit.form,
       jsonLimit: bodyParserConfig.limit.json,
       textLimit: bodyParserConfig.limit.form,
       strict: bodyParserConfig.strict,
-      detectJSON: bodyParserConfig.detectJSON,
-      extendTypes: bodyParserConfig.extendTypes,
-      onerror: bodyParserConfig.onerror
-    });
+      extendTypes: bodyParserConfig.extendTypes
+    };
   }
 
   createGraphlConfig() {
@@ -50,17 +46,12 @@ class Config {
     };
   }
 
-  createCorsConfig() {
+  getCorsConfig() {
     const corsConfig: CorsConfig = this.readConfigFile(path.join(process.cwd(), 'config/cors.ts'));
-
-    if (corsConfig.enabled) {
-      return koaCors(corsConfig);
-    }
-
-    return null;
+    return corsConfig;
   }
 
-  createMidddlewareConfig(): MiddlewareConfig {
+  getMidddlewareConfig(): MiddlewareConfig {
     const middlewareConfig: MiddlewareConfig = this.readConfigFile(path.join(process.cwd(), 'config/middleware.ts'));
     return middlewareConfig;
   }

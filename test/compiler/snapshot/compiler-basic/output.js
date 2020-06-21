@@ -1,6 +1,6 @@
 'use-strict';
 
-const { gql } = require('apollo-server-koa');
+const { gql } = require('apollo-server-core');
 
 module.exports = {
   types: gql`

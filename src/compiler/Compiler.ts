@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import fs from 'fs';
 import path from 'path';
-import { gql } from 'apollo-server-koa';
+import { gql } from 'apollo-server-core';
 import { DocumentNode } from 'graphql';
 
 import GraphCompiler from './GraphCompiler';

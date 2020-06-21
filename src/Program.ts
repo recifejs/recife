@@ -33,7 +33,7 @@ class Program {
 
     this.compiler = new Compiler(Recife.PATH_CONTROLLERS, Recife.PATH_MODELS, Recife.PATH_SCALARS);
 
-    Recife.MIDDLEWARES = this.config.createMidddlewareConfig();
+    Recife.MIDDLEWARES = this.config.getMidddlewareConfig();
   }
 
   start() {
@@ -146,8 +146,8 @@ class Program {
   private getHttpFramework() {
     const HttpFramework = require(path.join(process.cwd(), 'node_modules', `recife-${Recife.HTTP_FRAMEWORK}`)).default;
     this.app = new HttpFramework(
-      this.config.createBodyParser(),
-      this.config.createCorsConfig(),
+      this.config.getBodyParser(),
+      this.config.getCorsConfig(),
       generateHomepage(Recife.APP_NAME, Recife.PACKAGE_JSON.version)
     );
   }
