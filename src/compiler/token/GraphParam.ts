@@ -9,7 +9,7 @@ class GraphParam {
 
   constructor(parameter: ts.ParameterDeclaration, graph: Graph, sourceFile?: ts.SourceFile) {
     if (parameter.type) {
-      if (parameter.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+      if (parameter.type.kind === ts.SyntaxKind.AnyKeyword) {
         Log.Instance.error({
           code: 'param-type-any',
           message: 'Param type can not any keyword',
@@ -24,10 +24,7 @@ class GraphParam {
 
       if (ts.isUnionTypeNode(parameter.type)) {
         parameter.type.types.forEach(type => {
-          if (
-            type.kind === ts.SyntaxKind.NullKeyword.valueOf() ||
-            type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()
-          ) {
+          if (type.kind === ts.SyntaxKind.NullKeyword || type.kind === ts.SyntaxKind.UndefinedKeyword) {
             this.isRequired = false;
           } else {
             this.type = type.getText(sourceFile);

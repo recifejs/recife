@@ -106,7 +106,7 @@ class GraphCompiler {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.getText(this.sourceFile) === 'export') {
+        if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
           isExport = true;
         }
       });

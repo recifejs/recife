@@ -1,16 +1,19 @@
 import * as ts from 'typescript';
 import PrimitiveType from './PrimitiveType';
 import Field from './token/Field';
+import Log from '../log';
 
 class FieldCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private className: string;
   private fields: Field[] = [];
+  private path: string;
 
-  constructor(file: string, className: string) {
-    const program = ts.createProgram([file], { allowJs: true });
-    this.sourceFile = program.getSourceFile(file);
+  constructor(path: string, className: string) {
+    const program = ts.createProgram([path], { allowJs: true });
+    this.sourceFile = program.getSourceFile(path);
     this.className = className;
+    this.path = path;
   }
 
   getFields() {
@@ -64,12 +67,22 @@ class FieldCompiler {
 
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
       if (node.type) {
+        if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
+          Log.Instance.error({
+            code: 'property-type-any',
+            message: 'Property type can not any keyword',
+            path: this.path,
+            node,
+            sourceFile: this.sourceFile
+          });
+        }
+
         field.name = node.name.getText(this.sourceFile);
         field.isRequired = !node.questionToken;
 
         if (ts.isUnionTypeNode(node.type)) {
           node.type.types.forEach(type => {
-            if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
+            if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
               field.isRequired = false;
             } else {
               field.type = PrimitiveType.getPrimitiveType(type.getText(this.sourceFile));
@@ -78,6 +91,14 @@ class FieldCompiler {
         } else {
           field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
         }
+      } else {
+        Log.Instance.error({
+          code: 'type-not-exist',
+          message: `Type not defined in property ${field.name}.`,
+          path: this.path,
+          node,
+          sourceFile: this.sourceFile
+        });
       }
     }
 

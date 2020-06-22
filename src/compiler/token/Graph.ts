@@ -36,7 +36,7 @@ class Graph {
     }
 
     if (method.type) {
-      if (method.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+      if (method.type.kind === ts.SyntaxKind.AnyKeyword) {
         Log.Instance.error({
           code: 'return-type-any',
           message: 'Return type can not any keyword',
@@ -48,10 +48,7 @@ class Graph {
 
       if (ts.isUnionTypeNode(method.type)) {
         method.type.types.forEach(returnType => {
-          if (
-            returnType.kind === ts.SyntaxKind.UndefinedKeyword.valueOf() ||
-            returnType.kind === ts.SyntaxKind.NullKeyword.valueOf()
-          ) {
+          if (returnType.kind === ts.SyntaxKind.UndefinedKeyword || returnType.kind === ts.SyntaxKind.NullKeyword) {
             this.isReturnRequired = false;
           } else {
             this.returnType = PrimitiveType.getPrimitiveType(returnType.getText(sourceFile));
@@ -98,7 +95,7 @@ class Graph {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword.valueOf()) {
+        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
           isDefault = true;
         }
       });

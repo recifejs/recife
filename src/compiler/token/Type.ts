@@ -27,7 +27,7 @@ class Type {
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
         if (member.type) {
-          if (member.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+          if (member.type.kind === ts.SyntaxKind.AnyKeyword) {
             Log.Instance.error({
               code: 'property-type-any',
               message: 'Property type can not any keyword',
@@ -45,7 +45,7 @@ class Type {
 
           if (ts.isUnionTypeNode(member.type)) {
             member.type.types.forEach(type => {
-              if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
+              if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
                 field.isRequired = false;
               } else {
                 field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(type.getText(sourceFile));
@@ -82,7 +82,7 @@ class Type {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword.valueOf()) {
+        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
           isDefault = true;
         }
       });

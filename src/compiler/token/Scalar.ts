@@ -22,7 +22,7 @@ class Scalar {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword.valueOf()) {
+        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
           isDefault = true;
         }
       });
