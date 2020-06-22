@@ -75,6 +75,15 @@ class Field {
       }
     }
   }
+
+  toStringType(): string {
+    if (this.visible) {
+      const required = this.isRequired ? '!' : '';
+      return `  ${this.name}: ${this.type}${required} \n`;
+    }
+
+    return '';
+  }
 }
 
 export default Field;

@@ -75,20 +75,10 @@ class Type {
 
     let type = `type ${this.options.name || this.name} {\n`;
 
-    this.fields.forEach(field => {
-      if (field.visible) {
-        const required = field.isRequired ? '!' : '';
-        type += `  ${field.name}: ${field.type}${required} \n`;
-      }
-    });
+    this.fields.forEach(field => (type += field.toStringType()));
 
     if (this.heritageType) {
-      this.heritageType.fields.forEach(field => {
-        if (field.visible) {
-          const required = field.isRequired ? '!' : '';
-          type += `  ${field.name}: ${field.type}${required} \n`;
-        }
-      });
+      this.heritageType.fields.forEach(field => (type += field.toStringType()));
     }
 
     type += '}\n';
