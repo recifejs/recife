@@ -26,45 +26,8 @@ class Type {
 
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
-        if (member.type) {
-          if (member.type.kind === ts.SyntaxKind.AnyKeyword) {
-            Log.Instance.error({
-              code: 'property-type-any',
-              message: 'Property type can not any keyword',
-              path: this.path,
-              node: member,
-              sourceFile
-            });
-          }
-
-          const fieldTypeDecorator = this.findTypeDecorator(member, sourceFile);
-
-          const field = new Field();
-          field.name = member.name.getText(sourceFile);
-          field.isRequired = !member.questionToken;
-
-          if (ts.isUnionTypeNode(member.type)) {
-            member.type.types.forEach(type => {
-              if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
-                field.isRequired = false;
-              } else {
-                field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(type.getText(sourceFile));
-              }
-            });
-          } else {
-            field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(member.type.getText(sourceFile));
-          }
-
-          this.fields.push(field);
-        } else {
-          Log.Instance.error({
-            code: 'type-not-exist',
-            message: `Type not defined in property ${this.name}.`,
-            path: this.path,
-            node: member,
-            sourceFile
-          });
-        }
+        const field = new Field(member, this.path, sourceFile);
+        this.fields.push(field);
       }
     });
 
@@ -91,34 +54,11 @@ class Type {
     return isDefault;
   }
 
-  private findTypeDecorator(nodeField: ts.PropertyDeclaration, sourceFile?: ts.SourceFile): string | undefined {
-    if (nodeField.decorators) {
-      const decorator = nodeField.decorators.find(item => {
-        if (item.getText(sourceFile).includes('Field')) {
-          return item;
-        }
-      });
-
-      if (decorator) {
-        let _type = undefined;
-        decorator.expression.forEachChild(item => {
-          if (ts.isStringLiteral(item)) {
-            _type = item.getText(sourceFile).replace(/\"|\'/g, '');
-          }
-        });
-
-        if (_type) {
-          return _type;
-        }
-      }
-    }
-  }
-
   private getOptions(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile) {
     node.decorators!.forEach(decorator => {
       decorator.expression.forEachChild((expression: ts.Node) => {
         if (ts.isObjectLiteralExpression(expression)) {
-          this.options = { ...createDecoratorOptions(expression, sourceFile) };
+          this.options = createDecoratorOptions(expression, sourceFile);
         }
       });
     });
@@ -136,8 +76,10 @@ class Type {
     let type = `type ${this.options.name || this.name} {\n`;
 
     this.fields.forEach(field => {
-      const required = field.isRequired ? '!' : '';
-      type += `  ${field.name}: ${field.type}${required} \n`;
+      if (field.visible) {
+        const required = field.isRequired ? '!' : '';
+        type += `  ${field.name}: ${field.type}${required} \n`;
+      }
     });
 
     if (this.heritageType) {
