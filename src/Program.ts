@@ -88,13 +88,12 @@ class Program {
         }
       })
       .catch(e => {
-        console.log(e);
         this.lifecycle && this.lifecycle.catch(e);
         process.exit(1);
       });
   }
 
-  async runContext({ ctx }: any) {
+  async runContext(request: any) {
     let contextReturn: any = {};
     const keys = Object.keys(Recife.MIDDLEWARES.global);
 
@@ -103,18 +102,7 @@ class Program {
 
       const middleware = new Middleware();
       if (middleware.handle) {
-        const config: MiddlewareGlobalType = {
-          request: {
-            method: ctx.request.method,
-            url: ctx.request.url,
-            header: ctx.request.header
-          },
-          response: {
-            status: ctx.response.status,
-            message: ctx.response.message,
-            header: ctx.response.header
-          }
-        };
+        const config: MiddlewareGlobalType = { request: request };
 
         await middleware.handle(config, (context: any) => {
           if (context) {

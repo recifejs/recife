@@ -4,11 +4,6 @@ export type MiddlewareGlobalType = {
     url: string;
     header: any;
   };
-  response: {
-    status: Number;
-    message: string;
-    header: any;
-  };
 };
 
 export type MiddlewareType = {
