@@ -3,6 +3,7 @@ import Field from './Field';
 import PrimitiveType from '../PrimitiveType';
 import TypeOptions from '../../types/TypeOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
+import Log from '../../log';
 
 class Type {
   public name: string;
@@ -24,26 +25,46 @@ class Type {
     this.isExportDefaultModel = isDefaultExternal || this.isDefault(node, sourceFile);
 
     node.members.forEach(member => {
-      if (ts.isPropertyDeclaration(member) && member.type) {
-        const fieldTypeDecorator = this.findTypeDecorator(member, sourceFile);
+      if (ts.isPropertyDeclaration(member)) {
+        if (member.type) {
+          if (member.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+            Log.Instance.error({
+              code: 'property-type-any',
+              message: 'Property type can not any keyword',
+              path: this.path,
+              node: member,
+              sourceFile
+            });
+          }
 
-        const field = new Field();
-        field.name = member.name.getText(sourceFile);
-        field.isRequired = !member.questionToken;
+          const fieldTypeDecorator = this.findTypeDecorator(member, sourceFile);
 
-        if (ts.isUnionTypeNode(member.type)) {
-          member.type.types.forEach(type => {
-            if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
-              field.isRequired = false;
-            } else {
-              field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(type.getText(sourceFile));
-            }
-          });
+          const field = new Field();
+          field.name = member.name.getText(sourceFile);
+          field.isRequired = !member.questionToken;
+
+          if (ts.isUnionTypeNode(member.type)) {
+            member.type.types.forEach(type => {
+              if (type.kind === ts.SyntaxKind.UndefinedKeyword.valueOf()) {
+                field.isRequired = false;
+              } else {
+                field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(type.getText(sourceFile));
+              }
+            });
+          } else {
+            field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(member.type.getText(sourceFile));
+          }
+
+          this.fields.push(field);
         } else {
-          field.type = fieldTypeDecorator || PrimitiveType.getPrimitiveType(member.type.getText(sourceFile));
+          Log.Instance.error({
+            code: 'type-not-exist',
+            message: `Type not defined in property ${this.name}.`,
+            path: this.path,
+            node: member,
+            sourceFile
+          });
         }
-
-        this.fields.push(field);
       }
     });
 
@@ -61,7 +82,7 @@ class Type {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.getText(sourceFile) === 'default') {
+        if (modifier.kind === ts.SyntaxKind.DefaultKeyword.valueOf()) {
           isDefault = true;
         }
       });

@@ -32,10 +32,20 @@ class Graph {
     this.isReturnRequired = true;
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
-      this.params = new GraphParam(method.parameters[0], sourceFile);
+      this.params = new GraphParam(method.parameters[0], this, sourceFile);
     }
 
     if (method.type) {
+      if (method.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+        Log.Instance.error({
+          code: 'return-type-any',
+          message: 'Return type can not any keyword',
+          path: this.path,
+          node: method,
+          sourceFile
+        });
+      }
+
       if (ts.isUnionTypeNode(method.type)) {
         method.type.types.forEach(returnType => {
           if (
@@ -88,7 +98,7 @@ class Graph {
 
     if (node.modifiers) {
       node.modifiers.forEach(modifier => {
-        if (modifier.getText(sourceFile) === 'default') {
+        if (modifier.kind === ts.SyntaxKind.DefaultKeyword.valueOf()) {
           isDefault = true;
         }
       });

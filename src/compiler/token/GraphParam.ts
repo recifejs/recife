@@ -1,12 +1,24 @@
 import * as ts from 'typescript';
+import Log from '../../log';
+import Graph from './Graph';
 
 class GraphParam {
   public name!: string;
   public type!: string;
   public isRequired!: boolean;
 
-  constructor(parameter: ts.ParameterDeclaration, sourceFile?: ts.SourceFile) {
+  constructor(parameter: ts.ParameterDeclaration, graph: Graph, sourceFile?: ts.SourceFile) {
     if (parameter.type) {
+      if (parameter.type.kind === ts.SyntaxKind.AnyKeyword.valueOf()) {
+        Log.Instance.error({
+          code: 'param-type-any',
+          message: 'Param type can not any keyword',
+          path: graph.path,
+          node: parameter,
+          sourceFile
+        });
+      }
+
       this.name = parameter.name.getText(sourceFile);
       this.isRequired = !parameter.questionToken;
 
@@ -18,12 +30,20 @@ class GraphParam {
           ) {
             this.isRequired = false;
           } else {
-            this.type = type!.getText(sourceFile);
+            this.type = type.getText(sourceFile);
           }
         });
       } else {
-        this.type = parameter.type!.getText(sourceFile);
+        this.type = parameter.type.getText(sourceFile);
       }
+    } else {
+      Log.Instance.error({
+        code: 'param-type-not-defined',
+        message: 'Not defined param type.',
+        path: graph.path,
+        node: parameter,
+        sourceFile
+      });
     }
   }
 

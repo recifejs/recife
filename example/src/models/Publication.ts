@@ -2,7 +2,7 @@ import { Type } from 'recife';
 
 @Type({ onlyHeritage: false })
 class Publication {
-  text?: String;
+  text?: any;
 }
 
 export default Publication;
