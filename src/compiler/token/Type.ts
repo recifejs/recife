@@ -84,8 +84,10 @@ class Type {
 
     if (this.heritageType) {
       this.heritageType.fields.forEach(field => {
-        const required = field.isRequired ? '!' : '';
-        type += `  ${field.name}: ${field.type}${required} \n`;
+        if (field.visible) {
+          const required = field.isRequired ? '!' : '';
+          type += `  ${field.name}: ${field.type}${required} \n`;
+        }
       });
     }
 
