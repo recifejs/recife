@@ -5,6 +5,7 @@ import Publication from './Publication';
 class CommentModel extends Publication {
   @Field('String')
   postId: String | undefined;
+  @Field({ visible: false })
   date?: Date;
   author?: AuthorModel;
 

@@ -1,5 +1,7 @@
-function Field(scalar: string): any {
-  return function(_target: any, _propertyKey: string, descriptor: PropertyDescriptor) {
+import FieldOptions from '../types/FieldOptions';
+
+function Field(options: string | FieldOptions): any {
+  return function(_target: any, _propertyKey: string, _descriptor: PropertyDescriptor) {
     //
   };
 }

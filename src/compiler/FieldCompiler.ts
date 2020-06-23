@@ -1,7 +1,5 @@
 import * as ts from 'typescript';
-import PrimitiveType from './PrimitiveType';
 import Field from './token/Field';
-import Log from '../log';
 
 class FieldCompiler {
   private sourceFile: ts.SourceFile | undefined;
@@ -63,46 +61,8 @@ class FieldCompiler {
   }
 
   private compileField(node: ts.Node) {
-    const field = new Field();
-
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
-      if (node.type) {
-        if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
-          Log.Instance.error({
-            code: 'property-type-any',
-            message: 'Property type can not any keyword',
-            path: this.path,
-            node,
-            sourceFile: this.sourceFile
-          });
-        }
-
-        field.name = node.name.getText(this.sourceFile);
-        field.isRequired = !node.questionToken;
-
-        if (ts.isUnionTypeNode(node.type)) {
-          node.type.types.forEach(type => {
-            if (type.kind === ts.SyntaxKind.UndefinedKeyword) {
-              field.isRequired = false;
-            } else {
-              field.type = PrimitiveType.getPrimitiveType(type.getText(this.sourceFile));
-            }
-          });
-        } else {
-          field.type = PrimitiveType.getPrimitiveType(node.type!.getText(this.sourceFile));
-        }
-      } else {
-        Log.Instance.error({
-          code: 'type-not-exist',
-          message: `Type not defined in property ${field.name}.`,
-          path: this.path,
-          node,
-          sourceFile: this.sourceFile
-        });
-      }
-    }
-
-    if (field.name && field.type) {
+      const field = new Field(node, this.path, this.sourceFile);
       this.fields.push(field);
     }
   }

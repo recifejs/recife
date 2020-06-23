@@ -5,11 +5,13 @@ module.exports = {
     {
       fields: [
         {
+          visible: true,
           name: 'name',
           isRequired: false,
           type: 'String'
         },
         {
+          visible: true,
           name: 'exist',
           isRequired: false,
           type: 'Boolean'

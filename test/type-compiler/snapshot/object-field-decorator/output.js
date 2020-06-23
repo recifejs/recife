@@ -11,7 +11,7 @@ module.exports = {
           type: 'Int'
         },
         {
-          visible: true,
+          visible: false,
           name: 'name',
           isRequired: false,
           type: 'String'

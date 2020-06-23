@@ -1,5 +1,5 @@
 import { Query } from '../../../../../src';
-import { FilterUser } from './UserInput';
+import { FilterUser, CreateUserInput } from './UserInput';
 import InputModel from '../models/InputModel';
 
 class InputController {
@@ -11,6 +11,11 @@ class InputController {
   @Query()
   allUsers(input?: FilterUser): InputModel[] {
     return [new InputModel()];
+  }
+
+  @Mutation()
+  createUser(input: CreateUserInput): InputModel {
+    return new InputModel();
   }
 }
 

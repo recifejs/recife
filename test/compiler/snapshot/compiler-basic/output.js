@@ -5,6 +5,7 @@ const { gql } = require('apollo-server-core');
 module.exports = {
   types: gql`
     type Query
+    type Mutation
     scalar Date
     scalar Url
 
@@ -19,12 +20,21 @@ module.exports = {
       type: String!
     }
 
+    input CreateUserInput {
+      name: String
+      type: String!
+    }
+
     extend type Query {
       getUser(input: FilterUser!): Input
     }
 
     extend type Query {
       allUsers(input: FilterUser): [Input]!
+    }
+
+    extend type Mutation {
+      createUser(input: CreateUserInput!): Input!
     }
   `
 };
