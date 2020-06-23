@@ -7,8 +7,7 @@ class FieldCompiler {
   private fields: Field[] = [];
   private path: string;
 
-  constructor(path: string, className: string) {
-    const program = ts.createProgram([path], { allowJs: true });
+  constructor(path: string, program: ts.Program, className: string) {
     this.sourceFile = program.getSourceFile(path);
     this.className = className;
     this.path = path;

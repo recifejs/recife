@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import Field from './Field';
 import ImportDeclaration from './ImportDeclaration';
 import FieldCompiler from '../FieldCompiler';
@@ -6,8 +7,8 @@ class Input {
   public name!: string;
   public fields!: Field[];
 
-  constructor(importDeclaration: ImportDeclaration, className: string) {
-    const fieldCompiler = new FieldCompiler(importDeclaration!.getPath(), className);
+  constructor(importDeclaration: ImportDeclaration, program: ts.Program, className: string) {
+    const fieldCompiler = new FieldCompiler(importDeclaration!.getPath(), program, className);
     fieldCompiler.compile();
 
     this.name = className;

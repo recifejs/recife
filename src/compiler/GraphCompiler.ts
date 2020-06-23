@@ -11,11 +11,13 @@ class GraphCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
   private pathControllers: string;
+  private program: ts.Program;
 
   constructor(path: string, program: ts.Program, pathControllers: string) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.pathControllers = pathControllers;
+    this.program = program;
   }
 
   getGraphs() {
@@ -95,7 +97,7 @@ class GraphCompiler {
       });
 
       if (importDeclaration) {
-        const input = new Input(importDeclaration, className);
+        const input = new Input(importDeclaration, this.program, className);
         this.inputs.set(className, input);
       }
     }
