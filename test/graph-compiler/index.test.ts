@@ -40,5 +40,17 @@ const translateGraphs = (graphs: any[]) => {
 };
 
 const translateInputs = (inputs: any[]) => {
-  return JSON.stringify(inputs);
+  return JSON.stringify(
+    inputs.map(input => {
+      input.fields = input.fields.map((field: any) => {
+        delete field.importDeclaration;
+        delete field.node;
+        delete field.sourceFile;
+        delete field.path;
+
+        return field;
+      });
+      return input;
+    })
+  );
 };
