@@ -23,12 +23,13 @@ class Resolvers {
 
   add(field: Field, type: Type) {
     const Model = this.getModel(type);
+    const nameType = type.options.name || type.name;
 
-    if (!this.resolversType[type.name]) {
-      this.resolversType[type.name] = {};
+    if (!this.resolversType[nameType]) {
+      this.resolversType[nameType] = {};
     }
 
-    this.resolversType[type.name] = {
+    this.resolversType[nameType] = {
       [field.name]: (...params: any[]) => {
         return Model[`get${this.capitalize(field.type)}`](...params);
       }

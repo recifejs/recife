@@ -5,6 +5,7 @@ import PrimitiveType from '../PrimitiveType';
 import SchemaOptions from '../../types/SchemaOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import Log from '../../log';
+import Type from './Type';
 
 class Graph {
   public name!: string;
@@ -16,6 +17,8 @@ class Graph {
   public nameController: string;
   public path: string;
   public options: SchemaOptions;
+  private node: ts.MethodDeclaration;
+  private sourceFile?: ts.SourceFile;
 
   constructor(
     method: ts.MethodDeclaration,
@@ -24,6 +27,8 @@ class Graph {
     isDefaultExternal: boolean,
     sourceFile?: ts.SourceFile
   ) {
+    this.node = method;
+    this.sourceFile = sourceFile;
     this.nameController = classDecl.name!.getText(sourceFile);
     this.path = path;
     this.options = {};
@@ -102,6 +107,30 @@ class Graph {
     }
 
     return isDefault;
+  }
+
+  verifyAndUpdateType(scalars: string[], types: Type[]) {
+    if (this.returnType) {
+      const isArray = PrimitiveType.isArray(this.returnType);
+      const singleReturnType = PrimitiveType.formatType(this.returnType);
+
+      if (!scalars.includes(singleReturnType)) {
+        const type = types.find(type => type.name === singleReturnType);
+        if (!type) {
+          Log.Instance.error({
+            code: 'type-unreferenced-method',
+            message: `Type unreferenced in method ${this.name}`,
+            path: this.path,
+            node: this.node,
+            sourceFile: this.sourceFile
+          });
+        } else {
+          if (type.options.name) {
+            this.returnType = isArray ? PrimitiveType.formatArray(type.options.name) : type.options.name;
+          }
+        }
+      }
+    }
   }
 
   toStringType(): string {
