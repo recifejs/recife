@@ -1,9 +1,7 @@
 import * as ts from 'typescript';
 import Field from './Field';
-import PrimitiveType from '../PrimitiveType';
 import TypeOptions from '../../types/TypeOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
-import Log from '../../log';
 import ImportDeclaration from './ImportDeclaration';
 
 class Type {

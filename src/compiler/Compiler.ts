@@ -122,7 +122,7 @@ class Compiler {
         }
       }
 
-      type.fields.forEach(field => field.verifyExistType(scalars, this.types));
+      type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
 
       return type;
     });
@@ -175,15 +175,7 @@ class Compiler {
 
   generateResolvers(): any {
     let resolvers = new Resolvers();
-    const listScalars: string[] = [
-      'Int',
-      'Float',
-      'String',
-      'Boolean',
-      'ID',
-      ...this.scalarIntern,
-      ...this.scalars.map(item => item.name)
-    ];
+    const listScalars = this.listScalars();
 
     this.types.forEach(type => {
       type.fields.forEach(field => {

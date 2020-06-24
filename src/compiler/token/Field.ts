@@ -92,11 +92,11 @@ class Field {
     }
   }
 
-  verifyExistType(scalars: string[], types: Type[]) {
+  verifyAndUpdateType(scalars: string[], types: Type[]) {
     if (this.visible && !scalars.includes(this.type)) {
-      const existType = types.some(type => type.name === this.type || type.options.name === this.type);
+      const type = types.find(type => type.name === this.type);
 
-      if (!existType) {
+      if (!type) {
         Log.Instance.error({
           code: 'type-unreferenced',
           message: `Type unreferenced in property ${this.name}`,
@@ -104,6 +104,10 @@ class Field {
           node: this.node,
           sourceFile: this.sourceFile
         });
+      } else {
+        if (type.options.name) {
+          this.type = type.options.name;
+        }
       }
     }
   }
