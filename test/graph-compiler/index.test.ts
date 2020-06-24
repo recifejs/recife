@@ -34,6 +34,9 @@ const translateGraphs = (graphs: any[]) => {
   return JSON.stringify(
     graphs.map(graph => {
       delete graph.path;
+      delete graph.node;
+      delete graph.sourceFile;
+
       return graph;
     })
   );
