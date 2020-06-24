@@ -20,9 +20,10 @@ class CommentModel extends Publication {
 @Type()
 export class AuthorModel {
   name!: String;
-  @Field({ visible: false })
   book?: BookModel;
 }
+
+@Type({ name: 'Journal' })
 export class BookModel {
   name!: String;
 }
