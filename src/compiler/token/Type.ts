@@ -4,6 +4,7 @@ import PrimitiveType from '../PrimitiveType';
 import TypeOptions from '../../types/TypeOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import Log from '../../log';
+import ImportDeclaration from './ImportDeclaration';
 
 class Type {
   public name: string;
@@ -15,7 +16,13 @@ class Type {
   public heritageType?: Type;
   public options: TypeOptions;
 
-  constructor(node: ts.ClassDeclaration, path: string, isDefaultExternal: boolean, sourceFile?: ts.SourceFile) {
+  constructor(
+    node: ts.ClassDeclaration,
+    path: string,
+    isDefaultExternal: boolean,
+    imports: ImportDeclaration[],
+    sourceFile?: ts.SourceFile
+  ) {
     this.fields = [];
     this.options = {};
     this.path = path;
@@ -26,7 +33,7 @@ class Type {
 
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
-        const field = new Field(member, this.path, sourceFile);
+        const field = new Field(member, this.path, imports, sourceFile);
         this.fields.push(field);
       }
     });

@@ -15,7 +15,8 @@ class Log {
     fgRed: '\x1b[31m',
     bgBlue: '\x1b[44m',
     bgRed: '\x1b[41m',
-    bgYellow: '\x1b[43m'
+    bgYellow: '\x1b[43m',
+    bgWhite: '\x1b[47m'
   };
 
   private constructor() {
@@ -53,7 +54,9 @@ class Log {
   }
 
   title(text: string) {
-    process.stdout.write(`\n${this.colors.bgBlue}⚬ ${text.toUpperCase()}${this.colors.reset}\n\n`);
+    process.stdout.write(
+      `\n${this.colors.bgWhite}${this.colors.fgBlue} ⚬ ${text.toUpperCase()} ⚬ ${this.colors.reset}\n\n`
+    );
   }
 
   info(text: string) {

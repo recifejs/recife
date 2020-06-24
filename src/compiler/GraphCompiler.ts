@@ -11,11 +11,13 @@ class GraphCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
   private pathControllers: string;
+  private program: ts.Program;
 
   constructor(path: string, program: ts.Program, pathControllers: string) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.pathControllers = pathControllers;
+    this.program = program;
   }
 
   getGraphs() {
@@ -37,7 +39,8 @@ class GraphCompiler {
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
-          this.compileImport(node);
+          const importDeclaration = new ImportDeclaration(node, this.pathControllers, this.sourceFile);
+          this.imports.push(importDeclaration);
         }
 
         if (ts.isClassDeclaration(node) && node.name) {
@@ -47,25 +50,6 @@ class GraphCompiler {
         }
       });
     }
-  }
-
-  private compileImport(node: ts.ImportDeclaration) {
-    const importDeclaration = new ImportDeclaration(this.pathControllers);
-    importDeclaration.path = node.moduleSpecifier.getText(this.sourceFile);
-
-    if (node.importClause) {
-      if (node.importClause.name) {
-        importDeclaration.names.push(node.importClause.name!.getText(this.sourceFile));
-      }
-
-      if (node.importClause.namedBindings) {
-        node.importClause.namedBindings.forEachChild((node: ts.Node) => {
-          importDeclaration.names.push(node.getText(this.sourceFile));
-        });
-      }
-    }
-
-    this.imports.push(importDeclaration);
   }
 
   private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean) {
@@ -95,7 +79,7 @@ class GraphCompiler {
       });
 
       if (importDeclaration) {
-        const input = new Input(importDeclaration, className);
+        const input = new Input(importDeclaration, this.program, className);
         this.inputs.set(className, input);
       }
     }

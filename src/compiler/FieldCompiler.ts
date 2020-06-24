@@ -7,8 +7,7 @@ class FieldCompiler {
   private fields: Field[] = [];
   private path: string;
 
-  constructor(path: string, className: string) {
-    const program = ts.createProgram([path], { allowJs: true });
+  constructor(path: string, program: ts.Program, className: string) {
     this.sourceFile = program.getSourceFile(path);
     this.className = className;
     this.path = path;
@@ -62,7 +61,7 @@ class FieldCompiler {
 
   private compileField(node: ts.Node) {
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
-      const field = new Field(node, this.path, this.sourceFile);
+      const field = new Field(node, this.path, [], this.sourceFile);
       this.fields.push(field);
     }
   }

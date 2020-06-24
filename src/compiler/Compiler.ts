@@ -16,6 +16,7 @@ import Scalar from './token/Scalar';
 
 import GraphTypeEnum from './enum/GraphTypeEnum';
 import Log from '../log';
+import Recife from '../Recife';
 
 class Compiler {
   private graphs: Graph[] = [];
@@ -48,8 +49,11 @@ class Compiler {
     promisesCreate.push(this.createScalar(paths[2], program));
     await Promise.all(promisesCreate);
 
+    this.expandType();
+
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
+      throw new Error('Error in compiled');
     }
   }
 
@@ -94,7 +98,7 @@ class Compiler {
       files.forEach(file => {
         promises.push(
           new Promise(resolve => {
-            const typeCompiler = new TypeCompiler(file, program);
+            const typeCompiler = new TypeCompiler(file, program, Recife.PATH_MODELS);
             typeCompiler.compile();
             this.types = this.types.concat(typeCompiler.getTypes());
 
@@ -105,6 +109,10 @@ class Compiler {
 
       await Promise.all(promises);
     }
+  }
+
+  private expandType() {
+    const scalars = this.listScalars();
 
     this.types = this.types.map(type => {
       if (type.heritageName) {
@@ -113,6 +121,9 @@ class Compiler {
           type.setHeritageType(heritageType);
         }
       }
+
+      type.fields.forEach(field => field.verifyExistType(scalars, this.types));
+
       return type;
     });
   }
@@ -158,6 +169,10 @@ class Compiler {
     return gql(typeString);
   }
 
+  listScalars(): string[] {
+    return ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern, ...this.scalars.map(item => item.name)];
+  }
+
   generateResolvers(): any {
     let resolvers = new Resolvers();
     const listScalars: string[] = [
@@ -172,7 +187,7 @@ class Compiler {
 
     this.types.forEach(type => {
       type.fields.forEach(field => {
-        if (!listScalars.includes(field.type)) {
+        if (field.visible && !listScalars.includes(field.type)) {
           resolvers.add(field, type);
         }
       });
