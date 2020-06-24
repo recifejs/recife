@@ -20,6 +20,11 @@ class CommentModel extends Publication {
 @Type()
 export class AuthorModel {
   name!: String;
+  @Field({ visible: false })
+  book?: BookModel;
+}
+export class BookModel {
+  name!: String;
 }
 
 export default CommentModel;

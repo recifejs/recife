@@ -1,15 +1,19 @@
 import * as ts from 'typescript';
 import Type from './token/Type';
+import ImportDeclaration from './token/ImportDeclaration';
 
 class TypeCompiler {
   private types: Type[];
+  private imports: ImportDeclaration[] = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
+  private pathModels: string;
 
-  constructor(path: string, program: ts.Program) {
+  constructor(path: string, program: ts.Program, pathModels: string) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.types = [];
+    this.pathModels = pathModels;
   }
 
   getTypes() {
@@ -26,11 +30,16 @@ class TypeCompiler {
       });
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
+        if (ts.isImportDeclaration(node)) {
+          const importDeclaration = new ImportDeclaration(node, this.pathModels, this.sourceFile);
+          this.imports.push(importDeclaration);
+        }
+
         if (ts.isClassDeclaration(node) && node.name) {
           const isExportDefaultExternal = node.name.getText(this.sourceFile) === classExportDefault;
 
           if (this.isType(node) && (isExportDefaultExternal || this.isExport(node))) {
-            this.types.push(new Type(node, this.path, isExportDefaultExternal, this.sourceFile));
+            this.types.push(new Type(node, this.path, isExportDefaultExternal, this.imports, this.sourceFile));
           }
         }
       });

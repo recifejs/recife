@@ -61,7 +61,7 @@ class FieldCompiler {
 
   private compileField(node: ts.Node) {
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
-      const field = new Field(node, this.path, this.sourceFile);
+      const field = new Field(node, this.path, [], this.sourceFile);
       this.fields.push(field);
     }
   }
