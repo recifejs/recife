@@ -4,7 +4,6 @@ interface IServer {
   beforeMounted(): void;
   mounted(): void;
   beforeUpdated(): void;
-  beforeUpdated(): void;
   updated(): void;
   catch(error: any): void;
 }
