@@ -22,8 +22,12 @@ class PrimitiveType {
     return type.replace(/\[|\]|\>|Array\<|Model/g, '');
   }
 
+  static formatArray(type: string): string {
+    return `[${type}]`;
+  }
+
   static isArray(type: string): boolean {
-    if (type.includes('[]')) {
+    if (type.includes('[') && type.includes(']')) {
       return true;
     }
     if (type.includes('Array<')) {

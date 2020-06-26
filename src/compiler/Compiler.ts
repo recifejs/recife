@@ -50,6 +50,7 @@ class Compiler {
     await Promise.all(promisesCreate);
 
     this.expandType();
+    this.expandGraph();
 
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
@@ -125,6 +126,15 @@ class Compiler {
       type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
 
       return type;
+    });
+  }
+
+  private expandGraph() {
+    const scalars = this.listScalars();
+
+    this.graphs = this.graphs.map(graph => {
+      graph.verifyAndUpdateType(scalars, this.types);
+      return graph;
     });
   }
 

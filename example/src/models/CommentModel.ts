@@ -1,7 +1,7 @@
 import { Type, Field } from 'recife';
 import Publication from './Publication';
 
-@Type()
+@Type({ name: 'Post' })
 class CommentModel extends Publication {
   @Field('String')
   postId: String | undefined;
@@ -17,7 +17,7 @@ class CommentModel extends Publication {
   }
 }
 
-@Type()
+@Type({ name: 'User' })
 export class AuthorModel {
   name!: String;
   book?: BookModel;
