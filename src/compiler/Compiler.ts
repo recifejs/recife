@@ -51,6 +51,7 @@ class Compiler {
 
     this.expandType();
     this.expandGraph();
+    this.expandInput();
 
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
@@ -138,6 +139,16 @@ class Compiler {
     });
   }
 
+  private expandInput() {
+    const scalars = this.listScalars();
+
+    this.inputs = this.inputs.map(type => {
+      type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
+
+      return type;
+    });
+  }
+
   async createScalar(files: string[], program: ts.Program) {
     if (fs.existsSync(this.pathScalars)) {
       let promises: Promise<any>[] = [];
@@ -195,9 +206,7 @@ class Compiler {
       });
     });
 
-    this.scalars.forEach(scalar => {
-      resolvers.addScalar(scalar);
-    });
+    this.scalars.forEach(scalar => resolvers.addScalar(scalar));
 
     this.graphs.forEach(graph => {
       if (graph.type === GraphTypeEnum.QUERY) {
