@@ -1,4 +1,6 @@
 import * as ts from 'typescript';
+import os from 'os';
+
 import Type from './token/Type';
 import ImportDeclaration from './token/ImportDeclaration';
 
@@ -47,7 +49,8 @@ class TypeCompiler {
   }
 
   private getFolder(): string {
-    return this.path.substring(0, this.path.lastIndexOf('/'));
+    const bar = os.platform() === 'win32' ? '/' : '\\';
+    return this.path.substring(0, this.path.lastIndexOf(bar));
   }
 
   private isType(node: ts.ClassDeclaration): boolean {

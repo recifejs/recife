@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import os from 'os';
 
 import Graph from './token/Graph';
 import Input from './token/Input';
@@ -53,7 +54,8 @@ class GraphCompiler {
   }
 
   private getFolder(): string {
-    return this.path.substring(0, this.path.lastIndexOf('/'));
+    const bar = os.platform() === 'win32' ? '/' : '\\';
+    return this.path.substring(0, this.path.lastIndexOf(bar));
   }
 
   private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean) {
