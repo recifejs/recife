@@ -54,7 +54,7 @@ class GraphCompiler {
   }
 
   private getFolder(): string {
-    const bar = os.platform() === 'win32' ? '/' : '\\';
+    const bar = os.platform() === 'win32' ? '\\' : '/';
     return this.path.substring(0, this.path.lastIndexOf(bar));
   }
 
