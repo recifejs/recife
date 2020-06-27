@@ -16,7 +16,7 @@ describe('TypeCompiler tests', () => {
       const program = ts.createProgram([file], { allowJs: true });
 
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const typeCompiler = new TypeCompiler(file, program, path.join(pathSnapshot, folder));
+      const typeCompiler = new TypeCompiler(file, program);
       typeCompiler.compile();
 
       assert.equal(translateTypes(typeCompiler.getTypes()), JSON.stringify(output.types));
