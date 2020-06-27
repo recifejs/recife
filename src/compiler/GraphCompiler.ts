@@ -10,13 +10,13 @@ class GraphCompiler {
   private imports: Array<ImportDeclaration> = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
-  private pathControllers: string;
+  private folder: string;
   private program: ts.Program;
 
-  constructor(path: string, program: ts.Program, pathControllers: string) {
+  constructor(path: string, program: ts.Program) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
-    this.pathControllers = pathControllers;
+    this.folder = this.getFolder();
     this.program = program;
   }
 
@@ -39,7 +39,7 @@ class GraphCompiler {
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
-          const importDeclaration = new ImportDeclaration(node, this.pathControllers, this.sourceFile);
+          const importDeclaration = new ImportDeclaration(node, this.folder, this.sourceFile);
           this.imports.push(importDeclaration);
         }
 
@@ -50,6 +50,10 @@ class GraphCompiler {
         }
       });
     }
+  }
+
+  private getFolder(): string {
+    return this.path.substring(0, this.path.lastIndexOf('/'));
   }
 
   private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean) {

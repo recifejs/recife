@@ -7,13 +7,13 @@ class TypeCompiler {
   private imports: ImportDeclaration[] = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
-  private pathModels: string;
+  private folder: string;
 
-  constructor(path: string, program: ts.Program, pathModels: string) {
+  constructor(path: string, program: ts.Program) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
     this.types = [];
-    this.pathModels = pathModels;
+    this.folder = this.getFolder();
   }
 
   getTypes() {
@@ -31,7 +31,7 @@ class TypeCompiler {
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
-          const importDeclaration = new ImportDeclaration(node, this.pathModels, this.sourceFile);
+          const importDeclaration = new ImportDeclaration(node, this.folder, this.sourceFile);
           this.imports.push(importDeclaration);
         }
 
@@ -44,6 +44,10 @@ class TypeCompiler {
         }
       });
     }
+  }
+
+  private getFolder(): string {
+    return this.path.substring(0, this.path.lastIndexOf('/'));
   }
 
   private isType(node: ts.ClassDeclaration): boolean {

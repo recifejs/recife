@@ -16,7 +16,7 @@ describe('GraphCompiler tests', () => {
       const program = ts.createProgram([file], { allowJs: true });
 
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const graphCompiler = new GraphCompiler(file, program, path.join(pathSnapshot, folder));
+      const graphCompiler = new GraphCompiler(file, program);
       graphCompiler.compile();
 
       if (output.graphs) {
