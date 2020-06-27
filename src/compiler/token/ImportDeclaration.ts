@@ -24,7 +24,7 @@ class ImportDeclaration {
   }
 
   getPath() {
-    const pathComplete = path.join(this.pathImport, this.path.replace(/\"|\'/g, ''));
+    const pathComplete = path.resolve(this.pathImport, this.path.replace(/\"|\'/g, ''));
 
     if (!pathComplete.includes('.ts')) {
       return pathComplete + '.ts';
