@@ -45,6 +45,8 @@ const translateGraphs = (graphs: any[]) => {
 const translateInputs = (inputs: any[]) => {
   return JSON.stringify(
     inputs.map(input => {
+      delete input.path;
+
       input.fields = input.fields.map((field: any) => {
         delete field.importDeclaration;
         delete field.node;
