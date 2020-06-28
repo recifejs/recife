@@ -50,6 +50,7 @@ class Compiler {
 
     this.expandType();
     this.expandGraph();
+    this.expandInput();
 
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
@@ -148,6 +149,20 @@ class Compiler {
     });
   }
 
+  private expandInput() {
+    const scalars = this.listScalars();
+
+    this.inputs = this.inputs.map(type => {
+      type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
+
+      return type;
+    });
+  }
+
+  private listScalars(): string[] {
+    return ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern, ...this.scalars.map(item => item.name)];
+  }
+
   generateType(): DocumentNode {
     let typeString = '';
 
@@ -170,10 +185,6 @@ class Compiler {
     return gql(typeString);
   }
 
-  listScalars(): string[] {
-    return ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern, ...this.scalars.map(item => item.name)];
-  }
-
   generateResolvers(): any {
     let resolvers = new Resolvers();
     const listScalars = this.listScalars();
@@ -186,9 +197,7 @@ class Compiler {
       });
     });
 
-    this.scalars.forEach(scalar => {
-      resolvers.addScalar(scalar);
-    });
+    this.scalars.forEach(scalar => resolvers.addScalar(scalar));
 
     this.graphs.forEach(graph => {
       if (graph.type === GraphTypeEnum.QUERY) {
