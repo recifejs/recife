@@ -25,8 +25,8 @@ class Server implements IServer {
     //
   }
 
-  catch() {
-    //
+  catch(e: any) {
+    console.log(e);
   }
 }
 

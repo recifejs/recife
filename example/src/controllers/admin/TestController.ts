@@ -1,7 +1,7 @@
 import { Query, Mutation } from 'recife';
 
-import { CommentCreate } from '../inputs/CommentInput';
-import CommentModel from '../models/CommentModel';
+import { CommentCreate } from '../../inputs/CommentInput';
+import CommentModel from '../../models/CommentModel';
 
 export default class TestController {
   commentDefault: CommentModel;
