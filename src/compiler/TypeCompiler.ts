@@ -3,6 +3,7 @@ import os from 'os';
 
 import Type from './token/Type';
 import ImportDeclaration from './token/ImportDeclaration';
+import { isExport, getNameExportDefault } from '../helpers/exportHelper';
 
 class TypeCompiler {
   private types: Type[];
@@ -24,12 +25,7 @@ class TypeCompiler {
 
   compile() {
     if (this.sourceFile) {
-      let classExportDefault = '';
-      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-        if (ts.isExportAssignment(node)) {
-          classExportDefault = node.expression.getText(this.sourceFile);
-        }
-      });
+      let classExportDefault = getNameExportDefault(this.sourceFile) || '';
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
@@ -40,7 +36,7 @@ class TypeCompiler {
         if (ts.isClassDeclaration(node) && node.name) {
           const isExportDefaultExternal = node.name.getText(this.sourceFile) === classExportDefault;
 
-          if (this.isType(node) && (isExportDefaultExternal || this.isExport(node))) {
+          if (this.isType(node) && (isExportDefaultExternal || isExport(node))) {
             this.types.push(new Type(node, this.path, isExportDefaultExternal, this.imports, this.sourceFile));
           }
         }
@@ -65,20 +61,6 @@ class TypeCompiler {
       });
     }
     return isType;
-  }
-
-  private isExport(node: ts.ClassDeclaration): boolean {
-    let isExport = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.getText(this.sourceFile) === 'export') {
-          isExport = true;
-        }
-      });
-    }
-
-    return isExport;
   }
 }
 

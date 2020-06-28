@@ -9,7 +9,7 @@ class Input {
   public path: string;
 
   constructor(importDeclaration: ImportDeclaration, program: ts.Program, className: string) {
-    const fieldCompiler = new FieldCompiler(importDeclaration.getPath(), program, className);
+    const fieldCompiler = new FieldCompiler(importDeclaration, program, className);
     fieldCompiler.compile();
 
     this.path = importDeclaration.getPath();

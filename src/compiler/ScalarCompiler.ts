@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 import Scalar from './token/Scalar';
+import { isExport } from '../helpers/exportHelper';
 
 class ScalarCompiler {
   private sourceFile: ts.SourceFile | undefined;
@@ -31,7 +32,7 @@ class ScalarCompiler {
             if (ts.isVariableDeclaration(declaration) && declaration.name) {
               const isExportDefaultExternal = declaration.name.getText(this.sourceFile) === classExportDefault;
 
-              if (this.isScalarType(declaration.type) && (isExportDefaultExternal || this.isExport(node))) {
+              if (this.isScalarType(declaration.type) && (isExportDefaultExternal || isExport(node))) {
                 this.scalars.push(new Scalar(declaration, node, this.path, isExportDefaultExternal, this.sourceFile));
               }
             }
@@ -51,20 +52,6 @@ class ScalarCompiler {
     }
 
     return false;
-  }
-
-  private isExport(node: ts.VariableStatement): boolean {
-    let isExport = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.getText(this.sourceFile) === 'export') {
-          isExport = true;
-        }
-      });
-    }
-
-    return isExport;
   }
 }
 

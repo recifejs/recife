@@ -1,8 +1,13 @@
 import * as ts from 'typescript';
 import path from 'path';
 
+type NameImportType = {
+  name: string;
+  exportDefault: boolean;
+};
+
 class ImportDeclaration {
-  public names: string[] = [];
+  public names: NameImportType[] = [];
   public path: string;
   public pathImport: string;
 
@@ -12,12 +17,18 @@ class ImportDeclaration {
 
     if (node.importClause) {
       if (node.importClause.name) {
-        this.names.push(node.importClause.name!.getText(sourceFile));
+        this.names.push({
+          name: node.importClause.name!.getText(sourceFile),
+          exportDefault: true
+        });
       }
 
       if (node.importClause.namedBindings) {
         node.importClause.namedBindings.forEachChild((node: ts.Node) => {
-          this.names.push(node.getText(sourceFile));
+          this.names.push({
+            name: node.getText(sourceFile),
+            exportDefault: false
+          });
         });
       }
     }

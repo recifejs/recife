@@ -4,6 +4,7 @@ import os from 'os';
 import Graph from './token/Graph';
 import Input from './token/Input';
 import ImportDeclaration from './token/ImportDeclaration';
+import { isExport, getNameExportDefault } from '../helpers/exportHelper';
 
 class GraphCompiler {
   private graphs: Graph[] = [];
@@ -31,12 +32,7 @@ class GraphCompiler {
 
   compile() {
     if (this.sourceFile) {
-      let classExportDefault = '';
-      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-        if (ts.isExportAssignment(node)) {
-          classExportDefault = node.expression.getText(this.sourceFile);
-        }
-      });
+      let classExportDefault = getNameExportDefault(this.sourceFile) || '';
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
@@ -45,7 +41,7 @@ class GraphCompiler {
         }
 
         if (ts.isClassDeclaration(node) && node.name) {
-          if (node.name.getText(this.sourceFile) === classExportDefault || this.isExport(node)) {
+          if (node.name.getText(this.sourceFile) === classExportDefault || isExport(node)) {
             this.compileGraphs(node, node.name.getText(this.sourceFile) === classExportDefault);
           }
         }
@@ -79,7 +75,7 @@ class GraphCompiler {
       let importDeclaration: ImportDeclaration | undefined = undefined;
 
       this.imports.forEach((importDecl: ImportDeclaration) => {
-        if (importDecl.names.some(item => item === className)) {
+        if (importDecl.names.some(item => item.name === className)) {
           importDeclaration = importDecl;
         }
       });
@@ -89,20 +85,6 @@ class GraphCompiler {
         this.inputs.set(className, input);
       }
     }
-  }
-
-  private isExport(node: ts.ClassDeclaration): boolean {
-    let isExport = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
-          isExport = true;
-        }
-      });
-    }
-
-    return isExport;
   }
 }
 

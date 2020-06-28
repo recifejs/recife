@@ -3,6 +3,7 @@ import Field from './Field';
 import TypeOptions from '../../types/TypeOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import ImportDeclaration from './ImportDeclaration';
+import { isExportDefault } from '../../helpers/exportHelper';
 
 class Type {
   public name: string;
@@ -27,7 +28,7 @@ class Type {
     this.name = node.name!.getText(sourceFile).replace('Model', '');
     this.nameModel = node.name!.getText(sourceFile);
 
-    this.isExportDefaultModel = isDefaultExternal || this.isDefault(node, sourceFile);
+    this.isExportDefaultModel = isDefaultExternal || isExportDefault(node);
 
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
@@ -43,20 +44,6 @@ class Type {
     }
 
     this.getOptions(node, sourceFile);
-  }
-
-  private isDefault(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile): boolean {
-    let isDefault = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
-          isDefault = true;
-        }
-      });
-    }
-
-    return isDefault;
   }
 
   private getOptions(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile) {

@@ -13,3 +13,10 @@ export class CommentUpdate {
   text!: String;
   commentId?: String;
 }
+
+type CommentFilter = {
+  postId: string;
+  commentId?: String;
+};
+
+export default CommentFilter;

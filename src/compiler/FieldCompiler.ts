@@ -1,16 +1,22 @@
 import * as ts from 'typescript';
 import Field from './token/Field';
+import ImportDeclaration from './token/ImportDeclaration';
+import { findNodeExportDefault } from '../helpers/exportHelper';
 
 class FieldCompiler {
   private sourceFile: ts.SourceFile | undefined;
   private className: string;
+  private exportDefault: boolean;
   private fields: Field[] = [];
   private path: string;
 
-  constructor(path: string, program: ts.Program, className: string) {
-    this.sourceFile = program.getSourceFile(path);
+  constructor(importDeclaration: ImportDeclaration, program: ts.Program, className: string) {
+    const nameImport = importDeclaration.names.find(item => item.name === className);
+
+    this.exportDefault = nameImport!.exportDefault;
+    this.sourceFile = program.getSourceFile(importDeclaration.getPath());
     this.className = className;
-    this.path = path;
+    this.path = importDeclaration.getPath();
   }
 
   getFields() {
@@ -19,21 +25,30 @@ class FieldCompiler {
 
   compile() {
     if (this.sourceFile) {
-      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-        if (ts.isTypeAliasDeclaration(node)) {
-          if (node.name.getText(this.sourceFile) === this.className) {
-            this.compileTypeLiteral(node);
-          }
-        } else if (ts.isClassDeclaration(node)) {
-          if (node.name!.getText(this.sourceFile) === this.className) {
-            this.compileClass(node);
-          }
-        } else if (ts.isInterfaceDeclaration(node)) {
-          if (node.name!.getText(this.sourceFile) === this.className) {
-            this.compileInterface(node);
-          }
-        }
-      });
+      if (this.exportDefault) {
+        const node = findNodeExportDefault(this.sourceFile);
+        this.compileType(node!);
+      } else {
+        ts.forEachChild(this.sourceFile, (node: ts.Node) => {
+          this.compileType(node);
+        });
+      }
+    }
+  }
+
+  private compileType(node: ts.Node) {
+    if (ts.isTypeAliasDeclaration(node)) {
+      if (this.exportDefault || node.name.getText(this.sourceFile) === this.className) {
+        this.compileTypeLiteral(node);
+      }
+    } else if (ts.isClassDeclaration(node)) {
+      if (this.exportDefault || node.name!.getText(this.sourceFile) === this.className) {
+        this.compileClass(node);
+      }
+    } else if (ts.isInterfaceDeclaration(node)) {
+      if (this.exportDefault || node.name.getText(this.sourceFile) === this.className) {
+        this.compileInterface(node);
+      }
     }
   }
 
