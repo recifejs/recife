@@ -1,6 +1,6 @@
 {
   "name": "recife",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "MVC Framework for GraphQL",
   "license": "MIT",
   "main": "dist/src/index.js",
