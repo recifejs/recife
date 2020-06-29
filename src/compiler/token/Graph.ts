@@ -103,6 +103,7 @@ class Graph {
 
       if (!scalars.includes(singleReturnType)) {
         const type = types.find(type => type.name === singleReturnType);
+
         if (!type) {
           Log.Instance.error({
             code: 'type-unreferenced-method',

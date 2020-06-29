@@ -12,14 +12,15 @@ describe('ScalarCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
+      ScalarCompiler.Instance.clean();
+
       const file = path.join(pathSnapshot, folder, 'input.ts');
-      const program = ts.createProgram([file], { allowJs: true });
-
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const scalarCompiler = new ScalarCompiler(file, program);
-      scalarCompiler.compile();
 
-      assert.equal(translateScalars(scalarCompiler.getScalars()), JSON.stringify(output.scalars));
+      const program = ts.createProgram([file], { allowJs: true });
+      ScalarCompiler.Instance.compile(file, program);
+
+      assert.equal(translateScalars(ScalarCompiler.Instance.getScalars()), JSON.stringify(output.scalars));
     });
   });
 });

@@ -15,7 +15,6 @@ import Log from '../log';
 import InputCompiler from './InputCompiler';
 
 class Compiler {
-  private scalarIntern: string[] = ['Date'];
   private pathControllers: string;
   private pathModels: string;
   private pathScalars: string;
@@ -56,7 +55,6 @@ class Compiler {
     InputCompiler.Instance.clean();
     TypeCompiler.Instance.clean();
     ScalarCompiler.Instance.clean();
-    this.scalarIntern = ['Date'];
   }
 
   async createGraphs(files: string[], program: ts.Program) {
@@ -108,10 +106,6 @@ class Compiler {
 
   generateType(): DocumentNode {
     let typeString = '';
-
-    this.scalarIntern.forEach(scalar => {
-      typeString += `scalar ${scalar}\n`;
-    });
 
     typeString += ScalarCompiler.Instance.toStringType();
     typeString += TypeCompiler.Instance.toStringType();

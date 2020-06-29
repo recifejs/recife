@@ -33,7 +33,6 @@ class TypeCompiler {
   compile(path: string, program: ts.Program) {
     this.sourceFile = program.getSourceFile(path);
     this.path = path;
-    this.types = [];
 
     if (this.sourceFile) {
       let classExportDefault = getNameExportDefault(this.sourceFile) || '';

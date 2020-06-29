@@ -5,6 +5,7 @@ import { assert } from 'chai';
 import 'mocha';
 
 import GraphCompiler from '../../src/compiler/GraphCompiler';
+import InputCompiler from '../../src/compiler/InputCompiler';
 
 describe('GraphCompiler tests', () => {
   const pathSnapshot = path.join(__dirname, 'snapshot');
@@ -12,19 +13,21 @@ describe('GraphCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
-      const file = path.join(pathSnapshot, folder, 'input.ts');
-      const program = ts.createProgram([file], { allowJs: true });
+      GraphCompiler.Instance.clean();
+      InputCompiler.Instance.clean();
 
+      const file = path.join(pathSnapshot, folder, 'input.ts');
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const graphCompiler = new GraphCompiler(file, program);
-      graphCompiler.compile();
+
+      const program = ts.createProgram([file], { allowJs: true });
+      GraphCompiler.Instance.compile(file, program);
 
       if (output.graphs) {
-        assert.equal(translateGraphs(graphCompiler.getGraphs()), JSON.stringify(output.graphs));
+        assert.equal(translateGraphs(GraphCompiler.Instance.getGraphs()), JSON.stringify(output.graphs));
       }
 
       if (output.inputs) {
-        assert.equal(translateInputs(graphCompiler.getInputs()), JSON.stringify(output.inputs));
+        assert.equal(translateInputs(InputCompiler.Instance.getInputs()), JSON.stringify(output.inputs));
       }
     });
   });
@@ -46,6 +49,7 @@ const translateInputs = (inputs: any[]) => {
   return JSON.stringify(
     inputs.map(input => {
       delete input.path;
+      delete input.sourceFile;
 
       input.fields = input.fields.map((field: any) => {
         delete field.importDeclaration;

@@ -34,7 +34,7 @@ class InputCompiler {
   }
 
   private existInput(importDeclaration: ImportDeclaration, className: String): boolean {
-    return this.inputs.some(item => item.name === className && item.path === importDeclaration.path);
+    return this.inputs.some(item => item.name === className && item.path === importDeclaration.getPath());
   }
 
   expand() {

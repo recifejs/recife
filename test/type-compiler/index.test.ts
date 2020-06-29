@@ -12,14 +12,15 @@ describe('TypeCompiler tests', () => {
 
   folders.forEach(folder => {
     it(`test ${folder}`, () => {
+      TypeCompiler.Instance.clean();
+
       const file = path.join(pathSnapshot, folder, 'input.ts');
-      const program = ts.createProgram([file], { allowJs: true });
-
       const output = require(path.join(pathSnapshot, folder, 'output.js'));
-      const typeCompiler = new TypeCompiler(file, program);
-      typeCompiler.compile();
 
-      assert.equal(translateTypes(typeCompiler.getTypes()), JSON.stringify(output.types));
+      const program = ts.createProgram([file], { allowJs: true });
+      TypeCompiler.Instance.compile(file, program);
+
+      assert.equal(translateTypes(TypeCompiler.Instance.getTypes()), JSON.stringify(output.types));
     });
   });
 });

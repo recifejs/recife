@@ -6,13 +6,14 @@ class ScalarCompiler {
   private static _instance: ScalarCompiler;
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
+  private scalarIntern: string[] = ['Date'];
   private scalars: Scalar[];
   private scalarsName: string[];
 
   constructor() {
     this.scalars = [];
     this.path = '';
-    this.scalarsName = ['Int', 'Float', 'String', 'Boolean', 'ID', 'Date'];
+    this.scalarsName = ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern];
   }
 
   public static get Instance() {
@@ -74,7 +75,8 @@ class ScalarCompiler {
   }
 
   toStringType(): string {
-    return this.scalars.reduce((acc, scalar) => acc + scalar.toStringType(), '');
+    const scalarIntern = this.scalarIntern.reduce((acc, scalar) => acc + `scalar ${scalar}\n`, '');
+    return scalarIntern + this.scalars.reduce((acc, scalar) => acc + scalar.toStringType(), '');
   }
 }
 

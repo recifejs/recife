@@ -15,6 +15,7 @@ module.exports = {
   ],
   inputs: [
     {
+      exportDefault: false,
       name: 'FilterUser',
       fields: [{ visible: true, name: 'name', isRequired: false, type: 'String' }]
     }
