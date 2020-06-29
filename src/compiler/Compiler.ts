@@ -75,7 +75,13 @@ class Compiler {
           const graphCompiler = new GraphCompiler(file, program);
           graphCompiler.compile();
           this.graphs = this.graphs.concat(graphCompiler.getGraphs());
-          this.inputs = this.inputs.concat(graphCompiler.getInputs());
+
+          graphCompiler.getInputs().map(input => {
+            const inputSearch = this.inputs.find(item => item.name === input.name && item.path === input.path);
+            if (!inputSearch) {
+              this.inputs.push(input);
+            }
+          });
 
           resolve();
         })

@@ -4,13 +4,15 @@ import ImportDeclaration from './ImportDeclaration';
 import FieldCompiler from '../FieldCompiler';
 
 class Input {
-  public name!: string;
-  public fields!: Field[];
+  public name: string;
+  public fields: Field[];
+  public path: string;
 
   constructor(importDeclaration: ImportDeclaration, program: ts.Program, className: string) {
-    const fieldCompiler = new FieldCompiler(importDeclaration!.getPath(), program, className);
+    const fieldCompiler = new FieldCompiler(importDeclaration.getPath(), program, className);
     fieldCompiler.compile();
 
+    this.path = importDeclaration.getPath();
     this.name = className;
     this.fields = fieldCompiler.getFields();
   }
