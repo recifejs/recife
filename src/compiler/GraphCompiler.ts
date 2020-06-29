@@ -1,42 +1,48 @@
 import * as ts from 'typescript';
 import os from 'os';
 
+import ScalarCompiler from './ScalarCompiler';
+import TypeCompiler from './TypeCompiler';
 import Graph from './token/Graph';
-import Input from './token/Input';
+import InputCompiler from './InputCompiler';
 import ImportDeclaration from './token/ImportDeclaration';
 import { isExport, getNameExportDefault } from '../helpers/exportHelper';
 
 class GraphCompiler {
+  private static _instance: GraphCompiler;
   private graphs: Graph[] = [];
-  private inputs: Map<string, Input> = new Map();
   private imports: Array<ImportDeclaration> = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
-  private folder: string;
-  private program: ts.Program;
+  private program?: ts.Program;
 
-  constructor(path: string, program: ts.Program) {
-    this.sourceFile = program.getSourceFile(path);
-    this.path = path;
-    this.folder = this.getFolder();
-    this.program = program;
+  private constructor() {
+    this.path = '';
+  }
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
   }
 
   getGraphs() {
     return this.graphs;
   }
 
-  getInputs() {
-    return Array.from(this.inputs.values());
+  clean() {
+    this.graphs = [];
   }
 
-  compile() {
+  compile(path: string, program: ts.Program) {
+    this.sourceFile = program.getSourceFile(path);
+    this.path = path;
+    this.program = program;
+
     if (this.sourceFile) {
       let classExportDefault = getNameExportDefault(this.sourceFile) || '';
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
-          const importDeclaration = new ImportDeclaration(node, this.folder, this.sourceFile);
+          const importDeclaration = new ImportDeclaration(node, this.getFolder(), this.sourceFile);
           this.imports.push(importDeclaration);
         }
 
@@ -71,20 +77,27 @@ class GraphCompiler {
   }
 
   private createInput(className: string) {
-    if (!this.inputs.has(className)) {
-      let importDeclaration: ImportDeclaration | undefined = undefined;
+    let importDeclaration: ImportDeclaration | undefined = undefined;
 
-      this.imports.forEach((importDecl: ImportDeclaration) => {
-        if (importDecl.names.some(item => item.name === className)) {
-          importDeclaration = importDecl;
-        }
-      });
-
-      if (importDeclaration) {
-        const input = new Input(importDeclaration, this.program, className);
-        this.inputs.set(className, input);
+    this.imports.forEach((importDecl: ImportDeclaration) => {
+      if (importDecl.names.some(item => item.name === className)) {
+        importDeclaration = importDecl;
       }
+    });
+
+    if (importDeclaration) {
+      InputCompiler.Instance.compile(importDeclaration, this.program!, className);
     }
+  }
+
+  expand() {
+    for (let i = 0; i < this.graphs.length; i++) {
+      this.graphs[i].verifyAndUpdateType(ScalarCompiler.Instance.getNameScalars(), TypeCompiler.Instance.getTypes());
+    }
+  }
+
+  toStringType(): string {
+    return this.graphs.reduce((acc, graph) => acc + graph.toStringType(), '');
   }
 }
 

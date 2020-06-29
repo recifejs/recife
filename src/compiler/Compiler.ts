@@ -8,21 +8,14 @@ import GraphCompiler from './GraphCompiler';
 import TypeCompiler from './TypeCompiler';
 import ScalarCompiler from './ScalarCompiler';
 
-import Graph from './token/Graph';
 import Resolvers from './Resolvers';
-import Type from './token/Type';
-import Input from './token/Input';
-import Scalar from './token/Scalar';
 
 import GraphTypeEnum from './enum/GraphTypeEnum';
 import Log from '../log';
+import InputCompiler from './InputCompiler';
 
 class Compiler {
-  private graphs: Graph[] = [];
-  private types: Type[] = [];
-  private inputs: Input[] = [];
   private scalarIntern: string[] = ['Date'];
-  private scalars: Scalar[] = [];
   private pathControllers: string;
   private pathModels: string;
   private pathScalars: string;
@@ -48,9 +41,9 @@ class Compiler {
     promisesCreate.push(this.createScalar(paths[2], program));
     await Promise.all(promisesCreate);
 
-    this.expandType();
-    this.expandGraph();
-    this.expandInput();
+    GraphCompiler.Instance.expand();
+    InputCompiler.Instance.expand();
+    TypeCompiler.Instance.expand();
 
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
@@ -59,11 +52,11 @@ class Compiler {
   }
 
   clean() {
-    this.graphs = [];
-    this.types = [];
-    this.inputs = [];
+    GraphCompiler.Instance.clean();
+    InputCompiler.Instance.clean();
+    TypeCompiler.Instance.clean();
+    ScalarCompiler.Instance.clean();
     this.scalarIntern = ['Date'];
-    this.scalars = [];
   }
 
   async createGraphs(files: string[], program: ts.Program) {
@@ -72,17 +65,7 @@ class Compiler {
     files.forEach(file => {
       promises.push(
         new Promise(resolve => {
-          const graphCompiler = new GraphCompiler(file, program);
-          graphCompiler.compile();
-          this.graphs = this.graphs.concat(graphCompiler.getGraphs());
-
-          graphCompiler.getInputs().map(input => {
-            const inputSearch = this.inputs.find(item => item.name === input.name && item.path === input.path);
-            if (!inputSearch) {
-              this.inputs.push(input);
-            }
-          });
-
+          GraphCompiler.Instance.compile(file, program);
           resolve();
         })
       );
@@ -97,10 +80,7 @@ class Compiler {
       files.forEach(file => {
         promises.push(
           new Promise(resolve => {
-            const typeCompiler = new TypeCompiler(file, program);
-            typeCompiler.compile();
-            this.types = this.types.concat(typeCompiler.getTypes());
-
+            TypeCompiler.Instance.compile(file, program);
             resolve();
           })
         );
@@ -116,10 +96,7 @@ class Compiler {
       files.forEach(file => {
         promises.push(
           new Promise(resolve => {
-            const scalarCompiler = new ScalarCompiler(file, program);
-            scalarCompiler.compile();
-            this.scalars = this.scalars.concat(scalarCompiler.getScalars());
-
+            ScalarCompiler.Instance.compile(file, program);
             resolve();
           })
         );
@@ -129,46 +106,6 @@ class Compiler {
     }
   }
 
-  private expandType() {
-    const scalars = this.listScalars();
-
-    this.types = this.types.map(type => {
-      if (type.heritageName) {
-        const heritageType = this.types.find(item => item.name === type.heritageName);
-        if (heritageType) {
-          type.setHeritageType(heritageType);
-        }
-      }
-
-      type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
-
-      return type;
-    });
-  }
-
-  private expandGraph() {
-    const scalars = this.listScalars();
-
-    this.graphs = this.graphs.map(graph => {
-      graph.verifyAndUpdateType(scalars, this.types);
-      return graph;
-    });
-  }
-
-  private expandInput() {
-    const scalars = this.listScalars();
-
-    this.inputs = this.inputs.map(type => {
-      type.fields.forEach(field => field.verifyAndUpdateType(scalars, this.types));
-
-      return type;
-    });
-  }
-
-  private listScalars(): string[] {
-    return ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern, ...this.scalars.map(item => item.name)];
-  }
-
   generateType(): DocumentNode {
     let typeString = '';
 
@@ -176,13 +113,10 @@ class Compiler {
       typeString += `scalar ${scalar}\n`;
     });
 
-    this.scalars.forEach(scalar => (typeString += scalar.toStringType()));
-    this.types.forEach(type => (typeString += type.toStringType()));
-    this.inputs.forEach(input => (typeString += input.toStringType()));
-
-    this.graphs.forEach(graph => {
-      typeString += graph.toStringType();
-    });
+    typeString += ScalarCompiler.Instance.toStringType();
+    typeString += TypeCompiler.Instance.toStringType();
+    typeString += InputCompiler.Instance.toStringType();
+    typeString += GraphCompiler.Instance.toStringType();
 
     typeString = typeString.includes('type Subscription') ? `type Subscription\n${typeString}` : typeString;
     typeString = typeString.includes('type Mutation') ? `type Mutation\n${typeString}` : typeString;
@@ -193,19 +127,19 @@ class Compiler {
 
   generateResolvers(): any {
     let resolvers = new Resolvers();
-    const listScalars = this.listScalars();
+    const listNameScalars = ScalarCompiler.Instance.getNameScalars();
 
-    this.types.forEach(type => {
+    TypeCompiler.Instance.getTypes().forEach(type => {
       type.fields.forEach(field => {
-        if (field.visible && !listScalars.includes(field.type)) {
+        if (field.visible && !listNameScalars.includes(field.type)) {
           resolvers.add(field, type);
         }
       });
     });
 
-    this.scalars.forEach(scalar => resolvers.addScalar(scalar));
+    ScalarCompiler.Instance.getScalars().forEach(scalar => resolvers.addScalar(scalar));
 
-    this.graphs.forEach(graph => {
+    GraphCompiler.Instance.getGraphs().forEach(graph => {
       if (graph.type === GraphTypeEnum.QUERY) {
         resolvers.addQuery(graph);
       } else if (graph.type === GraphTypeEnum.MUTATION) {
