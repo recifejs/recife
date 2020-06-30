@@ -1,22 +1,41 @@
 import * as ts from 'typescript';
 import Scalar from './token/Scalar';
+import { isExport } from '../helpers/exportHelper';
 
 class ScalarCompiler {
+  private static _instance: ScalarCompiler;
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
+  private scalarIntern: string[] = ['Date'];
   private scalars: Scalar[];
+  private scalarsName: string[];
 
-  constructor(path: string, program: ts.Program) {
-    this.sourceFile = program.getSourceFile(path);
-    this.path = path;
+  constructor() {
     this.scalars = [];
+    this.path = '';
+    this.scalarsName = ['Int', 'Float', 'String', 'Boolean', 'ID', ...this.scalarIntern];
+  }
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
   }
 
   getScalars() {
     return this.scalars;
   }
 
-  compile() {
+  getNameScalars() {
+    return this.scalarsName;
+  }
+
+  clean() {
+    this.scalars = [];
+  }
+
+  compile(path: string, program: ts.Program) {
+    this.sourceFile = program.getSourceFile(path);
+    this.path = path;
+
     if (this.sourceFile) {
       let classExportDefault = '';
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
@@ -31,8 +50,10 @@ class ScalarCompiler {
             if (ts.isVariableDeclaration(declaration) && declaration.name) {
               const isExportDefaultExternal = declaration.name.getText(this.sourceFile) === classExportDefault;
 
-              if (this.isScalarType(declaration.type) && (isExportDefaultExternal || this.isExport(node))) {
-                this.scalars.push(new Scalar(declaration, node, this.path, isExportDefaultExternal, this.sourceFile));
+              if (this.isScalarType(declaration.type) && (isExportDefaultExternal || isExport(node))) {
+                const scalar = new Scalar(declaration, node, this.path, isExportDefaultExternal, this.sourceFile);
+                this.scalarsName.push(scalar.name);
+                this.scalars.push(scalar);
               }
             }
           });
@@ -53,18 +74,9 @@ class ScalarCompiler {
     return false;
   }
 
-  private isExport(node: ts.VariableStatement): boolean {
-    let isExport = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.getText(this.sourceFile) === 'export') {
-          isExport = true;
-        }
-      });
-    }
-
-    return isExport;
+  toStringType(): string {
+    const scalarIntern = this.scalarIntern.reduce((acc, scalar) => acc + `scalar ${scalar}\n`, '');
+    return scalarIntern + this.scalars.reduce((acc, scalar) => acc + scalar.toStringType(), '');
   }
 }
 

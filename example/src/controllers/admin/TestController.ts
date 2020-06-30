@@ -1,6 +1,6 @@
 import { Query, Mutation } from 'recife';
 
-import { CommentCreate, CommentDelete } from '../../inputs/CommentInput';
+import CommentAFilter, { CommentCreate, CommentDelete } from '../../inputs/CommentInput';
 import CommentModel from '../../models/CommentModel';
 
 export default class TestController {
@@ -12,7 +12,7 @@ export default class TestController {
   }
 
   @Query()
-  getComment(_: any, { context }: any): CommentModel {
+  getComment(filter: CommentAFilter, { context }: any): CommentModel {
     const comment = new CommentModel();
     comment.text = 'teste';
     comment.postId = 'ABCDE';

@@ -37,7 +37,7 @@ class Field {
       }
 
       this.name = node.name.getText(sourceFile);
-      this.importDeclaration = imports.find(importDecl => importDecl.names.includes(this.name));
+      this.importDeclaration = imports.find(importDecl => importDecl.names.some(item => item.name === this.name));
       this.isRequired = !node.questionToken;
 
       if (ts.isUnionTypeNode(node.type)) {

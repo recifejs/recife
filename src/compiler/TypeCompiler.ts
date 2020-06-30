@@ -1,46 +1,52 @@
 import * as ts from 'typescript';
 import os from 'os';
 
+import ScalarCompiler from './ScalarCompiler';
 import Type from './token/Type';
 import ImportDeclaration from './token/ImportDeclaration';
+import { isExport, getNameExportDefault } from '../helpers/exportHelper';
 
 class TypeCompiler {
+  private static _instance: TypeCompiler;
   private types: Type[];
   private imports: ImportDeclaration[] = [];
   private sourceFile: ts.SourceFile | undefined;
   private path: string;
-  private folder: string;
 
-  constructor(path: string, program: ts.Program) {
-    this.sourceFile = program.getSourceFile(path);
-    this.path = path;
+  constructor() {
     this.types = [];
-    this.folder = this.getFolder();
+    this.path = '';
+  }
+
+  public static get Instance() {
+    return this._instance || (this._instance = new this());
   }
 
   getTypes() {
     return this.types;
   }
 
-  compile() {
+  clean() {
+    this.types = [];
+  }
+
+  compile(path: string, program: ts.Program) {
+    this.sourceFile = program.getSourceFile(path);
+    this.path = path;
+
     if (this.sourceFile) {
-      let classExportDefault = '';
-      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-        if (ts.isExportAssignment(node)) {
-          classExportDefault = node.expression.getText(this.sourceFile);
-        }
-      });
+      let classExportDefault = getNameExportDefault(this.sourceFile) || '';
 
       ts.forEachChild(this.sourceFile, (node: ts.Node) => {
         if (ts.isImportDeclaration(node)) {
-          const importDeclaration = new ImportDeclaration(node, this.folder, this.sourceFile);
+          const importDeclaration = new ImportDeclaration(node, this.getFolder(), this.sourceFile);
           this.imports.push(importDeclaration);
         }
 
         if (ts.isClassDeclaration(node) && node.name) {
           const isExportDefaultExternal = node.name.getText(this.sourceFile) === classExportDefault;
 
-          if (this.isType(node) && (isExportDefaultExternal || this.isExport(node))) {
+          if (this.isType(node) && (isExportDefaultExternal || isExport(node))) {
             this.types.push(new Type(node, this.path, isExportDefaultExternal, this.imports, this.sourceFile));
           }
         }
@@ -67,18 +73,23 @@ class TypeCompiler {
     return isType;
   }
 
-  private isExport(node: ts.ClassDeclaration): boolean {
-    let isExport = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.getText(this.sourceFile) === 'export') {
-          isExport = true;
+  expand() {
+    this.types = this.types.map(type => {
+      if (type.heritageName) {
+        const heritageType = this.types.find(item => item.name === type.heritageName);
+        if (heritageType) {
+          type.setHeritageType(heritageType);
         }
-      });
-    }
+      }
 
-    return isExport;
+      type.fields.forEach(field => field.verifyAndUpdateType(ScalarCompiler.Instance.getNameScalars(), this.types));
+
+      return type;
+    });
+  }
+
+  toStringType(): string {
+    return this.types.reduce((acc, type) => acc + type.toStringType(), '');
   }
 }
 

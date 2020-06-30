@@ -8,16 +8,16 @@ module.exports = {
       name: 'getUser',
       isExportDefaultController: true,
       isReturnRequired: true,
-      params: { name: 'input', isRequired: false, type: 'FilterUser' },
+      params: { name: 'input', isRequired: true, type: 'FilterUser' },
       returnType: 'String',
       type: 'Query'
     }
   ],
   inputs: [
     {
-      exportDefault: false,
+      exportDefault: true,
       name: 'FilterUser',
-      fields: [{ visible: true, name: 'name', isRequired: false, type: 'String' }]
+      fields: [{ visible: true, name: 'name', isRequired: true, type: 'String' }]
     }
   ]
 };

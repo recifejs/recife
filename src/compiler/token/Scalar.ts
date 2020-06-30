@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import { isExportDefault } from '../../helpers/exportHelper';
 
 class Scalar {
   public name!: string;
@@ -13,22 +14,8 @@ class Scalar {
     sourceFile?: ts.SourceFile
   ) {
     this.name = node.name.getText(sourceFile);
-    this.isExportDefault = isDefaultExternal || this.isDefault(nodeStatement, sourceFile);
+    this.isExportDefault = isDefaultExternal || isExportDefault(nodeStatement);
     this.path = path;
-  }
-
-  private isDefault(node: ts.VariableStatement, sourceFile?: ts.SourceFile): boolean {
-    let isDefault = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
-          isDefault = true;
-        }
-      });
-    }
-
-    return isDefault;
   }
 
   getNameScalar(): string {

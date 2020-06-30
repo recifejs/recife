@@ -6,6 +6,7 @@ import SchemaOptions from '../../types/SchemaOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import Log from '../../log';
 import Type from './Type';
+import { isExportDefault } from '../../helpers/exportHelper';
 
 class Graph {
   public name!: string;
@@ -33,7 +34,7 @@ class Graph {
     this.path = path;
     this.options = {};
     this.name = method.name.getText(sourceFile);
-    this.isExportDefaultController = isDefaultExternal || this.isDefault(classDecl, sourceFile);
+    this.isExportDefaultController = isDefaultExternal || isExportDefault(classDecl);
     this.isReturnRequired = true;
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
@@ -95,20 +96,6 @@ class Graph {
     }
   }
 
-  private isDefault(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile): boolean {
-    let isDefault = false;
-
-    if (node.modifiers) {
-      node.modifiers.forEach(modifier => {
-        if (modifier.kind === ts.SyntaxKind.DefaultKeyword) {
-          isDefault = true;
-        }
-      });
-    }
-
-    return isDefault;
-  }
-
   verifyAndUpdateType(scalars: string[], types: Type[]) {
     if (this.returnType) {
       const isArray = PrimitiveType.isArray(this.returnType);
@@ -116,6 +103,7 @@ class Graph {
 
       if (!scalars.includes(singleReturnType)) {
         const type = types.find(type => type.name === singleReturnType);
+
         if (!type) {
           Log.Instance.error({
             code: 'type-unreferenced-method',
