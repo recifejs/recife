@@ -3,6 +3,7 @@ import ScalarCompiler from './ScalarCompiler';
 import TypeCompiler from './TypeCompiler';
 import ImportDeclaration from './token/ImportDeclaration';
 import Input from './token/Input';
+import NameImportType from './type/NameImportType';
 
 class InputCompiler {
   private static _instance: InputCompiler;
@@ -25,16 +26,21 @@ class InputCompiler {
     this.inputs = [];
   }
 
-  compile(importDeclaration: ImportDeclaration, program: ts.Program, className: string) {
-    if (!this.existInput(importDeclaration, className)) {
+  compile(importDeclaration: ImportDeclaration, program: ts.Program, nameImport: NameImportType): Input {
+    const inputSearch = this.findInput(importDeclaration, nameImport.name);
+
+    if (!inputSearch) {
       this.sourceFile = program.getSourceFile(importDeclaration.getPath());
-      const input = new Input(importDeclaration, className, this.sourceFile);
+      const input = new Input(importDeclaration, nameImport, this.sourceFile);
       this.inputs.push(input);
+      return input;
     }
+
+    return inputSearch;
   }
 
-  private existInput(importDeclaration: ImportDeclaration, className: String): boolean {
-    return this.inputs.some(item => item.name === className && item.path === importDeclaration.getPath());
+  private findInput(importDeclaration: ImportDeclaration, className: String): Input | undefined {
+    return this.inputs.find(item => item.name === className && item.path === importDeclaration.getPath());
   }
 
   expand() {

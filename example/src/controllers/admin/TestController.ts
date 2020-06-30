@@ -1,6 +1,6 @@
 import { Query, Mutation } from 'recife';
 
-import CommentAFilter, { CommentCreate, CommentDelete } from '../../inputs/CommentInput';
+import CommentAFilter, { CommentCreate as CommentCreateA, CommentDelete } from '../../inputs/CommentInput';
 import CommentModel from '../../models/CommentModel';
 
 export default class TestController {
@@ -22,7 +22,7 @@ export default class TestController {
   }
 
   @Mutation({ name: 'registerComment' })
-  createComment(input: CommentCreate): CommentModel {
+  createComment(input: CommentCreateA): CommentModel {
     return this.commentDefault;
   }
 

@@ -1,10 +1,6 @@
 import * as ts from 'typescript';
 import path from 'path';
-
-type NameImportType = {
-  name: string;
-  exportDefault: boolean;
-};
+import NameImportType from '../type/NameImportType';
 
 class ImportDeclaration {
   public names: NameImportType[] = [];
@@ -24,11 +20,13 @@ class ImportDeclaration {
       }
 
       if (node.importClause.namedBindings) {
-        node.importClause.namedBindings.forEachChild((node: ts.Node) => {
-          this.names.push({
-            name: node.getText(sourceFile),
-            exportDefault: false
-          });
+        node.importClause.namedBindings.forEachChild(node => {
+          if (ts.isImportSpecifier(node))
+            this.names.push({
+              name: node.propertyName ? node.propertyName.getText(sourceFile) : node.name.getText(sourceFile),
+              nameAlias: node.propertyName ? node.name.getText(sourceFile) : undefined,
+              exportDefault: false
+            });
         });
       }
     }
