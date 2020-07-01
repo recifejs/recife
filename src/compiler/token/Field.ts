@@ -14,6 +14,7 @@ class Field {
   private node: ts.PropertyDeclaration | ts.PropertySignature;
   private sourceFile?: ts.SourceFile;
   private path: string;
+  private fields: Field[];
 
   constructor(
     node: ts.PropertyDeclaration | ts.PropertySignature,
@@ -21,6 +22,7 @@ class Field {
     imports: ImportDeclaration[],
     sourceFile?: ts.SourceFile
   ) {
+    this.fields = [];
     this.node = node;
     this.sourceFile = sourceFile;
     this.path = path;
@@ -46,6 +48,13 @@ class Field {
             this.isRequired = false;
           } else {
             this.type = PrimitiveType.getPrimitiveType(type.getText(sourceFile));
+          }
+        });
+      } else if (ts.isTypeLiteralNode(node.type)) {
+        node.type.members.forEach((member: ts.Node) => {
+          if (ts.isPropertySignature(member) || ts.isPropertyDeclaration(member)) {
+            this.fields.push(new Field(member, path, imports, sourceFile));
+            this.type = 'Object';
           }
         });
       } else {
@@ -93,7 +102,7 @@ class Field {
   }
 
   verifyAndUpdateType(scalars: string[], types: Type[]) {
-    if (this.visible && !scalars.includes(this.type)) {
+    if (this.visible && this.fields.length === 0 && !scalars.includes(this.type)) {
       const type = types.find(type => type.name === this.type);
 
       if (!type) {
@@ -115,7 +124,13 @@ class Field {
   toStringType(): string {
     if (this.visible) {
       const required = this.isRequired ? '!' : '';
-      return `  ${this.name}: ${this.type}${required} \n`;
+      if (this.fields.length > 0) {
+        let typeString = `  ${this.name}: {\n`;
+        this.fields.forEach(field => (typeString += field.toStringType()));
+        return `${typeString}}${required}\n`;
+      } else {
+        return `  ${this.name}: ${this.type}${required} \n`;
+      }
     }
 
     return '';
