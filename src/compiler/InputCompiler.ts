@@ -39,6 +39,24 @@ class InputCompiler {
     return inputSearch;
   }
 
+  compileObject(node: ts.TypeLiteralNode, fieldName: string) {
+    // node.type.members.forEach((member: ts.Node) => {
+    //   if (ts.isPropertySignature(member) || ts.isPropertyDeclaration(member)) {
+    //     }
+    //     this.fields.push(new Field(member, path, imports, sourceFile));
+    //     this.type = 'Object';
+    //   }
+    // });
+    // const inputSearch = this.findInput(importDeclaration, nameImport.name);
+    // if (!inputSearch) {
+    //   this.sourceFile = program.getSourceFile(importDeclaration.getPath());
+    //   const input = new Input(importDeclaration, nameImport, this.sourceFile);
+    //   this.inputs.push(input);
+    //   return input;
+    // }
+    // return inputSearch;
+  }
+
   private findInput(importDeclaration: ImportDeclaration, className: String): Input | undefined {
     return this.inputs.find(item => item.name === className && item.path === importDeclaration.getPath());
   }

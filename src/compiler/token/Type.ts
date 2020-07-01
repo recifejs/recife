@@ -4,6 +4,7 @@ import TypeOptions from '../../types/TypeOptions';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import ImportDeclaration from './ImportDeclaration';
 import { isExportDefault } from '../../helpers/exportHelper';
+import FieldTypeEnum from '../enum/FieldTypeEnum';
 
 class Type {
   public name: string;
@@ -32,7 +33,7 @@ class Type {
 
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
-        const field = new Field(member, this.path, imports, sourceFile);
+        const field = new Field(member, this.path, imports, FieldTypeEnum.TYPE, sourceFile);
         this.fields.push(field);
       }
     });

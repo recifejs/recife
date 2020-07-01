@@ -3,6 +3,7 @@ import Field from './Field';
 import ImportDeclaration from './ImportDeclaration';
 import { findNodeExportDefault } from '../../helpers/exportHelper';
 import NameImportType from '../type/NameImportType';
+import FieldTypeEnum from '../enum/FieldTypeEnum';
 
 class Input {
   public name: string;
@@ -89,7 +90,7 @@ class Input {
 
   private compileField(node: ts.Node) {
     if (ts.isPropertySignature(node) || ts.isPropertyDeclaration(node)) {
-      const field = new Field(node, this.path, [], this.sourceFile);
+      const field = new Field(node, this.path, [], FieldTypeEnum.INPUT, this.sourceFile);
       this.fields.push(field);
     }
   }

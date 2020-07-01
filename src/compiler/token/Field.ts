@@ -4,6 +4,8 @@ import ImportDeclaration from './ImportDeclaration';
 import PrimitiveType from '../PrimitiveType';
 import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import Type from './Type';
+import FieldTypeEnum from '../enum/FieldTypeEnum';
+import InputCompiler from '../InputCompiler';
 
 class Field {
   public name!: string;
@@ -20,6 +22,7 @@ class Field {
     node: ts.PropertyDeclaration | ts.PropertySignature,
     path: string,
     imports: ImportDeclaration[],
+    fieldType: FieldTypeEnum,
     sourceFile?: ts.SourceFile
   ) {
     this.fields = [];
@@ -51,12 +54,9 @@ class Field {
           }
         });
       } else if (ts.isTypeLiteralNode(node.type)) {
-        node.type.members.forEach((member: ts.Node) => {
-          if (ts.isPropertySignature(member) || ts.isPropertyDeclaration(member)) {
-            this.fields.push(new Field(member, path, imports, sourceFile));
-            this.type = 'Object';
-          }
-        });
+        if (fieldType === FieldTypeEnum.INPUT) {
+          InputCompiler.Instance.compileObject(node.type, this.name);
+        }
       } else {
         this.type = PrimitiveType.getPrimitiveType(node.type.getText(sourceFile));
       }
