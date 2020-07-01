@@ -2,6 +2,7 @@ import * as ts from 'typescript';
 import Field from './Field';
 import ImportDeclaration from './ImportDeclaration';
 import { findNodeExportDefault } from '../../helpers/exportHelper';
+import NameImportType from '../type/NameImportType';
 
 class Input {
   public name: string;
@@ -10,12 +11,10 @@ class Input {
   private sourceFile?: ts.SourceFile;
   private exportDefault: boolean;
 
-  constructor(importDeclaration: ImportDeclaration, className: string, sourceFile?: ts.SourceFile) {
-    const nameImport = importDeclaration.names.find(item => item.name === className);
-
-    this.exportDefault = nameImport!.exportDefault;
+  constructor(importDeclaration: ImportDeclaration, nameImport: NameImportType, sourceFile?: ts.SourceFile) {
+    this.exportDefault = nameImport.exportDefault;
     this.path = importDeclaration.getPath();
-    this.name = className;
+    this.name = nameImport.name;
     this.sourceFile = sourceFile;
     this.fields = [];
 
@@ -44,14 +43,23 @@ class Input {
   private compileType(node: ts.Node) {
     if (ts.isTypeAliasDeclaration(node)) {
       if (this.exportDefault || node.name.getText(this.sourceFile) === this.name) {
+        if (this.exportDefault) {
+          this.name = node.name.getText(this.sourceFile);
+        }
         this.compileTypeLiteral(node);
       }
     } else if (ts.isClassDeclaration(node)) {
       if (this.exportDefault || node.name!.getText(this.sourceFile) === this.name) {
+        if (this.exportDefault) {
+          this.name = node.name!.getText(this.sourceFile);
+        }
         this.compileClass(node);
       }
     } else if (ts.isInterfaceDeclaration(node)) {
       if (this.exportDefault || node.name.getText(this.sourceFile) === this.name) {
+        if (this.exportDefault) {
+          this.name = node.name.getText(this.sourceFile);
+        }
         this.compileInterface(node);
       }
     }

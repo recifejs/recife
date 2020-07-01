@@ -7,6 +7,8 @@ import Graph from './token/Graph';
 import InputCompiler from './InputCompiler';
 import ImportDeclaration from './token/ImportDeclaration';
 import { isExport, getNameExportDefault } from '../helpers/exportHelper';
+import NameImportType from './type/NameImportType';
+import Input from './token/Input';
 
 class GraphCompiler {
   private static _instance: GraphCompiler;
@@ -66,27 +68,32 @@ class GraphCompiler {
         const graph = new Graph(member, node, this.path, isDefault, this.sourceFile);
 
         if (graph.type) {
-          this.graphs.push(graph);
-
           if (graph.params) {
-            this.createInput(graph.params.type);
+            const input = this.createInput(graph.params.type);
+            graph.params.type = input!.name;
           }
+
+          this.graphs.push(graph);
         }
       }
     });
   }
 
-  private createInput(className: string) {
+  private createInput(className: string): Input | undefined {
     let importDeclaration: ImportDeclaration | undefined = undefined;
+    let nameImport: NameImportType | undefined = undefined;
 
     this.imports.forEach((importDecl: ImportDeclaration) => {
-      if (importDecl.names.some(item => item.name === className)) {
+      const nameImportSearch = importDecl.names.find(item => (item.nameAlias || item.name) === className);
+      if (nameImportSearch) {
         importDeclaration = importDecl;
+        nameImport = nameImportSearch;
       }
     });
 
-    if (importDeclaration) {
-      InputCompiler.Instance.compile(importDeclaration, this.program!, className);
+    if (importDeclaration && nameImport) {
+      const input = InputCompiler.Instance.compile(importDeclaration, this.program!, nameImport!);
+      return input;
     }
   }
 
