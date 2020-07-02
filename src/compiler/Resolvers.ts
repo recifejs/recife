@@ -31,7 +31,7 @@ class Resolvers {
 
     this.resolversType[nameType] = {
       [field.name]: (...params: any[]) => {
-        return Model[`get${this.capitalize(field.type)}`](...params);
+        return Model[`get${this.capitalize(field.name)}`](...params);
       }
     };
   }
