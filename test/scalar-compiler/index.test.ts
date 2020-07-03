@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import equal from 'fast-deep-equal';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
@@ -20,16 +21,20 @@ describe('ScalarCompiler tests', () => {
       const program = ts.createProgram([file], { allowJs: true });
       ScalarCompiler.Instance.compile(file, program);
 
-      assert.equal(translateScalars(ScalarCompiler.Instance.getScalars()), JSON.stringify(output.scalars));
+      assert.isTrue(equal(translateScalars(ScalarCompiler.Instance.getScalars()), output.scalars));
     });
   });
 });
 
 const translateScalars = (scalars: any[]) => {
-  return JSON.stringify(
+  return destructor(
     scalars.map(scalar => {
       delete scalar.path;
       return scalar;
     })
   );
+};
+
+const destructor = (object: any) => {
+  return JSON.parse(JSON.stringify(object));
 };

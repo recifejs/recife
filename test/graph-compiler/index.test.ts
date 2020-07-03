@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import equal from 'fast-deep-equal';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
@@ -23,30 +24,30 @@ describe('GraphCompiler tests', () => {
       GraphCompiler.Instance.compile(file, program);
 
       if (output.graphs) {
-        assert.equal(translateGraphs(GraphCompiler.Instance.getGraphs()), JSON.stringify(output.graphs));
+        assert.isTrue(equal(translateGraphs(GraphCompiler.Instance.getGraphs()), output.graphs));
       }
 
       if (output.inputs) {
-        assert.equal(translateInputs(InputCompiler.Instance.getInputs()), JSON.stringify(output.inputs));
+        assert.isTrue(equal(translateInputs(InputCompiler.Instance.getInputs()), output.inputs));
       }
     });
   });
 });
 
 const translateGraphs = (graphs: any[]) => {
-  return JSON.stringify(
+  return destructor(
     graphs.map(graph => {
       delete graph.path;
       delete graph.node;
       delete graph.sourceFile;
 
-      return graph;
+      return Object.assign({}, graph);
     })
   );
 };
 
 const translateInputs = (inputs: any[]) => {
-  return JSON.stringify(
+  return destructor(
     inputs.map(input => {
       delete input.path;
       delete input.sourceFile;
@@ -59,7 +60,12 @@ const translateInputs = (inputs: any[]) => {
 
         return field;
       });
+
       return input;
     })
   );
+};
+
+const destructor = (object: any) => {
+  return JSON.parse(JSON.stringify(object));
 };
