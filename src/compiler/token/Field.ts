@@ -1,11 +1,15 @@
 import * as ts from 'typescript';
 import Log from '../../log';
-import ImportDeclaration from './ImportDeclaration';
-import PrimitiveType from '../PrimitiveType';
-import createDecoratorOptions from '../../helpers/createDecoratorOptions';
-import Type from './Type';
-import FieldTypeEnum from '../enum/FieldTypeEnum';
 import InputCompiler from '../InputCompiler';
+import FieldTypeEnum from '../enum/FieldTypeEnum';
+import PrimitiveType from '../PrimitiveType';
+
+import ImportDeclaration from './ImportDeclaration';
+import Type from './Type';
+import Input from './Input';
+
+import capitalize from '../../helpers/capitalize';
+import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 
 class Field {
   public name!: string;
@@ -17,10 +21,12 @@ class Field {
   private sourceFile?: ts.SourceFile;
   private path: string;
   private fields: Field[];
+  private parentName: string;
 
   constructor(
     node: ts.PropertyDeclaration | ts.PropertySignature,
     path: string,
+    parentName: string,
     imports: ImportDeclaration[],
     fieldType: FieldTypeEnum,
     sourceFile?: ts.SourceFile
@@ -29,6 +35,7 @@ class Field {
     this.node = node;
     this.sourceFile = sourceFile;
     this.path = path;
+    this.parentName = parentName;
 
     if (node.type) {
       if (node.type.kind === ts.SyntaxKind.AnyKeyword) {
@@ -55,7 +62,12 @@ class Field {
         });
       } else if (ts.isTypeLiteralNode(node.type)) {
         if (fieldType === FieldTypeEnum.INPUT) {
-          InputCompiler.Instance.compileObject(node.type, this.name);
+          const input = InputCompiler.Instance.compileObjectLiteral(
+            node.type,
+            `${capitalize(this.parentName)}${capitalize(this.name)}`,
+            this.path
+          );
+          this.type = input.name;
         }
       } else {
         this.type = PrimitiveType.getPrimitiveType(node.type.getText(sourceFile));
@@ -101,11 +113,12 @@ class Field {
     }
   }
 
-  verifyAndUpdateType(scalars: string[], types: Type[]) {
+  verifyAndUpdateType(scalars: string[], types: Type[], inputs: Input[]) {
     if (this.visible && this.fields.length === 0 && !scalars.includes(this.type)) {
       const type = types.find(type => type.name === this.type);
+      const input = inputs.find(input => input.name === this.type);
 
-      if (!type) {
+      if (!type && !input) {
         Log.Instance.error({
           code: 'type-unreferenced',
           message: `Type unreferenced in property ${this.name}`,
@@ -114,7 +127,7 @@ class Field {
           sourceFile: this.sourceFile
         });
       } else {
-        if (type.options.name) {
+        if (type && type.options.name) {
           this.type = type.options.name;
         }
       }

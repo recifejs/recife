@@ -33,7 +33,7 @@ class Type {
 
     node.members.forEach(member => {
       if (ts.isPropertyDeclaration(member)) {
-        const field = new Field(member, this.path, imports, FieldTypeEnum.TYPE, sourceFile);
+        const field = new Field(member, this.path, this.name, imports, FieldTypeEnum.TYPE, sourceFile);
         this.fields.push(field);
       }
     });

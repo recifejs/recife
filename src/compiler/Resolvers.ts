@@ -9,6 +9,7 @@ import Recife from '../Recife';
 import DateScalar from '../scalars/DateScalar';
 import ScalarType from '../types/ScalarType';
 import requireUncached from '../helpers/requireUncached';
+import capitalize from '../helpers/capitalize';
 
 class Resolvers {
   private Query: any = {};
@@ -31,7 +32,7 @@ class Resolvers {
 
     this.resolversType[nameType] = {
       [field.name]: (...params: any[]) => {
-        return Model[`get${this.capitalize(field.type)}`](...params);
+        return Model[`get${capitalize(field.type)}`](...params);
       }
     };
   }
@@ -124,10 +125,6 @@ class Resolvers {
     const file = requireUncached(scalar.path.replace(Recife.PATH_BASE_ABSOLUTE, Recife.PATH_BUILD).replace('.ts', ''));
     const Model = scalar.isExportDefault ? file.default : file[scalar.name];
     return Model;
-  }
-
-  private capitalize(string: string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
   formatter(): any {

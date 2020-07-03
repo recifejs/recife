@@ -115,7 +115,7 @@ class Compiler {
     typeString = typeString.includes('type Subscription') ? `type Subscription\n${typeString}` : typeString;
     typeString = typeString.includes('type Mutation') ? `type Mutation\n${typeString}` : typeString;
     typeString = typeString.includes('type Query') ? `type Query\n${typeString}` : typeString;
-    console.log(typeString);
+
     return gql(typeString);
   }
 
