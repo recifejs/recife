@@ -20,7 +20,6 @@ class Field {
   private node: ts.PropertyDeclaration | ts.PropertySignature;
   private sourceFile?: ts.SourceFile;
   private path: string;
-  private fields: Field[];
   private parentName: string;
 
   constructor(
@@ -31,7 +30,6 @@ class Field {
     fieldType: FieldTypeEnum,
     sourceFile?: ts.SourceFile
   ) {
-    this.fields = [];
     this.node = node;
     this.sourceFile = sourceFile;
     this.path = path;
@@ -114,7 +112,7 @@ class Field {
   }
 
   verifyAndUpdateType(scalars: string[], types: Type[], inputs: Input[]) {
-    if (this.visible && this.fields.length === 0 && !scalars.includes(this.type)) {
+    if (this.visible && !scalars.includes(this.type)) {
       const type = types.find(type => type.name === this.type);
       const input = inputs.find(input => input.name === this.type);
 
@@ -137,13 +135,7 @@ class Field {
   toStringType(): string {
     if (this.visible) {
       const required = this.isRequired ? '!' : '';
-      if (this.fields.length > 0) {
-        let typeString = `  ${this.name}: {\n`;
-        this.fields.forEach(field => (typeString += field.toStringType()));
-        return `${typeString}}${required}\n`;
-      } else {
-        return `  ${this.name}: ${this.type}${required} \n`;
-      }
+      return `  ${this.name}: ${this.type}${required} \n`;
     }
 
     return '';

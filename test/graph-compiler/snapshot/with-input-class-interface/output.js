@@ -25,14 +25,14 @@ module.exports = {
   ],
   inputs: [
     {
+      fields: [{ visible: true, parentName: 'CreateUser', name: 'name', isRequired: false, type: 'String' }],
       exportDefault: false,
-      name: 'CreateUser',
-      fields: [{ visible: true, name: 'name', isRequired: false, type: 'String' }]
+      name: 'CreateUser'
     },
     {
+      fields: [{ visible: true, parentName: 'DeleteUser', name: 'name', isRequired: false, type: 'String' }],
       exportDefault: false,
-      name: 'DeleteUser',
-      fields: [{ visible: true, name: 'name', isRequired: false, type: 'String' }]
+      name: 'DeleteUser'
     }
   ]
 };
