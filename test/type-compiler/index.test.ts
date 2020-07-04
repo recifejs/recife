@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import equal from 'fast-deep-equal';
 import fs from 'fs';
 import path from 'path';
 import { assert } from 'chai';
@@ -20,13 +21,13 @@ describe('TypeCompiler tests', () => {
       const program = ts.createProgram([file], { allowJs: true });
       TypeCompiler.Instance.compile(file, program);
 
-      assert.equal(translateTypes(TypeCompiler.Instance.getTypes()), JSON.stringify(output.types));
+      assert.isTrue(equal(translateTypes(TypeCompiler.Instance.getTypes()), output.types));
     });
   });
 });
 
 const translateTypes = (types: any[]) => {
-  return JSON.stringify(
+  return destructor(
     types.map(type => {
       delete type.path;
       type.fields = type.fields.map((field: any) => {
@@ -40,4 +41,8 @@ const translateTypes = (types: any[]) => {
       return type;
     })
   );
+};
+
+const destructor = (object: any) => {
+  return JSON.parse(JSON.stringify(object));
 };
