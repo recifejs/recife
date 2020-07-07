@@ -12,6 +12,10 @@ export class CommentUpdate {
   postId!: String;
   text!: String;
   commentId?: String;
+  params?: {
+    a: string;
+    b: string;
+  };
 }
 
 type CommentFilter = {

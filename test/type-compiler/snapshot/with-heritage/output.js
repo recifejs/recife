@@ -6,6 +6,7 @@ module.exports = {
       fields: [
         {
           visible: true,
+          parentName: 'Person',
           name: 'id',
           isRequired: true,
           type: 'String'
@@ -20,6 +21,7 @@ module.exports = {
       fields: [
         {
           visible: true,
+          parentName: 'User',
           name: 'name',
           isRequired: false,
           type: 'String'
@@ -35,6 +37,7 @@ module.exports = {
       fields: [
         {
           visible: true,
+          parentName: 'Author',
           name: 'emails',
           isRequired: true,
           type: '[String]'

@@ -31,12 +31,19 @@ class InputCompiler {
 
     if (!inputSearch) {
       this.sourceFile = program.getSourceFile(importDeclaration.getPath());
-      const input = new Input(importDeclaration, nameImport, this.sourceFile);
+      const input = new Input({ type: 'InputImport', importDeclaration, nameImport }, this.sourceFile);
       this.inputs.push(input);
       return input;
     }
 
     return inputSearch;
+  }
+
+  compileObjectLiteral(node: ts.TypeLiteralNode, fieldName: string, path: string): Input {
+    const input = new Input({ type: 'InputNode', node, fieldName, path }, this.sourceFile);
+    this.inputs.push(input);
+
+    return input;
   }
 
   private findInput(importDeclaration: ImportDeclaration, className: String): Input | undefined {
@@ -46,7 +53,11 @@ class InputCompiler {
   expand() {
     for (let i = 0; i < this.inputs.length; i++) {
       this.inputs[i].fields.forEach(field =>
-        field.verifyAndUpdateType(ScalarCompiler.Instance.getNameScalars(), TypeCompiler.Instance.getTypes())
+        field.verifyAndUpdateType(
+          ScalarCompiler.Instance.getNameScalars(),
+          TypeCompiler.Instance.getTypes(),
+          this.inputs
+        )
       );
     }
   }
