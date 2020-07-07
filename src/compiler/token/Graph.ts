@@ -13,8 +13,11 @@ class Graph {
   public type!: GraphTypeEnum;
   public params!: GraphParam;
   public isExportDefaultController: boolean;
-  public returnType?: string;
-  public isReturnRequired: boolean;
+  public return: {
+    type?: string;
+    isRequired: boolean;
+    isArray: boolean;
+  };
   public nameController: string;
   public path: string;
   public options: SchemaOptions;
@@ -35,7 +38,7 @@ class Graph {
     this.options = {};
     this.name = method.name.getText(sourceFile);
     this.isExportDefaultController = isDefaultExternal || isExportDefault(classDecl);
-    this.isReturnRequired = true;
+    this.return = { isRequired: false, isArray: false };
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
       this.params = new GraphParam(method.parameters[0], this, sourceFile);
@@ -52,17 +55,7 @@ class Graph {
         });
       }
 
-      if (ts.isUnionTypeNode(method.type)) {
-        method.type.types.forEach(returnType => {
-          if (returnType.kind === ts.SyntaxKind.UndefinedKeyword || returnType.kind === ts.SyntaxKind.NullKeyword) {
-            this.isReturnRequired = false;
-          } else {
-            this.returnType = PrimitiveType.getPrimitiveType(returnType.getText(sourceFile));
-          }
-        });
-      } else {
-        this.returnType = PrimitiveType.getPrimitiveType(method.type!.getText(sourceFile));
-      }
+      this.readReturn(method.type, sourceFile);
     } else {
       Log.Instance.error({
         code: 'return-not-exist',
@@ -96,13 +89,39 @@ class Graph {
     }
   }
 
-  verifyAndUpdateType(scalars: string[], types: Type[]) {
-    if (this.returnType) {
-      const isArray = PrimitiveType.isArray(this.returnType);
-      const singleReturnType = PrimitiveType.formatType(this.returnType);
+  readReturn(type: ts.Node, sourceFile?: ts.SourceFile) {
+    if (ts.isUnionTypeNode(type)) {
+      type.types.forEach(returnType => {
+        if (returnType.kind === ts.SyntaxKind.UndefinedKeyword || returnType.kind === ts.SyntaxKind.NullKeyword) {
+          this.return.isRequired = false;
+        } else {
+          console.log(returnType);
+          this.readReturn(returnType, sourceFile);
+        }
+      });
+    } else if (ts.isArrayTypeNode(type)) {
+      this.return.isArray = true;
+      if (ts.isTypeReferenceNode(type.elementType)) {
+        this.readReturn(type.elementType, sourceFile);
+      }
+    } else if (ts.isTypeReferenceNode(type)) {
+      if (type.typeArguments) {
+        if (type.typeName.getText(sourceFile) === 'Array') {
+          this.return.isArray = true;
+        }
+        this.readReturn(type.typeArguments[0], sourceFile);
+      } else {
+        this.return.type = PrimitiveType.getPrimitiveType(type.typeName.getText(sourceFile));
+      }
+    } else {
+      this.return.type = PrimitiveType.readNode(type);
+    }
+  }
 
-      if (!scalars.includes(singleReturnType)) {
-        const type = types.find(type => type.name === singleReturnType);
+  verifyAndUpdateType(scalars: string[], types: Type[]) {
+    if (this.return.type) {
+      if (!scalars.includes(this.return.type)) {
+        const type = types.find(type => type.name === this.return.type);
 
         if (!type) {
           Log.Instance.error({
@@ -114,7 +133,7 @@ class Graph {
           });
         } else {
           if (type.options.name) {
-            this.returnType = isArray ? PrimitiveType.formatArray(type.options.name) : type.options.name;
+            this.return.type = type.options.name;
           }
         }
       }
@@ -124,13 +143,14 @@ class Graph {
   toStringType(): string {
     let typeString = '';
     const name = this.options.name || this.name;
-    const requiredReturn = this.isReturnRequired ? '!' : '';
+    let returnName = this.return.isArray ? `[${this.return.type}]` : this.return.type;
+    returnName = `${returnName}${this.return.isRequired ? '!' : ''}`;
 
     if (this.params) {
       const required = this.params.isRequired ? '!' : '';
-      typeString += `  ${name}(${this.params.name}: ${this.params.type}${required}): ${this.returnType}${requiredReturn}\n`;
+      typeString += `  ${name}(${this.params.name}: ${this.params.type}${required}): ${returnName}\n`;
     } else {
-      typeString += `  ${name}: ${this.returnType}${requiredReturn}\n`;
+      typeString += `  ${name}: ${returnName}\n`;
     }
 
     return `extend type ${this.type.toString()} {\n${typeString}}\n`;
