@@ -5,19 +5,17 @@ module.exports = {
     {
       nameController: 'InputController',
       options: {},
+      return: { type: 'String', isArray: false, isRequired: true },
       name: 'getUser',
       isExportDefaultController: true,
-      isReturnRequired: true,
-      returnType: 'String',
       type: 'Query'
     },
     {
       nameController: 'AnotherInputController',
       options: {},
+      return: { type: 'String', isArray: false, isRequired: true },
       name: 'createUser',
       isExportDefaultController: false,
-      isReturnRequired: true,
-      returnType: 'String',
       type: 'Mutation'
     }
   ]

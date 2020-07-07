@@ -38,7 +38,7 @@ class Graph {
     this.options = {};
     this.name = method.name.getText(sourceFile);
     this.isExportDefaultController = isDefaultExternal || isExportDefault(classDecl);
-    this.return = { isRequired: false, isArray: false };
+    this.return = { isRequired: true, isArray: false };
 
     if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
       this.params = new GraphParam(method.parameters[0], this, sourceFile);
@@ -95,7 +95,6 @@ class Graph {
         if (returnType.kind === ts.SyntaxKind.UndefinedKeyword || returnType.kind === ts.SyntaxKind.NullKeyword) {
           this.return.isRequired = false;
         } else {
-          console.log(returnType);
           this.readReturn(returnType, sourceFile);
         }
       });
