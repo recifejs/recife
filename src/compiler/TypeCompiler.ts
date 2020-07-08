@@ -55,6 +55,13 @@ class TypeCompiler {
     }
   }
 
+  compileObjectLiteral(node: ts.TypeLiteralNode, fieldName: string, path: string): Type {
+    const type = new Type(node, path, false, [], this.sourceFile, fieldName);
+    this.types.push(type);
+
+    return type;
+  }
+
   private getFolder(): string {
     const bar = os.platform() === 'win32' ? '\\' : '/';
     return this.path.substring(0, this.path.lastIndexOf(bar));

@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import Log from '../../log';
 import InputCompiler from '../InputCompiler';
+import TypeCompiler from '../TypeCompiler';
 import FieldTypeEnum from '../enum/FieldTypeEnum';
 import PrimitiveType from '../PrimitiveType';
 
@@ -66,6 +67,13 @@ class Field {
             this.path
           );
           this.type = input.name;
+        } else if (fieldType === FieldTypeEnum.TYPE) {
+          const type = TypeCompiler.Instance.compileObjectLiteral(
+            node.type,
+            `${capitalize(this.parentName)}${capitalize(this.name)}`,
+            this.path
+          );
+          this.type = type.name;
         }
       } else {
         this.type = PrimitiveType.getPrimitiveType(node.type.getText(sourceFile));

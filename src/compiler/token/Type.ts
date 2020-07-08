@@ -17,34 +17,42 @@ class Type {
   public options: TypeOptions;
 
   constructor(
-    node: ts.ClassDeclaration,
+    node: ts.ClassDeclaration | ts.TypeLiteralNode,
     path: string,
     isDefaultExternal: boolean,
     imports: ImportDeclaration[],
-    sourceFile?: ts.SourceFile
+    sourceFile?: ts.SourceFile,
+    name?: string
   ) {
     this.fields = [];
     this.options = {};
     this.path = path;
-    this.name = node.name!.getText(sourceFile).replace('Model', '');
-    this.nameModel = node.name!.getText(sourceFile);
+    if (ts.isTypeLiteralNode(node)) {
+      this.name = name!;
+      this.nameModel = name!;
+    } else {
+      this.name = node.name!.getText(sourceFile).replace('Model', '');
+      this.nameModel = node.name!.getText(sourceFile);
+    }
 
     this.isExportDefaultModel = isDefaultExternal || isExportDefault(node);
 
-    node.members.forEach(member => {
-      if (ts.isPropertyDeclaration(member)) {
+    node.members.forEach((member: ts.Node) => {
+      if (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) {
         const field = new Field(member, this.path, this.name, imports, FieldTypeEnum.TYPE, sourceFile);
         this.fields.push(field);
       }
     });
 
-    if (node.heritageClauses) {
-      node.heritageClauses.forEach((heritage: ts.HeritageClause) => {
-        this.heritageName = heritage.types[0].expression.getText(sourceFile);
-      });
-    }
+    if (ts.isClassDeclaration(node)) {
+      if (node.heritageClauses) {
+        node.heritageClauses.forEach((heritage: ts.HeritageClause) => {
+          this.heritageName = heritage.types[0].expression.getText(sourceFile);
+        });
+      }
 
-    this.getOptions(node, sourceFile);
+      this.getOptions(node, sourceFile);
+    }
   }
 
   private getOptions(node: ts.ClassDeclaration, sourceFile?: ts.SourceFile) {
