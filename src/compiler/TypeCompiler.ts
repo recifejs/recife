@@ -5,7 +5,6 @@ import ScalarCompiler from './ScalarCompiler';
 import Type from './token/Type';
 import ImportDeclaration from './token/ImportDeclaration';
 import { isExport, getNameExportDefault } from '../helpers/exportHelper';
-import InputCompiler from './InputCompiler';
 
 class TypeCompiler {
   private static _instance: TypeCompiler;
