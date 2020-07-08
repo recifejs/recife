@@ -24,12 +24,10 @@ module.exports = {
   inputs: [
     {
       fields: [{ visible: true, parentName: 'CreateUser', name: 'name', isRequired: false, type: 'String' }],
-      exportDefault: false,
       name: 'CreateUser'
     },
     {
       fields: [{ visible: true, parentName: 'DeleteUser', name: 'name', isRequired: false, type: 'String' }],
-      exportDefault: false,
       name: 'DeleteUser'
     }
   ]

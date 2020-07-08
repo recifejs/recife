@@ -28,6 +28,7 @@ describe('GraphCompiler tests', () => {
       }
 
       if (output.inputs) {
+        console.log(translateInputs(InputCompiler.Instance.getInputs()));
         assert.isTrue(equal(translateInputs(InputCompiler.Instance.getInputs()), output.inputs));
       }
     });
@@ -51,6 +52,7 @@ const translateInputs = (inputs: any[]) => {
     inputs.map(input => {
       delete input.path;
       delete input.sourceFile;
+      delete input.node;
 
       input.fields = input.fields.map((field: any) => {
         delete field.importDeclaration;
