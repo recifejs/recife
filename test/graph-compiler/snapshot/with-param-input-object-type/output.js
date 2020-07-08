@@ -15,15 +15,13 @@ module.exports = {
   inputs: [
     {
       fields: [{ visible: true, parentName: 'FilterUserAddress', name: 'street', isRequired: false, type: 'String' }],
-      name: 'FilterUserAddress',
-      exportDefault: false
+      name: 'FilterUserAddress'
     },
     {
       fields: [
         { visible: true, parentName: 'FilterUser', name: 'name', isRequired: true, type: 'String' },
         { visible: true, parentName: 'FilterUser', name: 'address', isRequired: false, type: 'FilterUserAddress' }
       ],
-      exportDefault: true,
       name: 'FilterUser'
     }
   ]

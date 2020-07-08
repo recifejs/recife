@@ -80,6 +80,13 @@ class Log {
   }
 
   warn(log: LogType) {
+    if (!log.line) {
+      log.line = log.sourceFile!.getLineAndCharacterOfPosition(log.node!.getStart(log.sourceFile));
+    }
+
+    delete log.node;
+    delete log.sourceFile;
+
     this.warns.push(log);
   }
 
@@ -87,11 +94,19 @@ class Log {
     return this.errors.length > 0;
   }
 
+  containsWarns(): boolean {
+    return this.warns.length > 0;
+  }
+
   showErrors(text: string) {
-    if (this.errors) {
+    if (this.errors.length > 0) {
       process.stdout.clearLine(0);
       process.stdout.cursorTo(0);
       process.stdout.write(`${this.colors.fgRed}☓${this.colors.reset} ${text}\n`);
+    } else {
+      process.stdout.clearLine(0);
+      process.stdout.cursorTo(0);
+      process.stdout.write(`${this.colors.fgYellow}⚠${this.colors.reset} ${text}\n`);
     }
 
     this.errors.forEach((error, index) => {

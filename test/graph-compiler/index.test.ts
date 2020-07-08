@@ -51,6 +51,7 @@ const translateInputs = (inputs: any[]) => {
     inputs.map(input => {
       delete input.path;
       delete input.sourceFile;
+      delete input.node;
 
       input.fields = input.fields.map((field: any) => {
         delete field.importDeclaration;

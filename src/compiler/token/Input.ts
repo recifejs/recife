@@ -1,20 +1,10 @@
 import * as ts from 'typescript';
 import Field from './Field';
-import ImportDeclaration from './ImportDeclaration';
-import { findNodeExportDefault } from '../../helpers/exportHelper';
-import NameImportType from '../type/NameImportType';
 import FieldTypeEnum from '../enum/FieldTypeEnum';
 
-type InputImport = {
-  type: 'InputImport';
-  importDeclaration: ImportDeclaration;
-  nameImport: NameImportType;
-};
-
 type InputNode = {
-  type: 'InputNode';
-  node: ts.TypeLiteralNode;
-  fieldName: string;
+  node: ts.Node;
+  fieldName?: string;
   path: string;
 };
 
@@ -22,37 +12,30 @@ class Input {
   public name: string;
   public fields: Field[];
   public path: string;
-  private sourceFile?: ts.SourceFile;
-  private exportDefault: boolean;
+  public sourceFile?: ts.SourceFile;
+  public node: ts.Node;
 
-  constructor(params: InputNode | InputImport, sourceFile?: ts.SourceFile) {
+  constructor(params: InputNode, sourceFile?: ts.SourceFile) {
     this.fields = [];
     this.sourceFile = sourceFile;
+    this.path = params.path;
+    this.name = '';
+    this.node = params.node;
 
-    switch (params.type) {
-      case 'InputNode':
-        this.name = params.fieldName;
-        this.path = params.path;
-        this.exportDefault = false;
-        this.compileObject(params.node);
-        break;
-      case 'InputImport':
-      default:
-        this.exportDefault = params.nameImport.exportDefault;
-        this.path = params.importDeclaration.getPath();
-        this.name = params.nameImport.name;
+    if (params.fieldName) {
+      this.name = params.fieldName;
+    }
 
-        if (this.sourceFile) {
-          if (this.exportDefault) {
-            const node = findNodeExportDefault(this.sourceFile);
-            this.compileType(node!);
-          } else {
-            ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-              this.compileType(node);
-            });
-          }
-        }
-        break;
+    if (ts.isTypeLiteralNode(params.node)) {
+      this.compileObject(params.node);
+    } else if (ts.isTypeAliasDeclaration(params.node)) {
+      this.name = params.node.name.getText(this.sourceFile);
+      this.compileTypeLiteral(params.node);
+    } else if (ts.isClassDeclaration(params.node) || ts.isInterfaceDeclaration(params.node)) {
+      if (params.node.name) {
+        this.name = params.node.name.getText(this.sourceFile);
+        this.compileClassAndInterface(params.node);
+      }
     }
   }
 
@@ -64,24 +47,6 @@ class Input {
     type += '}\n';
 
     return type;
-  }
-
-  private compileType(node: ts.Node) {
-    if (ts.isTypeAliasDeclaration(node)) {
-      if (this.exportDefault || node.name.getText(this.sourceFile) === this.name) {
-        if (this.exportDefault) {
-          this.name = node.name.getText(this.sourceFile);
-        }
-        this.compileTypeLiteral(node);
-      }
-    } else if (ts.isClassDeclaration(node) || ts.isInterfaceDeclaration(node)) {
-      if (this.exportDefault || node.name!.getText(this.sourceFile) === this.name) {
-        if (this.exportDefault) {
-          this.name = node.name!.getText(this.sourceFile);
-        }
-        this.compileClassAndInterface(node);
-      }
-    }
   }
 
   private compileTypeLiteral(node: ts.TypeAliasDeclaration) {
