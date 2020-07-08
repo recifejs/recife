@@ -21,6 +21,10 @@ class CommentModel extends Publication {
 export class AuthorModel {
   name!: String;
   book?: BookModel;
+  params?: {
+    a: string;
+    b: string;
+  };
 }
 
 @Type({ name: 'Journal' })
