@@ -47,6 +47,8 @@ class Compiler {
     if (Log.Instance.containsErrors()) {
       Log.Instance.showErrors('Error in compiled');
       throw new Error('Error in compiled');
+    } else if (Log.Instance.containsWarns()) {
+      Log.Instance.showErrors('Warnings in compiled');
     }
   }
 

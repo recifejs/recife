@@ -63,7 +63,8 @@ class Field {
           const input = InputCompiler.Instance.compileObjectLiteral(
             node.type,
             `${capitalize(this.parentName)}${capitalize(this.name)}`,
-            this.path
+            this.path,
+            sourceFile
           );
           this.type = input.name;
         }

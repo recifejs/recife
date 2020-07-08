@@ -7,14 +7,12 @@ import Graph from './token/Graph';
 import InputCompiler from './InputCompiler';
 import ImportDeclaration from './token/ImportDeclaration';
 import { isExport, getNameExportDefault } from '../helpers/exportHelper';
-import NameImportType from './type/NameImportType';
+import { getReference } from '../helpers/referenceHelper';
 import Input from './token/Input';
 
 class GraphCompiler {
   private static _instance: GraphCompiler;
   private graphs: Graph[] = [];
-  private imports: Array<ImportDeclaration> = [];
-  private sourceFile: ts.SourceFile | undefined;
   private path: string;
   private program?: ts.Program;
 
@@ -35,22 +33,17 @@ class GraphCompiler {
   }
 
   compile(path: string, program: ts.Program) {
-    this.sourceFile = program.getSourceFile(path);
+    let sourceFile = program.getSourceFile(path);
     this.path = path;
     this.program = program;
 
-    if (this.sourceFile) {
-      let classExportDefault = getNameExportDefault(this.sourceFile) || '';
+    if (sourceFile) {
+      let classExportDefault = getNameExportDefault(sourceFile) || '';
 
-      ts.forEachChild(this.sourceFile, (node: ts.Node) => {
-        if (ts.isImportDeclaration(node)) {
-          const importDeclaration = new ImportDeclaration(node, this.getFolder(), this.sourceFile);
-          this.imports.push(importDeclaration);
-        }
-
+      ts.forEachChild(sourceFile, (node: ts.Node) => {
         if (ts.isClassDeclaration(node) && node.name) {
-          if (node.name.getText(this.sourceFile) === classExportDefault || isExport(node)) {
-            this.compileGraphs(node, node.name.getText(this.sourceFile) === classExportDefault);
+          if (node.name.getText(sourceFile) === classExportDefault || isExport(node)) {
+            this.compileGraphs(node, node.name.getText(sourceFile) === classExportDefault, sourceFile!);
           }
         }
       });
@@ -62,14 +55,14 @@ class GraphCompiler {
     return this.path.substring(0, this.path.lastIndexOf(bar));
   }
 
-  private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean) {
+  private compileGraphs(node: ts.ClassDeclaration, isDefault: boolean, sourceFile: ts.SourceFile) {
     node.members.forEach((member: ts.ClassElement) => {
       if (ts.isMethodDeclaration(member)) {
-        const graph = new Graph(member, node, this.path, isDefault, this.sourceFile);
+        const graph = new Graph(member, node, this.path, isDefault, sourceFile);
 
         if (graph.type) {
           if (graph.params) {
-            const input = this.createInput(graph.params.type);
+            const input = this.createInput(graph.params.type, sourceFile);
             graph.params.type = input!.name;
           }
 
@@ -79,21 +72,20 @@ class GraphCompiler {
     });
   }
 
-  private createInput(className: string): Input | undefined {
-    let importDeclaration: ImportDeclaration | undefined = undefined;
-    let nameImport: NameImportType | undefined = undefined;
+  private createInput(nameInput: string, sourceFile: ts.SourceFile): Input | undefined {
+    const node: ts.Node | undefined = getReference(nameInput, sourceFile);
 
-    this.imports.forEach((importDecl: ImportDeclaration) => {
-      const nameImportSearch = importDecl.names.find(item => (item.nameAlias || item.name) === className);
-      if (nameImportSearch) {
-        importDeclaration = importDecl;
-        nameImport = nameImportSearch;
+    if (node) {
+      if (ts.isImportDeclaration(node)) {
+        const importDeclaration = new ImportDeclaration(node, this.getFolder(), sourceFile);
+        const nameImport = importDeclaration.names.find(item => (item.nameAlias || item.name) === nameInput);
+        const input = InputCompiler.Instance.compile(importDeclaration, this.program!, nameImport!);
+
+        return input;
+      } else {
+        const input = InputCompiler.Instance.compileNode(node, this.path, sourceFile);
+        return input;
       }
-    });
-
-    if (importDeclaration && nameImport) {
-      const input = InputCompiler.Instance.compile(importDeclaration, this.program!, nameImport!);
-      return input;
     }
   }
 

@@ -1,7 +1,12 @@
 import { Query, Mutation } from 'recife';
 
-import { CommentDelete, CommentUpdate } from '../inputs/CommentInput';
+import { CommentUpdate } from '../inputs/CommentInput';
 import CommentModel from '../models/CommentModel';
+
+interface CommentDelete {
+  postId: string;
+  commentId?: String;
+}
 
 class AnotherController {
   @Mutation()

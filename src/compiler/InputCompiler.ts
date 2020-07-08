@@ -4,10 +4,12 @@ import TypeCompiler from './TypeCompiler';
 import ImportDeclaration from './token/ImportDeclaration';
 import Input from './token/Input';
 import NameImportType from './type/NameImportType';
+import { findNodeExportDefault } from '../helpers/exportHelper';
+import { getReference } from '../helpers/referenceHelper';
+import Log from '../log';
 
 class InputCompiler {
   private static _instance: InputCompiler;
-  private sourceFile?: ts.SourceFile;
   private inputs: Input[];
 
   private constructor() {
@@ -30,24 +32,59 @@ class InputCompiler {
     const inputSearch = this.findInput(importDeclaration, nameImport.name);
 
     if (!inputSearch) {
-      this.sourceFile = program.getSourceFile(importDeclaration.getPath());
-      const input = new Input({ type: 'InputImport', importDeclaration, nameImport }, this.sourceFile);
-      this.inputs.push(input);
+      const sourceFile = program.getSourceFile(importDeclaration.getPath());
+      let node: ts.Node | undefined = undefined;
+
+      if (sourceFile) {
+        if (nameImport.exportDefault) {
+          node = findNodeExportDefault(sourceFile);
+        } else {
+          node = getReference(nameImport.name, sourceFile);
+        }
+      }
+      const input = new Input({ node: node!, path: importDeclaration.getPath() }, sourceFile);
+      this.addInput(input);
       return input;
     }
 
     return inputSearch;
   }
 
-  compileObjectLiteral(node: ts.TypeLiteralNode, fieldName: string, path: string): Input {
-    const input = new Input({ type: 'InputNode', node, fieldName, path }, this.sourceFile);
-    this.inputs.push(input);
-
+  compileObjectLiteral(node: ts.TypeLiteralNode, fieldName: string, path: string, sourceFile?: ts.SourceFile): Input {
+    const input = new Input({ node, fieldName, path }, sourceFile);
+    this.addInput(input);
     return input;
+  }
+
+  compileNode(node: ts.Node, path: string, sourceFile: ts.SourceFile): Input {
+    const input = new Input({ node, path }, sourceFile);
+    this.addInput(input);
+    return input;
+  }
+
+  private addInput(input: Input) {
+    const countExistName = this.findInputName(input.name).length;
+    if (countExistName > 0) {
+      input.name += `_${countExistName}`;
+
+      Log.Instance.warn({
+        code: 'input-repeat-name',
+        message: 'Input name is already exist',
+        path: input.path,
+        node: input.node,
+        sourceFile: input.sourceFile
+      });
+    }
+
+    this.inputs.push(input);
   }
 
   private findInput(importDeclaration: ImportDeclaration, className: String): Input | undefined {
     return this.inputs.find(item => item.name === className && item.path === importDeclaration.getPath());
+  }
+
+  private findInputName(className: String): Input[] {
+    return this.inputs.filter(item => item.name === className);
   }
 
   expand() {
