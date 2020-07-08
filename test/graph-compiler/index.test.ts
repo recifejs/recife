@@ -28,7 +28,6 @@ describe('GraphCompiler tests', () => {
       }
 
       if (output.inputs) {
-        console.log(translateInputs(InputCompiler.Instance.getInputs()));
         assert.isTrue(equal(translateInputs(InputCompiler.Instance.getInputs()), output.inputs));
       }
     });
