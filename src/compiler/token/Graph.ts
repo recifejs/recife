@@ -1,12 +1,14 @@
 import * as ts from 'typescript';
+
 import GraphParam from './GraphParam';
-import GraphTypeEnum from '../enum/GraphTypeEnum';
-import PrimitiveType from '../PrimitiveType';
-import SchemaOptions from '../../types/SchemaOptions';
-import createDecoratorOptions from '../../helpers/createDecoratorOptions';
-import Log from '../../log';
 import Type from './Type';
+import GraphTypeEnum from '../enum/GraphTypeEnum';
+import SchemaOptions from '../../types/SchemaOptions';
+import Log from '../../log';
+
+import createDecoratorOptions from '../../helpers/createDecoratorOptions';
 import { isExportDefault } from '../../helpers/exportHelper';
+import { formatPrimitive, formatPrimitiveString } from '../../helpers/primitiveHelper';
 
 class Graph {
   public name!: string;
@@ -89,7 +91,7 @@ class Graph {
     }
   }
 
-  readReturn(type: ts.Node, sourceFile?: ts.SourceFile) {
+  private readReturn(type: ts.Node, sourceFile?: ts.SourceFile) {
     if (ts.isUnionTypeNode(type)) {
       type.types.forEach(returnType => {
         if (returnType.kind === ts.SyntaxKind.UndefinedKeyword || returnType.kind === ts.SyntaxKind.NullKeyword) {
@@ -110,10 +112,10 @@ class Graph {
         }
         this.readReturn(type.typeArguments[0], sourceFile);
       } else {
-        this.return.type = PrimitiveType.getPrimitiveType(type.typeName.getText(sourceFile));
+        this.return.type = formatPrimitiveString(type.typeName.getText(sourceFile));
       }
     } else {
-      this.return.type = PrimitiveType.readNode(type);
+      this.return.type = formatPrimitive(type);
     }
   }
 

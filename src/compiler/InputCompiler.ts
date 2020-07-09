@@ -42,7 +42,7 @@ class InputCompiler {
           node = getReference(nameImport.name, sourceFile);
         }
       }
-      const input = new Input({ node: node!, path: importDeclaration.getPath() }, sourceFile);
+      const input = new Input(node!, importDeclaration.getPath(), sourceFile);
       this.addInput(input);
       return input;
     }
@@ -51,13 +51,13 @@ class InputCompiler {
   }
 
   compileObjectLiteral(node: ts.TypeLiteralNode, fieldName: string, path: string, sourceFile?: ts.SourceFile): Input {
-    const input = new Input({ node, fieldName, path }, sourceFile);
+    const input = new Input(node, path, sourceFile, fieldName);
     this.addInput(input);
     return input;
   }
 
   compileNode(node: ts.Node, path: string, sourceFile: ts.SourceFile): Input {
-    const input = new Input({ node, path }, sourceFile);
+    const input = new Input(node, path, sourceFile);
     this.addInput(input);
     return input;
   }

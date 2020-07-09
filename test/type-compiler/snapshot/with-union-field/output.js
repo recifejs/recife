@@ -9,6 +9,7 @@ module.exports = {
           parentName: 'User',
           name: 'name',
           isRequired: false,
+          isArray: false,
           type: 'String'
         },
         {
@@ -16,6 +17,7 @@ module.exports = {
           parentName: 'User',
           name: 'exist',
           isRequired: false,
+          isArray: false,
           type: 'Boolean'
         }
       ],

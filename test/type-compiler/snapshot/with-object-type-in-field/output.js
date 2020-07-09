@@ -9,6 +9,7 @@ module.exports = {
           parentName: 'UserParams',
           name: 'a',
           isRequired: true,
+          isArray: false,
           type: 'String'
         },
         {
@@ -16,6 +17,7 @@ module.exports = {
           parentName: 'UserParams',
           name: 'b',
           isRequired: true,
+          isArray: false,
           type: 'String'
         }
       ],
@@ -31,6 +33,7 @@ module.exports = {
           parentName: 'User',
           name: 'name',
           isRequired: false,
+          isArray: false,
           type: 'String'
         },
         {
@@ -38,6 +41,7 @@ module.exports = {
           parentName: 'User',
           name: 'exist',
           isRequired: false,
+          isArray: false,
           type: 'Boolean'
         },
         {
@@ -45,13 +49,15 @@ module.exports = {
           parentName: 'User',
           name: 'emails',
           isRequired: true,
-          type: '[String]'
+          isArray: true,
+          type: 'String'
         },
         {
           visible: true,
           parentName: 'User',
           name: 'params',
           isRequired: false,
+          isArray: false,
           type: 'UserParams'
         }
       ],

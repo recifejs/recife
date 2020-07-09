@@ -9,6 +9,7 @@ module.exports = {
           parentName: 'Person',
           name: 'id',
           isRequired: true,
+          isArray: false,
           type: 'String'
         }
       ],
@@ -24,6 +25,7 @@ module.exports = {
           parentName: 'User',
           name: 'name',
           isRequired: false,
+          isArray: false,
           type: 'String'
         }
       ],
@@ -40,7 +42,8 @@ module.exports = {
           parentName: 'Author',
           name: 'emails',
           isRequired: true,
-          type: '[String]'
+          isArray: true,
+          type: 'String'
         }
       ],
       options: {},
