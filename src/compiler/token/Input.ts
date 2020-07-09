@@ -2,12 +2,6 @@ import * as ts from 'typescript';
 import Field from './Field';
 import FieldTypeEnum from '../enum/FieldTypeEnum';
 
-type InputNode = {
-  node: ts.Node;
-  fieldName?: string;
-  path: string;
-};
-
 class Input {
   public name: string;
   public fields: Field[];
@@ -15,26 +9,26 @@ class Input {
   public sourceFile?: ts.SourceFile;
   public node: ts.Node;
 
-  constructor(params: InputNode, sourceFile?: ts.SourceFile) {
+  constructor(node: ts.Node, path: string, sourceFile?: ts.SourceFile, fieldName?: string) {
     this.fields = [];
     this.sourceFile = sourceFile;
-    this.path = params.path;
+    this.path = path;
     this.name = '';
-    this.node = params.node;
+    this.node = node;
 
-    if (params.fieldName) {
-      this.name = params.fieldName;
+    if (fieldName) {
+      this.name = fieldName;
     }
 
-    if (ts.isTypeLiteralNode(params.node)) {
-      this.compileObject(params.node);
-    } else if (ts.isTypeAliasDeclaration(params.node)) {
-      this.name = params.node.name.getText(this.sourceFile);
-      this.compileTypeLiteral(params.node);
-    } else if (ts.isClassDeclaration(params.node) || ts.isInterfaceDeclaration(params.node)) {
-      if (params.node.name) {
-        this.name = params.node.name.getText(this.sourceFile);
-        this.compileClassAndInterface(params.node);
+    if (ts.isTypeLiteralNode(node)) {
+      this.compileObject(node);
+    } else if (ts.isTypeAliasDeclaration(node)) {
+      this.name = node.name.getText(this.sourceFile);
+      this.compileTypeLiteral(node);
+    } else if (ts.isClassDeclaration(node) || ts.isInterfaceDeclaration(node)) {
+      if (node.name) {
+        this.name = node.name.getText(this.sourceFile);
+        this.compileClassAndInterface(node);
       }
     }
   }
