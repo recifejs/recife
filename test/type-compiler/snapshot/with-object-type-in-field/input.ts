@@ -4,7 +4,7 @@ import { Type } from 'recife';
 class User {
   name?: String;
   exist?: Boolean;
-  emails: String[];
+  emails: Array<String>;
   params?: {
     a: string;
     b: string;
