@@ -15,7 +15,7 @@ class AnotherController {
   }
 
   @Mutation()
-  updateComment(input: CommentUpdate): Array<CommentModel> {
+  updateComment(input: { text: String }): Array<CommentModel> {
     return [new CommentModel(), new CommentModel()];
   }
 }
