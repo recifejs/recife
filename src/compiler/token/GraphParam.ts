@@ -1,19 +1,20 @@
 import * as ts from 'typescript';
 import Log from '../../log';
 import Graph from './Graph';
+import capitalize from '../../helpers/capitalize';
 
 class GraphParam {
   public name!: string;
   public type!: string;
   public isRequired!: boolean;
 
-  constructor(parameter: ts.ParameterDeclaration, graph: Graph, sourceFile?: ts.SourceFile) {
+  constructor(parameter: ts.ParameterDeclaration, path: string, nameGraph: string, sourceFile?: ts.SourceFile) {
     if (parameter.type) {
       if (parameter.type.kind === ts.SyntaxKind.AnyKeyword) {
         Log.Instance.error({
           code: 'param-type-any',
           message: 'Param type can not any keyword',
-          path: graph.path,
+          path,
           node: parameter,
           sourceFile
         });
@@ -30,6 +31,8 @@ class GraphParam {
             this.type = type.getText(sourceFile);
           }
         });
+      } else if (ts.isTypeLiteralNode(parameter.type)) {
+        this.type = `${capitalize(nameGraph)}Parameter`;
       } else {
         this.type = parameter.type.getText(sourceFile);
       }
@@ -37,7 +40,7 @@ class GraphParam {
       Log.Instance.error({
         code: 'param-type-not-defined',
         message: 'Not defined param type.',
-        path: graph.path,
+        path,
         node: parameter,
         sourceFile
       });

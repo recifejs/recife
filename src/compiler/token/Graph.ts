@@ -42,10 +42,6 @@ class Graph {
     this.isExportDefaultController = isDefaultExternal || isExportDefault(classDecl);
     this.return = { isRequired: true, isArray: false };
 
-    if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
-      this.params = new GraphParam(method.parameters[0], this, sourceFile);
-    }
-
     if (method.type) {
       if (method.type.kind === ts.SyntaxKind.AnyKeyword) {
         Log.Instance.error({
@@ -89,6 +85,14 @@ class Graph {
         });
       });
     }
+
+    if (method.parameters[0] && GraphParam.isParamValid(method.parameters[0], sourceFile)) {
+      this.params = new GraphParam(method.parameters[0], this.path, this.getName(), sourceFile);
+    }
+  }
+
+  getName(): string {
+    return this.options.name || this.name;
   }
 
   private readReturn(type: ts.Node, sourceFile?: ts.SourceFile) {
