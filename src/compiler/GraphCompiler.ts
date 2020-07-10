@@ -62,12 +62,7 @@ class GraphCompiler {
 
         if (graph.type) {
           if (graph.params) {
-            const input = this.createInput(
-              graph.params.type,
-              member.parameters[0].type!,
-              graph.params.isLiteral,
-              sourceFile
-            );
+            const input = this.createInput(graph.params.type, member.parameters[0].type!, sourceFile);
             graph.params.type = input!.name;
           }
 
@@ -77,13 +72,8 @@ class GraphCompiler {
     });
   }
 
-  private createInput(
-    nameInput: string,
-    parameter: ts.Node,
-    isLiteral: boolean,
-    sourceFile: ts.SourceFile
-  ): Input | undefined {
-    if (isLiteral && ts.isTypeLiteralNode(parameter)) {
+  private createInput(nameInput: string, parameter: ts.Node, sourceFile: ts.SourceFile): Input | undefined {
+    if (ts.isTypeLiteralNode(parameter)) {
       const input = InputCompiler.Instance.compileObjectLiteral(parameter, nameInput, this.path, sourceFile);
       return input;
     }

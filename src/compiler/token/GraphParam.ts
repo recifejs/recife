@@ -7,11 +7,8 @@ class GraphParam {
   public name!: string;
   public type!: string;
   public isRequired!: boolean;
-  public isLiteral: boolean;
 
   constructor(parameter: ts.ParameterDeclaration, path: string, nameGraph: string, sourceFile?: ts.SourceFile) {
-    this.isLiteral = true;
-
     if (parameter.type) {
       if (parameter.type.kind === ts.SyntaxKind.AnyKeyword) {
         Log.Instance.error({
@@ -35,7 +32,6 @@ class GraphParam {
           }
         });
       } else if (ts.isTypeLiteralNode(parameter.type)) {
-        this.isLiteral = true;
         this.type = `${capitalize(nameGraph)}Parameter`;
       } else {
         this.type = parameter.type.getText(sourceFile);
