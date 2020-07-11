@@ -1,6 +1,5 @@
 import { Query, Mutation } from 'recife';
 
-import { CommentUpdate } from '../inputs/CommentInput';
 import CommentModel from '../models/CommentModel';
 
 interface CommentDelete {

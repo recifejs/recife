@@ -1,6 +1,5 @@
 import * as ts from 'typescript';
 import Log from '../../log';
-import Graph from './Graph';
 import capitalize from '../../helpers/capitalize';
 
 class GraphParam {
