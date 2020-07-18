@@ -21,7 +21,7 @@
     "recife": "./bin/recife"
   },
   "dependencies": {
-    "apollo-server-core": "^2.15.0",
+    "apollo-server-core": "^2.16.0",
     "choose-port": "^0.3.2",
     "open": "^7.0.4"
   },
