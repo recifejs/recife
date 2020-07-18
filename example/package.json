@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "recife": "^0.4.0",
-    "recife-koa": "^0.1.1",
+    "recife-koa": "^0.1.4",
     "typescript": "^3.9.5"
   }
 }

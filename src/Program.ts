@@ -45,6 +45,7 @@ class Program {
     }
 
     this.compiler.clean();
+    Log.Instance.clean();
     this.compiler
       .compile()
       .then(() => {
@@ -52,6 +53,7 @@ class Program {
           this.lifecycle && this.lifecycle.mounted();
         } else {
           this.lifecycle && this.lifecycle.updated();
+          this.server.close();
         }
 
         Log.Instance.successHeap('Compiled graphql');
@@ -67,19 +69,15 @@ class Program {
         const host = Recife.NODE_HOST;
 
         if (this.server) {
-          this.server.close();
-
           this.server = this.app.listen({ port: this.port, host: host }, () => {
-            Log.Instance.info(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}`);
-            Log.Instance.jump();
+            Log.Instance.info(`Server restarted at http://${host}:${this.port}${apolloServer.graphqlPath}\n\n`);
           });
         } else {
           choosePort(port, host, (portValid: Number) => {
             this.port = portValid;
 
             this.server = this.app.listen({ port: portValid, host: host }, () => {
-              Log.Instance.info(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}`);
-              Log.Instance.jump();
+              Log.Instance.info(`Server ready at http://${host}:${this.port}${apolloServer.graphqlPath}\n\n`);
               setTimeout(() => {
                 open(`http://${host}:${portValid}`);
               }, 2000);

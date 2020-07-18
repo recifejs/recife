@@ -29,6 +29,11 @@ class Log {
     return this._instance || (this._instance = new this());
   }
 
+  clean() {
+    this.errors = [];
+    this.warns = [];
+  }
+
   infoHeap(text: string) {
     if (this.infoOld !== '') {
       process.stdout.clearLine(0);
