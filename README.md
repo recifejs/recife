@@ -47,6 +47,8 @@ If you want to contribute to **RecifeJs**, be sure to review the
 [code of conduct](CODE_OF_CONDUCT.md). By participating, you are expected to
 uphold this code.
 
+![Contributors list](https://opencollective.com/recifejs/contributors.svg)
+
 ## License
 
 RecifeJs is open source software [licensed as MIT](https://github.com/recifejs/recife/blob/master/LICENSE).
