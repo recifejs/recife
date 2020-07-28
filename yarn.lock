@@ -2408,10 +2408,10 @@ normalize-path@^3.0.0, normalize-path@~3.0.0:
   resolved "https://registry.yarnpkg.com/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
   integrity sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==
 
-npm-dts@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/npm-dts/-/npm-dts-1.3.0.tgz#a7b8094e2a0d50c90dd72ed3e929b4e3752ea660"
-  integrity sha512-9zSl5pSv9AbxluI1e84kq0QFAM2Mm/ftrBdJbqiIvx6U4MQjdoCLAeLAhRoVlW7mwk0c2sib5E2w1cLSYPJpoA==
+npm-dts@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/npm-dts/-/npm-dts-1.3.1.tgz#2be92792de72ab718d8c32a14db4e5c6c4f1d411"
+  integrity sha512-+8DD1kR2thUAC2CC0stp/ykSvlxoh/sSs6vzEYpRBohgs7Vpp+1ssUyU6JHl5oGRWgnJ7KryY4nqP/jjwXaJag==
   dependencies:
     args "5.0.1"
     find-node-modules "2.0.0"
