@@ -5,7 +5,7 @@ process.on('unhandledRejection', err => {
 });
 
 import { spawnSync } from 'child_process';
-import Log from '../src/log';
+import Log from '../log';
 
 const args = process.argv.slice(2);
 const scripts = ['start', 'build', 'server'];

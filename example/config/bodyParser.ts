@@ -15,13 +15,11 @@ const bodyParserConfig: BodyParserConfig = {
     text: '1mb'
   },
   strict: true,
-  detectJSON: undefined,
   extendTypes: {
     json: undefined,
     form: undefined,
     text: undefined
-  },
-  onerror: undefined
+  }
 };
 
 export default bodyParserConfig;

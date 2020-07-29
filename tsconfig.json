@@ -11,6 +11,6 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true
   },
-  "include": ["src", "bin", "scripts"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }

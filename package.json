@@ -3,7 +3,7 @@
   "version": "0.7.4",
   "description": "MVC Framework for GraphQL",
   "license": "MIT",
-  "main": "dist/src/index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://recifejs.org/",
   "repository": "https://github.com/recifejs/recife",
@@ -11,7 +11,7 @@
     "build": "tsc -p . && yarn types",
     "test": "mocha -r ts-node/register --timeout 10000 test/**/*.test.ts",
     "coverage": "nyc npm run test",
-    "types": "npm-dts generate -o ./dist/index.d.ts"
+    "types": "npm-dts generate -o ./dist/index.d.ts -L error"
   },
   "files": [
     "dist",
