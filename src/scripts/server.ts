@@ -1,7 +1,7 @@
 'use strict';
 
-import Server from '../src/Server';
-import Log from '../src/log';
+import Server from '../Server';
+import Log from '../log';
 
 Log.Instance.title(`Start Server RecifeJs`);
 

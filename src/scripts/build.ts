@@ -1,7 +1,7 @@
 'use strict';
 
-import Build from '../src/Build';
-import Log from '../src/log';
+import Build from '../Build';
+import Log from '../log';
 
 Log.Instance.title(`Build RecifeJs`);
 
