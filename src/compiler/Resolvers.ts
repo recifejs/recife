@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { GraphQLScalarType } from 'graphql';
 import Graph from './token/Graph';
 import Field from './token/Field';
@@ -20,6 +21,10 @@ class Resolvers {
 
   constructor() {
     this.scalars.Date = new GraphQLScalarType(DateScalar);
+
+    this.Query.recife = () => {
+      return require(path.join(__dirname, '../../package.json')).version;
+    };
   }
 
   add(field: Field, type: Type) {

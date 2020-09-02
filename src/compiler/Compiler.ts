@@ -114,6 +114,8 @@ class Compiler {
     typeString += InputCompiler.Instance.toStringType();
     typeString += GraphCompiler.Instance.toStringType();
 
+    typeString += `extend type Query {\n  recife: String!\n}\n`;
+
     typeString = typeString.includes('type Subscription') ? `type Subscription\n${typeString}` : typeString;
     typeString = typeString.includes('type Mutation') ? `type Mutation\n${typeString}` : typeString;
     typeString = typeString.includes('type Query') ? `type Query\n${typeString}` : typeString;

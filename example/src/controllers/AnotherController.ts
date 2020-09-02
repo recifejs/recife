@@ -9,7 +9,7 @@ interface CommentDelete {
 
 class AnotherController {
   @Mutation()
-  deleteComment(input: CommentDelete | undefined): boolean | undefined | null {
+  deleteComment(input: CommentDelete | undefined): boolean | undefined {
     return false;
   }
 
