@@ -1,8 +1,8 @@
 import fs from 'fs';
+import equal from 'fast-deep-equal';
 import path from 'path';
 import { assert } from 'chai';
 import 'mocha';
-import Recife from '../../src/Recife';
 
 import Compiler from '../../src/compiler/Compiler';
 
@@ -21,7 +21,7 @@ describe('Compiler tests', () => {
       await compiler.compile();
 
       if (output.types) {
-        assert.equal(JSON.stringify(compiler.generateType()), JSON.stringify(output.types));
+        assert.isTrue(equal(destructor(compiler.generateType()), destructor(output.types)));
       }
 
       if (output.resolvers) {
@@ -32,3 +32,7 @@ describe('Compiler tests', () => {
     });
   });
 });
+
+const destructor = (object: any) => {
+  return JSON.parse(JSON.stringify(object));
+};

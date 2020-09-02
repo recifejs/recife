@@ -36,5 +36,9 @@ module.exports = {
     extend type Mutation {
       createUser(input: CreateUserInput!): Input!
     }
+
+    extend type Query {
+      recife: String!
+    }
   `
 };
