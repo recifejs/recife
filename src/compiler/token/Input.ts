@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import Field from './Field';
 import FieldTypeEnum from '../enum/FieldTypeEnum';
+import { getReference } from '../../helpers/referenceHelper';
 
 class Input {
   public name: string;
@@ -23,12 +24,27 @@ class Input {
     if (ts.isTypeLiteralNode(node)) {
       this.compileObject(node);
     } else if (ts.isTypeAliasDeclaration(node)) {
-      this.name = node.name.getText(this.sourceFile);
+      if (!fieldName) {
+        this.name = node.name.getText(this.sourceFile);
+      }
       this.compileTypeLiteral(node);
     } else if (ts.isClassDeclaration(node) || ts.isInterfaceDeclaration(node)) {
       if (node.name) {
-        this.name = node.name.getText(this.sourceFile);
+        if (!fieldName) {
+          this.name = node.name.getText(this.sourceFile);
+        }
         this.compileClassAndInterface(node);
+      }
+
+      if (node.heritageClauses) {
+        node.heritageClauses.forEach((heritage: ts.HeritageClause) => {
+          const nodeHeritage = getReference(heritage.types[0].expression.getText(sourceFile), sourceFile!);
+
+          if (nodeHeritage) {
+            const inputHeritage = new Input(nodeHeritage, '', sourceFile, this.name);
+            this.fields = this.fields.concat(inputHeritage.fields);
+          }
+        });
       }
     }
   }

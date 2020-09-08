@@ -8,8 +8,11 @@ export interface CommentDelete {
   commentId?: String;
 }
 
-export class CommentUpdate {
+export class CommentForm {
   postId!: String;
+}
+
+export class CommentUpdate extends CommentForm {
   text!: String;
   commentId?: String;
   params?: {
