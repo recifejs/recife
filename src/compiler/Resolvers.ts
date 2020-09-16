@@ -37,7 +37,11 @@ class Resolvers {
 
     this.resolversType[nameType] = {
       [field.name]: (...params: any[]) => {
-        return Model[`get${capitalize(field.name)}`](...params);
+        if (Model[`get${capitalize(field.name)}`]) {
+          return Model[`get${capitalize(field.name)}`](...params);
+        } else if (params[0][field.name]) {
+          return params[0][field.name];
+        }
       }
     };
   }

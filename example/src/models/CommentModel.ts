@@ -8,13 +8,6 @@ class CommentModel extends Publication {
   @Field({ visible: false })
   date?: Date;
   author?: AuthorModel;
-
-  static getAuthor(comment: CommentModel) {
-    const author = new AuthorModel();
-    author.name = 'André Lins';
-
-    return author;
-  }
 }
 
 @Type({ name: 'User' })
